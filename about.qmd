@@ -1,0 +1,26 @@
+---
+title: "About"
+image: profile.jpg
+about:
+  template: jolla
+  links:
+    - icon: twitter
+      text: Twitter
+      href: https://x.com/StevenMesquiti
+    - icon: google scholar
+      text: Google Scholar
+      href: https://scholar.google.com/citations?user=jMPn4hoAAAAJ&hl=en&inst=10749622055976013885
+    - icon: github
+      text: Github
+      href: https://github.com/scm1210
+---
+
+Hi! 
+
+My name is Steven Mesquiti! I'm a [first-year](https://lemolab.princeton.edu/people/steven-mesquiti) in the Department of Psychology at Princeton University advised by [Erik Nook](https://lemolab.princeton.edu/people/erik-c-nook-phd). 
+
+I study how we can use Natural Language Processing techniques and Artifical Intelligence to explain, predict, and improve people's Mental Health
+
+Before Princeton, I worked as a Lab Manager for Emily Falk in the [Communication Neuroscience Lab](https://www.asc.upenn.edu/research/centers/communication-neuroscience-lab) at the Univeristy of Pennsylvania. Along the way, I have worked with excessively generous scientists like Jamie Pennebaker, Lyle Ungar, & Angela Duckworth pursing questions at the nexus of Computer Science, Computational Linguistics, and Psychology 
+
+This is my blog for `PSY-504`. You can find various assignments that I complete on this website. 

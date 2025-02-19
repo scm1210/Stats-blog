@@ -1,0 +1,298 @@
+---
+title: "Ordinal Regression Lab Answers"
+subtitle: "Princeton University"
+author: "Steven Mesquiti"
+output: 
+  tufte::tufte_html:
+    css: 
+    tufte_variant: "envisioned"
+    highlight: github-dark
+    fig_height: 10
+    fig_width: 16
+    toc: true
+    toc_depth: 1
+execute: 
+  message: false
+  warning: false
+format: html
+engine: knitr
+---
+
+# Lab 3- Ordinal Regression
+
+## Instructions
+
+-   If you are fitting a model, display the model output in a neatly formatted table. (The `tidy` and `kable` functions can help!)
+
+-   If you are creating a plot, use clear labels for all axes, titles, etc.
+
+-   If you are using Github, don't forget to commit and push your work to to it regularly, at least after each exercise. Write short and informative commit messages. Else, if you are submitting on Canvas, make sure that the version you submit is the latest, and that it runs/knits without any errors.
+
+-   When you're done, we should be able to knit the final version of the QMD in your GitHub as a HTML.
+
+# Lab
+
+The data for this week's lab is taken from the Great British Bake-off (GBBO, https://bakeoff.netlify.app/). In this lab you will be looking at `Gender` and `Age` as a predictor of technical rank. For this exercise, we will only be looking at those who were in top 3 of technical.
+
+In the GBBO, the bakers are usually provided with a list of ingredients and basic instructions, but they may not have access to specific measurements or details on how to prepare the ingredients. The judges evaluate the bakers' finished products based on factors such as appearance, texture, and flavor, but also compare the bakers' results to a standard version of the recipe that has been prepared in advance by the judges or a baking expert.
+
+The dataset contains 3 variables:
+
+-   `Gender`: M = MALE, F = FEMALE
+
+-   `Age`: Age of baker
+
+-   `Technical Rank`: Rank in technical (1,2,3)
+
+## Load packages:
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = FALSE,fig.path = "Lab-3-figs/fig_")
+options(scipen=999)
+```
+
+```{r}
+library(pacman)
+pacman::p_load(tidyverse, DT, broom, performance,
+               ordinal,car,ggeffects,gofact,brms,
+               emmeans,knirt,MASS,brant,
+               install = TRUE)
+
+
+#### define plot objects and stuff
+
+palette <- c(
+  "#772e25", "#c44536", "#ee9b00", "#197278", "#283d3b", 
+  "#9CC5A1", "#6195C6", "#ADA7C9", "#4D4861", "grey50",
+  "#d4a373", "#8a5a44", "#4a6a74", "#5c80a8", "#a9c5a0",
+  "#7b9b8e", "#e1b16a", "#a69b7c", "#9d94c4", "#665c54"
+)
+
+palette_condition = c("#ee9b00", "#c44536","#005f73", "#283d3b", "#9CC5A1", "#6195C6", "#ADA7C9", "#4D4861")
+
+plot_aes = theme_minimal() +
+  theme(
+    legend.position = "top",
+    legend.text = element_text(size = 12),
+    text = element_text(size = 16, family = "Futura Medium"),
+    axis.text = element_text(color = "black"),
+    axis.ticks.y = element_blank(),
+    plot.title = element_text(size = 20, hjust = 0.5) # Adjusted title size and centering
+  )
+
+
+```
+
+## Load data
+
+-   Make sure only the top 3 ranks are being used. *For some reason, there are missing ranks (my guess is they did not announce rank on TV)*
+
+```{r}
+
+gbbo <- read_csv("https://raw.githubusercontent.com/suyoghc/PSY-504_Spring-2025/refs/heads/main/Ordinal%20Regression/data/GBBO.csv")
+
+# Enter code to filter. Think about the data type that would be relevant for Rank
+# gb <- ....
+
+### only use the the first three ranks 
+data = gbbo |> 
+  rename(Technical_Rank = `Technical Rank`) |> 
+  filter(Technical_Rank < 4) |> 
+  mutate(Technical_Rank = factor(Technical_Rank, levels = c(1, 2, 3), ordered = TRUE),
+         Gender = factor(Gender)) 
+
+```
+
+## Explore
+
+-   Plot two figures showing the percentage of bakers in each rank--- create one for `Gender` and `Age`
+
+```{r}
+#| label: plot-by-rank
+gb <- data %>% 
+  mutate(AgeGroup = cut(Age, 
+                        breaks = seq(floor(min(Age, na.rm = TRUE)), ceiling(max(Age, na.rm = TRUE)), by = 10),
+                        include.lowest = TRUE, right = FALSE))
+
+# Compute percentages by Age Group
+age_rank <- gb %>%
+  group_by(AgeGroup, `Technical_Rank`) %>%
+  summarise(n = n(), .groups = 'drop') %>%
+  mutate(perc = n / sum(n) * 100)
+
+# Compute percentages by Gender
+gender_rank <- gb %>%
+  group_by(Gender, `Technical_Rank`) %>%
+  summarise(n = n(), .groups = 'drop') %>%
+  mutate(perc = n / sum(n) * 100)
+
+# Plot for Age Group
+ggplot(age_rank, aes(x = AgeGroup, y = perc, fill = factor(`Technical_Rank`))) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8)) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  scale_fill_manual(values = palette_condition) +
+  labs(title = "Percentage of Bakers in Each Technical Rank by Age Group",
+       x = "Age Group",
+       y = "Percentage",
+       fill = "Technical Rank") +
+  plot_aes +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Plot for Gender
+ggplot(gender_rank, aes(x = Gender, y = perc, fill = factor(`Technical_Rank`))) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8)) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  scale_fill_manual(values = palette_condition) +
+  labs(title = "Percentage of Bakers in Each Technical Rank by Gender",
+       x = "Gender",
+       y = "Percentage",
+       fill = "Technical Rank") +
+  plot_aes 
+
+
+```
+
+## Ordinal Analysis
+
+-   If you haven't already, convert the outcome variable to an ordered factor. What does the order here represent?
+
+```         
+data = gbbo |> 
+  rename(Technical_Rank = `Technical Rank`) |> 
+  filter(Technical_Rank < 4) |> 
+  mutate(Technical_Rank = factor(Technical_Rank, levels = c(1, 2, 3), ordered = TRUE),
+  Gender = factor(Gender)) 
+```
+
+> The order represents their placement in a technical bake-off.
+
+-   Convert input variables to categorical factors as appropriate.
+
+```         
+# Factorizing gender
+Gender = factor(Gender)
+```
+
+-   Run a ordinal logistic regression model against all relevant input variables. Interpret the effects for `Gender`, `Age` and `Gender*Age` (even if they are non-significant).
+
+```{r}
+
+# Fit the ordinal logistic regression model
+model <- clm(`Technical_Rank` ~ Gender * Age, data = gb)
+
+# Extract results with 95% confidence intervals
+results <- tidy(model, conf.int = TRUE) %>%
+  rename(Estimate = estimate, `Lower CI` = conf.low, `Upper CI` = conf.high) %>%
+  mutate(
+    Estimate = round(Estimate, 3),
+    `Lower CI` = round(`Lower CI`, 3),
+    `Upper CI` = round(`Upper CI`, 3),
+    p.value = round(2 * (1 - pnorm(abs(statistic))), 3)  # Compute p-values manually and round
+  )
+
+# Display results in an interactive DT table
+datatable(results, 
+          options = list(pageLength = 5, scrollX = TRUE),
+          caption = "Ordinal Logistic Regression Results with 95% Confidence Intervals")
+
+summary(model)
+```
+
+-   Test if the interaction is warranted
+
+#Hint: You need to create two models with clm(); one with interaction and one without. #Then you compare them using the anova test using anova()
+
+```{{r}}
+model_interaction <- clm(`Technical_Rank` ~ Gender * Age, data = gb)
+
+# Fit the model without the interaction term
+model_main <- clm(`Technical_Rank` ~ Gender + Age, data = gb)
+
+# Compare the two models using ANOVA
+anova_results <- anova(model_main, model_interaction)
+anova_results
+
+```
+
+> we should use the interaction term since th emodel has significantly better fit
+
+-   Use `ggemmeans` to create a figure showing the interaction between `Gender` and `Age` as a function of rank. Plot predicted probabilities from the model.
+
+```{r}
+
+preds <- ggemmeans(model_interaction, terms = c("Age", "Gender"), type = "fixed")
+
+ggplot(preds, aes(x = x, y = predicted, color = group, fill = group)) +
+  geom_line(size = 1) +  
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2, linetype = "dashed") +  
+  facet_wrap(~response.level, scales = "free_y") +  
+  labs(title = "Predicted Probability of Technical Rank by Age and Gender",
+       x = "Age",
+       y = "Predicted Probability",
+       color = "Gender",
+       fill = "Gender") +  
+  scale_color_manual(values = palette) +  
+  scale_fill_manual(values = palette) +  
+  plot_aes
+```
+
+### Latent Visualization
+
+```{r}
+
+ols_clm = MASS::polr(Technical_Rank~Gender*Age, data=gb)
+
+ggeffect(ols_clm, c("Age[all]", "Gender"), latent=TRUE) %>% plot() +  scale_color_manual(values = palette) +  
+  scale_fill_manual(values = palette) +  plot_aes 
+
+```
+
+-   Use the Brant test to support or reject the hypothesis that the proportional odds assumption holds for your simplified model.
+
+```{r}
+
+brant(ols_clm)
+```
+
+> We fail to rejecet it proportional odds assumption holds
+
+## `brms`
+
+-   Below is a model implementation using the `brms` package. We will just use the default priors for this. The exercise is to run this code and note your observations. What are salient differences you observe in how the model fitting takes place With respect to the results, how do you compare the results of the model you fit with `clm` and the one you fit with `brms`?
+
+```{r}
+#| results: hide
+#| 
+model_path <- file.path("/Users/sm9518/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/PSY-504/stevens-blog/posts/Lab-3/models/brms_model.rds")
+
+if (!file.exists(model_path)) {
+  # If the RDS file does not exist, create the model
+  ols2_brm <- brm(Technical_Rank ~ Gender * Age, data = gb, 
+                  family = cumulative, cores = 4, chains = 4)
+  
+  # Save the model output to an RDS file
+  saveRDS(ols2_brm, model_path)
+} else {
+  # If the RDS file already exists, load the data from it
+  ols2_brm <- readRDS(model_path)
+}
+
+```
+
+> The results are the same since we are using an uninformative prior and the estimates are similar to that of ML (frequentist estimations)
+
+-   The `conditional_effects` function is used to plot predicted probabilities by Gender and Age across each rank.
+
+```{r}
+conditional_effects(ols2_brm, categorical = T)
+```
+
+-   `check_predictions` from the `easystats` `performance` package is used for examining model fit (i.e., does the data fit the model being used?).
+
+Run the below code. What do you think?
+
+```{r}
+check_predictions(ols2_brm) |>  plot() + plot_aes
+```
+
+> Yes, the model appears to fit the data

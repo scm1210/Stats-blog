@@ -1,0 +1,565 @@
+---
+title: "Lab 2: Logistic Regression"
+subtitle: "Princeton University"
+author: "Steven Mesquiti"
+output: 
+  tufte::tufte_html:
+    css: 
+    tufte_variant: "envisioned"
+    highlight: github-dark
+    fig_height: 10
+    fig_width: 16
+    toc: true
+    toc_depth: 1
+execute: 
+  message: false
+  warning: false
+format: html
+engine: knitr
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = FALSE,fig.path = "Lab-2-figs/fig_")
+options(scipen=999)
+```
+
+```{r load packages and installize conda environment, warning=TRUE, include=FALSE}
+if (!require("pacman")) install.packages("pacman") #run this if you don't have pacman 
+library(pacman)
+
+pacman::p_load(tidyverse, DT, lmerTest, lme4, reactable,
+               broom.mixed, knitr, kableExtra, ggrepel,
+              modelsummary, tidyr, easystats, broom, emmeans, 
+              marginaleffects, performance, arm,
+               install = TRUE)
+
+palette <- c(
+  "#772e25", "#c44536", "#ee9b00", "#197278", "#283d3b", 
+  "#9CC5A1", "#6195C6", "#ADA7C9", "#4D4861", "grey50",
+  "#d4a373", "#8a5a44", "#4a6a74", "#5c80a8", "#a9c5a0",
+  "#7b9b8e", "#e1b16a", "#a69b7c", "#9d94c4", "#665c54"
+)
+
+palette_condition = c("#ee9b00", "#c44536","#005f73", "#283d3b", "#9CC5A1", "#6195C6", "#ADA7C9", "#4D4861")
+plot_aes = theme_minimal() +
+  theme(
+    legend.position = "top",
+    legend.text = element_text(size = 12),
+    text = element_text(size = 16, family = "Futura Medium"),
+    axis.text = element_text(color = "black"),
+    axis.ticks.y = element_blank(),
+    plot.title = element_text(size = 20, hjust = 0.5) # Adjusted title size and centering
+  )
+```
+-   Assignment requirements:
+
+    -   If you are using Github (recommended), make sure to commit and push your work to GitHub regularly, at least after each exercise. Write short and informative commit messages, and share the link to your assignment with me. If not, you can also send me the **rmd** & **rendered file** via Canvas.
+
+    -   In this assignment, you will not need to code from scratch. Rather, you'll need to fill in code where needed. This assignment has a logisitic regression implementation for a scenario from EDA down to model comparison (and would be useful for whenever you may encounter such a situation in the future).
+
+    -   I want the assignments to begin reflecting a bit more of how you'd be doing things on your own, where you have some prior knowledge and you figure other things out (by referring to documentation, etc.) . In addition to the rmd, I also want you to submit to me **notes** of anything new that you learn while finishing the assignment. And any pain-points, and we'll discuss more.
+
+-   Note:
+
+    -   If you are fitting a model, display the model output in a neatly formatted table. (The `gt` `tidy` and `kable` functions can help!). `Modelsummary` also looks good(https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html)
+
+    -   Make sure that your plots are clearly labeled – for all axes, titles, etc.\
+
+## Data: General Social Survey
+
+The General Social Survey (GSS) has been used to measure trends in attitudes and behaviors in American society since 1972. In addition to collecting demographic information, the survey includes questions used to gauge attitudes about government spending priorities, confidence in institutions, lifestyle, and many other topics. A full description of the survey may be found here.
+
+The data for this lab are from the 2016 General Social Survey. The original data set contains 2867 observations and 935 variables. We will use and abbreviated data set that includes the following variables:
+
+natmass: Respondent’s answer to the following prompt:
+
+“We are faced with many problems in this country, none of which can be solved easily or inexpensively. I’m going to name some of these problems, and for each one I’d like you to tell me whether you think we’re spending too much money on it, too little money, or about the right amount…are we spending too much, too little, or about the right amount on mass transportation?”
+
+age: Age in years.
+
+sex: Sex recorded as male or female
+
+sei10: Socioeconomic index from 0 to 100
+
+region: Region where interview took place
+
+polviews: Respondent’s answer to the following prompt:
+
+“We hear a lot of talk these days about liberals and conservatives. I’m going to show you a seven-point scale on which the political views that people might hold are arranged from extremely liberal - point 1 - to extremely conservative - point 7. Where would you place yourself on this scale?”
+
+The data are in gss2016.csv in the data folder.
+
+## EDA
+
+> Let’s begin by making a binary variable for respondents’ views on spending on mass transportation. Create a new variable that is equal to “1” if a respondent said spending on mass transportation is about right and “0” otherwise. Then plot the proportion of the response variable, using informative labels for each category.
+
+Fill in the "\_\_\_\_" below to encode the binary variable
+
+```{r}
+data <- read.csv("gss2016.csv")
+
+data = data |> 
+  mutate(mass_trans_spend_right = if_else(natmass == "About right", 1, 0))
+
+data |> 
+  DT::datatable()
+
+```
+
+```{r}
+#Get proportions
+mass_spend_summary <- data %>%
+  count(mass_trans_spend_right) %>%
+  mutate(proportion = n / sum(n))
+
+#Look at the dataframe structure. And make sure it's in a format that you can use for plotting.
+#Change structure if needed
+mass_spend_long <- mass_spend_summary %>%
+  mutate(category = if_else(mass_trans_spend_right == 1, "About right", "Not right")) 
+
+#Factorise for plot
+mass_spend_long$mass_trans_spend_right <- as.factor(mass_spend_long$mass_trans_spend_right)
+
+#Make plot
+#Hint: geom_bar lets you make stacked bar charts
+ggplot(mass_spend_summary, aes(x = factor(mass_trans_spend_right), y = proportion, fill = factor(mass_trans_spend_right))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c("#E69F00", "#56B4E9"),
+                   labels = c("Not right", "About right")) +
+  labs(title = "Proportion of Responses on Mass Transportation Spending",
+       x = "Response",
+       y = "Proportion",
+       fill = "Spending View") +
+  scale_x_discrete(labels = c("Not right", "About right")) +
+  plot_aes
+
+```
+
+> Recode `polviews` so it is a factor with levels that are in an order that is consistent with question on the survey. Note how the categories are spelled in the data.
+
+```{r}
+data <- data %>%
+  mutate(polviews = factor(polviews,
+                           levels = c("Extremely liberal", "Liberal", "Slightly liberal", 
+                                      "Moderate", "Slghtly conservative", "Conservative", 
+                                      "Extrmly conservative"),
+                           ordered = TRUE))
+```
+
+> Make a plot of the distribution of `polviews`
+
+```{r fig.height=10, fig.width=16}
+#Get proportions, format, and produce a plot like you did previously for mass_trans_spend_right
+
+pol_view_summary <- data %>%
+  count(polviews) %>%
+  mutate(proportion = n / sum(n))
+
+ggplot(pol_view_summary, aes(x = polviews, y = proportion, fill = polviews)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = palette) +  # Removed extra parenthesis
+  labs(title = "Proportion of Responses on Mass Transportation Spending",
+       x = "Response",
+       y = "Proportion",
+       fill = "Spending View") +
+  plot_aes
+
+
+
+  
+```
+
+> Which political view occurs most frequently in this data set?
+>
+> \_\_\_\_\_
+
+> Make a plot displaying the relationship between satisfaction with mass transportation spending and political views. Use the plot to describe the relationship the two variables.
+
+```{r fig.height=10, fig.width=16}
+data |> 
+  group_by(polviews) |> 
+  summarize(prop_satisfied = mean(mass_trans_spend_right), na.rn = T) |> 
+  ggplot(aes(x = polviews, y = prop_satisfied, fill = polviews)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = palette_condition) +  
+  labs(title = "Proportion of Responses on Mass Transportation Spending",
+       x = "Political Views",
+       y = "Proportion\nSatisfied with Spending",
+       fill = "Spending View") +
+  plot_aes
+
+
+```
+
+The more conservative one's political views are the more they think the amount of spending on mass transportation is correct.
+
+-   We’d like to use age as a quantitative variable in your model; however, it is currently a character data type because some observations are coded as "89 or older".
+
+> Recode age so that is a numeric variable. Note: Before making the variable numeric, you will need to replace the values "89 or older" with a single value.
+
+```{r}
+data = data |> 
+  mutate(age = if_else(age == "89 or older", "89", age)) |> 
+  mutate(age = as.numeric(age))
+
+```
+
+> Plot the frequency distribution of age.
+
+```{r}
+
+data |> 
+  ggplot(aes(x = age)) + 
+  geom_density(binwidth = 5, fill = "#6195C6") + 
+  labs(title = "Frequency Distribution of Age",
+       x = "Age",
+       y = "Frequency") +
+  plot_aes
+
+```
+
+## Logistic regression
+
+> Let’s start by fitting a logistic regression model with just the intercept
+
+```{r}
+intercept_only_model <- glm(mass_trans_spend_right ~ 1, data = data, family = binomial(link = "logit"))
+
+intercept_only_model %>% 
+  tidy() %>%
+  DT::datatable()
+
+```
+
+> Interpret the intercept in the context of the data. You can do this by converting the $\beta_0$ parameter out of the log-odds metric to the probability metric. Make sure to include the 95% confidence intervals. Then interpret the results in a sentence or two--what is the basic thing this probability tells us about?
+
+```{r}
+b0 <- coef(intercept_only_model)["(Intercept)"]
+
+# Logistic transformation of the intercept (log-odds to probability)
+b0_transformed <- exp(b0) / (1 + exp(b0)) 
+
+# Compute the 95% confidence intervals on the log-odds scale
+ci_lower <- b0 - 1.96 * 0.0393685
+ci_upper <- b0 + 1.96 * 0.0393685
+
+# Transform the confidence intervals into probabilities
+p_lower <- exp(ci_lower) / (1 + exp(ci_lower))
+p_upper <- exp(ci_upper) / (1 + exp(ci_upper))
+
+# Print results
+cat("Intercept (probability):", round(b0_transformed, 3), "\n")
+cat("95% CI (probability): [", round(p_lower, 3), ",", round(p_upper, 3), "]\n")
+
+
+```
+
+> The the baseline probability of supporting the policy is 53%.
+
+> Now let's fit a model using the demographic factors - `age`,`sex`, `sei10` - to predict the odds a person is satisfied with spending on mass transportation. Make any necessary adjustments to the variables so the intercept will have a meaningful interpretation. *Neatly display the model coefficients (do not display the summary output)*
+
+```{r}
+#make sure that sex is a factor (i.e. to make sure R knows it's binary/categorical, and not continuous)
+
+data <- data |> 
+  mutate(sex = as.factor(sex)) 
+data$sex <- relevel(data$sex, ref = "Male")
+
+
+m1 <- glm(mass_trans_spend_right ~ age +sex + sei10, data = data, family = binomial(link = "logit"))
+
+m1 %>% 
+  tidy() %>%
+  DT::datatable()
+
+```
+
+> Consider the relationship between sex and one’s opinion about spending on mass transportation. Interpret the coefficient of sex in terms of the logs odds and OR of being satisfied with spending on mass transportation. What are the predicted probabilities for males and females on support for spending on mass transportation? Please include the 95% CIs around each estimate.
+
+```{r}
+list(
+  "Model Coefficients" = m1 %>% tidy(),
+  "Exponentiated Coefficients" = m1 %>% tidy(exponentiate = TRUE)
+) %>%
+  purrr::map(DT::datatable)
+
+# Calculate confidence intervals for sexFemale coefficient
+bsex <- coef(m1)["sexFemale"]
+ci_lower_lo <- bsex - 1.96 * 0.0798020
+ci_upper_lo <- bsex + 1.96 * 0.0798020
+
+# Convert to odds ratios and calculate confidence intervals
+ci_lower_or <- exp(bsex - 1.96 * 0.0798020)
+ci_upper_or <- exp(bsex + 1.96 * 0.0798020)
+
+# Output the results
+list(
+  "CI for log-odds" = c(ci_lower_lo, ci_upper_lo),
+  "CI for Odds Ratio" = c(ci_lower_or, ci_upper_or)
+)
+emm_sex <- emmeans(m1, "sex", type = "response")
+
+emm_sex 
+
+```
+
+If you did this right, you'll find that being female (as compared to male) is associated with an increase in the log-odds of being satisfied with spending on mass transportation by 0.2557439 units (95% CI \[0.09, 0.41\]), holding all other variables constant. This equates to the odds of thinking the spending amount is right in females being 1.29 times the odds of thinking this in men (95% CI \[1.13, 1.44\]).
+
+The predicted probability for females to be satisfied with spending on mass transportation is 55.9% (95% CI \[53.3%, 58.5%\]) and that of males is 49.5% (95% CI \[46.7%, 52.4%\]).\
+\
+Verify this.
+
+> Next, consider the relationship between age and one’s opinion about spending on mass transportation. Interpret the coefficient of age in terms of the logs odds and OR of being satisfied with spending on mass transportation. Please include the 95% CIs around each estimate.
+
+```{r}
+
+
+# Get the coefficient for age
+b_age <- coef(m1)["age"]
+
+# Compute the 95% CI for the coefficient of age in log-odds
+age_se <- summary(m1)$coefficients["age", "Std. Error"]
+ci_lower_log_odds <- b_age - 1.96 * age_se
+ci_upper_log_odds <- b_age + 1.96 * age_se
+
+# Convert log-odds to odds ratio (OR) by applying the logistic transformation
+or_age <- exp(b_age)
+
+# Compute the 95% CI for the odds ratio
+ci_lower_or <- exp(ci_lower_log_odds)
+ci_upper_or <- exp(ci_upper_log_odds)
+
+# Create a data frame with the results
+result_df <- data.frame(
+  Metric = c("Coefficient (log-odds)", "95% CI for log-odds", "Odds Ratio", "95% CI for Odds Ratio"),
+  Estimate = c(b_age, paste(round(ci_lower_log_odds, 3), "to", round(ci_upper_log_odds, 3)),
+               round(or_age, 3), paste(round(ci_lower_or, 3), "to", round(ci_upper_or, 3)))
+)
+
+# Display the results in an interactive datatable
+DT::datatable(result_df, options = list(pageLength = 5))
+```
+
+A one unit increase in age is associated with a decrease in the log-odds of being satisfied with spending on mass transportation by **-0.0062**, holding all other variables constant. The odds ratio is **0.994**, which confirms the **negative** relationship implied by the log-odds coefficient. Specifically, for each additional unit of age, the odds of being satisfied with mass transportation spending decrease by a factor of about **0.994**, or approximately **0.6%** per unit increase in age, holding other factors constant.
+
+> Consider the relationship between SES and one’s opinion about spending on mass transportation. Interpret the coefficient of SES in terms of the logs odds and OR of being satisfied with spending on mass transportation. Please include the 95% CIs around each estimate. ß
+
+```{r}
+bses <- coef(m1)["sei10"]
+
+
+# Compute the 95% CI for the coefficient of age in log-odds
+ses_se <- summary(m1)$coefficients["sei10", "Std. Error"]
+ci_lower_log_odds <- bses - 1.96 * age_se
+ci_upper_log_odds <- bses + 1.96 * age_se
+
+# Convert log-odds to odds ratio (OR) by applying the logistic transformation
+or_age <- exp(bses)
+
+# Compute the 95% CI for the odds ratio
+ci_lower_or <- exp(ci_lower_log_odds)
+ci_upper_or <- exp(ci_upper_log_odds)
+
+# Create a data frame with the results
+result_df <- data.frame(
+  Metric = c("Coefficient (log-odds)", "95% CI for log-odds", "Odds Ratio", "95% CI for Odds Ratio"),
+  Estimate = c(b_age, paste(round(ci_lower_log_odds, 3), "to", round(ci_upper_log_odds, 3)),
+               round(or_age, 3), paste(round(ci_lower_or, 3), "to", round(ci_upper_or, 3)))
+)
+
+# Display the results in an interactive datatable
+DT::datatable(result_df, options = list(pageLength = 5))
+
+```
+
+A one unit increase in SES index is associated with a decrease in the log-odds of being satisfied with spending on mass transportation by 0.0062 units (95% CI \[-0.0107, -0.0017\]), holding all other variables constant. The odds ratio is less than 1 (0.9937922), which confirms the negative relationship implied by the log-odds coefficient. Specifically, for each additional unit of SES index, the odds of being satisfied with mass transportation spending decrease by a factor of about 0.993, or approximately 0.7% per unit increase in SES index, holding other factors constant (95% CI \[0.989, 0.998\]).
+
+## Marginal effects
+
+-   Let's examine the results on the probability scale.
+
+> Calculate the marginal effects of sex, age, and SES on mass transportation spending. You can use the `margins` package function `margins` discussed in your textbook or you can use the `marginaleffects` package `avg_slope` `avg_comparisons` discussed in lecture. Interpret each estimate.
+
+```{r}
+avg_comparisons(m1, comparison = "difference") %>% 
+  DT::datatable()
+```
+
+- The marginal effect of age is **-0.0015** (95% CI [-0.0026, -0.0004]). So, for each additional unit increase of age, the probability of being satisfied with mass transportation spending decreases by approximately **0.15** percentage points, holding other factors constant (p = **0.0066**).
+
+- The marginal effect of SES is **-0.0015** (95% CI [-0.0023, -0.0007]). For each one-unit increase in the socioeconomic index, the probability of being satisfied with mass transportation spending decreases by approximately **0.15** percentage points, holding other variables constant.
+
+- The marginal effect for being female compared to male is **0.0631** (95% CI [0.0263, 0.1000]). This indicates that females are, on average, about **6.31** percentage points more likely than males to be satisfied with mass transportation spending, holding other factors constant.
+
+## Model comparison
+
+-   Now let’s see whether a person’s political views has a significant impact on their odds of being satisfied with spending on mass transportation, after accounting for the demographic factors.
+
+> Conduct a drop-in-deviance/likelihood ratio test to determine if polviews is a significant predictor of attitude towards spending on mass transportation. Name these two models `fit2` and `fit3`, respectively. Compare the two models.
+
+```{r}
+
+fit2 <- glm(mass_trans_spend_right ~age + sex + sei10, data = data, family = binomial(link = "logit"))
+fit3 <- glm(mass_trans_spend_right ~ polviews + age + sex + sei10, data = data, family = binomial(link = "logit"))
+
+test_likelihoodratio(fit2, fit3) %>% kable()
+
+```
+
+> Is the model with polviews better than the model without?
+
+-   Yes. The model with polviews is significantly better than the model without it, as indicated by the likelihood ratio test (p < 0.001).
+
+## Visualization
+
+-   Let’s plot the results
+
+-   We next use the model to produce visualizations:
+
+    -   Given the code below, interpet what is being plotted:
+
+        -   pol_plot : people that are extremely conservative are more likely to support mass transit spending
+
+        -   sex_plot : women are more likely to support mass transit spending than men
+
+        -   ses_plot: people of lower ses are more likely to support mass transit spending
+
+    ::: callout-tip
+    -   adjust the various settings in your plot to make it look professional.
+
+    -   You can use `ggeffects` to get the predicted probabilities for these models.
+    :::
+
+```{r fig.height=10}
+#| fig-width: 12
+library(ggeffects)
+
+
+# Load the gridExtra package for arranging plots
+library(gridExtra)
+
+# Plot for political views
+pp_pol <- ggemmeans(fit3, terms = c("polviews"))
+pol_plot <- ggplot(pp_pol, aes(x = x, y = predicted, color = x)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.2) +
+  scale_color_manual(values = palette) +
+  labs(title = "Effect of Political Views on Satisfaction with Mass Transportation",
+       x = "Political Views", y = "Predicted Probability",
+       color = "Political Views") +
+  plot_aes
+
+# Plot for sex
+pp_sex <- ggemmeans(fit3, terms = c("sex"))
+sex_plot <- ggplot(pp_sex, aes(x = x, y = predicted, color = x)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.2) +
+  labs(title = "Effect of Sex on Satisfaction with Mass Transportation",
+       x = "Sex", y = "Predicted Probability",
+       color = "Sex") +
+  plot_aes
+
+# Plot for socioeconomic status
+pp_ses <- ggemmeans(fit3, terms = "sei10")
+ses_plot <- ggplot(pp_ses, aes(x = x, y = predicted)) +
+  geom_line(color = "red4", size = 1) + 
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), fill = "red4", alpha = 0.2) +
+  labs(title = "Effect of SES on Satisfaction with Mass Transportation",
+       x = "Socioeconomic Status", y = "Predicted Probability") +
+  plot_aes + theme(legend.position = "none")
+
+# Arrange the plots using grid.arrange
+grid.arrange(pol_plot, sex_plot, ses_plot, ncol = 1)
+
+
+```
+
+## Model Assumptions
+
+-   Is the logistic model a good choice for this data?
+
+```{r}
+binned_residuals(fit2)
+```
+
+::: callout-note
+Answer: No, because only 86% of the residuals are inside the error bounds (~95% or higher would be good).
+:::
+
+## Model fit
+
+-   Calculate the $R^2$ for this model
+
+```{r}
+
+r2_mcfadden(fit2)
+
+```
+
+> R2 interpretation: The model accounts for 0.01% of the variance in the outcome variable, which is very low.
+>
+> Next, Take a look at the binned residual plots for each continuous predictor variable and look at linearity. Is there a predictor that sticks out? What can we do to improve model fit in this case?
+
+```{r}
+binned_residuals(fit2, term="sei10")
+binned_residuals(fit2, term="age")
+
+binned_residuals(fit2, term="sei10") %>% plot(show_dots=TRUE)
+binned_residuals(fit2, term="age") %>% plot(show_dots=TRUE)
+
+```
+
+::: callout-note
+-   ::: callout-note
+    Yes, there are a few predictors that stick out. The residuals for the socioeconomic index (sei10) are not evenly distributed across the bins, indicating a non-linear relationship. To improve model fit, we could consider transforming the variable or using a different model that can capture non-linear relationships.
+    :::
+:::
+
+## Testing Polviews
+
+```{r}
+emmeans(fit3, "polviews") %>% pairs() %>% as.data.frame() %>% filter(p.value < .05)
+emmeans(fit3, "polviews", type="response") %>% pairs() %>% as.data.frame() %>% filter(p.value < .05)
+```
+
+
+- **Conservatives** are **0.37** times more likely to support mass transit spending compared to extremely liberals and **0.46** times more likely to support mass transit than liberals.  
+- **Extreme liberals** are **2.70** times more likely to support spending compared to conservatives, **2.53** times compared to moderates, and **2.34** times compared to slightly conservatives.  
+- **Extremely conservatives** are **3.82** times less likely to support mass spending than liberals and **2.08** times less likely than slightly liberals.  
+- **Liberals** are **2.03** times more likely to support spending than moderates and **1.88** times more likely than slightly conservatives.  
+
+> How These Numbers Were Derived 
+The reported odds ratios in the original output describe how much **less likely** a group is to support spending compared to another group. To express how much **more likely** one group is compared to another, we compute the **inverse** of the odds ratio:
+
+\[
+\text{More likely} = \frac{1}{\text{odds ratio}}
+\]
+
+## Conclusion
+
+Political views have the strongest effect on the dependent variable, given the largest deviance reduction. 
+Age and sex also have a significant impact, with similar deviance reductions. Socioeconomic status (sei10) matters but has a smaller effect compared to other predictors.
+
+```{r model-summary, results='asis', echo=FALSE , fig.cap="Table 1"}
+
+fit_anova = anova(fit3, test="Chisq")
+
+fit_anova %>%
+  DT::datatable()
+
+
+```
+
+```{r plot-sexviews, echo=FALSE, fig.cap="Figure 1: Effect of Sex on Satisfaction with Mass Transportation", fig.height=10, fig.width=12}
+sex_plot
+```
+
+```{r plot-sesviews, echo=FALSE, fig.cap="Figure 2: Effect of SES  on Satisfaction with Mass Transportation", fig.height=10, fig.width=12}
+ses_plot
+```
+
+```{r plot-polviews, echo=FALSE, fig.cap="Figure 3: Effect of Political Views on Satisfaction with Mass Transportation", fig.height=10, fig.width=12}
+pol_plot
+```
+
