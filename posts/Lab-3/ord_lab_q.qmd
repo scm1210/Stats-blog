@@ -16,6 +16,7 @@ execute:
   warning: false
 format: html
 engine: knitr
+categories: [Lab, code, analysis]
 ---
 
 # Lab 3- Ordinal Regression

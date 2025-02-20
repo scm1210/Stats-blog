@@ -16,8 +16,9 @@ execute:
   warning: false
 format: html
 engine: knitr
----
+categories: [Lab, code, analysis]
 
+---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = FALSE,fig.path = "Lab-2-figs/fig_")
@@ -52,6 +53,7 @@ plot_aes = theme_minimal() +
     plot.title = element_text(size = 20, hjust = 0.5) # Adjusted title size and centering
   )
 ```
+
 -   Assignment requirements:
 
     -   If you are using Github (recommended), make sure to commit and push your work to GitHub regularly, at least after each exercise. Write short and informative commit messages, and share the link to your assignment with me. If not, you can also send me the **rmd** & **rendered file** via Canvas.
@@ -386,11 +388,11 @@ avg_comparisons(m1, comparison = "difference") %>%
   DT::datatable()
 ```
 
-- The marginal effect of age is **-0.0015** (95% CI [-0.0026, -0.0004]). So, for each additional unit increase of age, the probability of being satisfied with mass transportation spending decreases by approximately **0.15** percentage points, holding other factors constant (p = **0.0066**).
+-   The marginal effect of age is **-0.0015** (95% CI \[-0.0026, -0.0004\]). So, for each additional unit increase of age, the probability of being satisfied with mass transportation spending decreases by approximately **0.15** percentage points, holding other factors constant (p = **0.0066**).
 
-- The marginal effect of SES is **-0.0015** (95% CI [-0.0023, -0.0007]). For each one-unit increase in the socioeconomic index, the probability of being satisfied with mass transportation spending decreases by approximately **0.15** percentage points, holding other variables constant.
+-   The marginal effect of SES is **-0.0015** (95% CI \[-0.0023, -0.0007\]). For each one-unit increase in the socioeconomic index, the probability of being satisfied with mass transportation spending decreases by approximately **0.15** percentage points, holding other variables constant.
 
-- The marginal effect for being female compared to male is **0.0631** (95% CI [0.0263, 0.1000]). This indicates that females are, on average, about **6.31** percentage points more likely than males to be satisfied with mass transportation spending, holding other factors constant.
+-   The marginal effect for being female compared to male is **0.0631** (95% CI \[0.0263, 0.1000\]). This indicates that females are, on average, about **6.31** percentage points more likely than males to be satisfied with mass transportation spending, holding other factors constant.
 
 ## Model comparison
 
@@ -409,7 +411,7 @@ test_likelihoodratio(fit2, fit3) %>% kable()
 
 > Is the model with polviews better than the model without?
 
--   Yes. The model with polviews is significantly better than the model without it, as indicated by the likelihood ratio test (p < 0.001).
+-   Yes. The model with polviews is significantly better than the model without it, as indicated by the likelihood ratio test (p \< 0.001).
 
 ## Visualization
 
@@ -484,7 +486,7 @@ binned_residuals(fit2)
 ```
 
 ::: callout-note
-Answer: No, because only 86% of the residuals are inside the error bounds (~95% or higher would be good).
+Answer: No, because only 86% of the residuals are inside the error bounds (\~95% or higher would be good).
 :::
 
 ## Model fit
@@ -523,23 +525,18 @@ emmeans(fit3, "polviews") %>% pairs() %>% as.data.frame() %>% filter(p.value < .
 emmeans(fit3, "polviews", type="response") %>% pairs() %>% as.data.frame() %>% filter(p.value < .05)
 ```
 
+-   **Conservatives** are **0.37** times more likely to support mass transit spending compared to extremely liberals and **0.46** times more likely to support mass transit than liberals.\
+-   **Extreme liberals** are **2.70** times more likely to support spending compared to conservatives, **2.53** times compared to moderates, and **2.34** times compared to slightly conservatives.\
+-   **Extremely conservatives** are **3.82** times less likely to support mass spending than liberals and **2.08** times less likely than slightly liberals.\
+-   **Liberals** are **2.03** times more likely to support spending than moderates and **1.88** times more likely than slightly conservatives.
 
-- **Conservatives** are **0.37** times more likely to support mass transit spending compared to extremely liberals and **0.46** times more likely to support mass transit than liberals.  
-- **Extreme liberals** are **2.70** times more likely to support spending compared to conservatives, **2.53** times compared to moderates, and **2.34** times compared to slightly conservatives.  
-- **Extremely conservatives** are **3.82** times less likely to support mass spending than liberals and **2.08** times less likely than slightly liberals.  
-- **Liberals** are **2.03** times more likely to support spending than moderates and **1.88** times more likely than slightly conservatives.  
+> How These Numbers Were Derived The reported odds ratios in the original output describe how much **less likely** a group is to support spending compared to another group. To express how much **more likely** one group is compared to another, we compute the **inverse** of the odds ratio:
 
-> How These Numbers Were Derived 
-The reported odds ratios in the original output describe how much **less likely** a group is to support spending compared to another group. To express how much **more likely** one group is compared to another, we compute the **inverse** of the odds ratio:
-
-\[
-\text{More likely} = \frac{1}{\text{odds ratio}}
-\]
+\[ \text{More likely} = \frac{1}{\text{odds ratio}} \]
 
 ## Conclusion
 
-Political views have the strongest effect on the dependent variable, given the largest deviance reduction. 
-Age and sex also have a significant impact, with similar deviance reductions. Socioeconomic status (sei10) matters but has a smaller effect compared to other predictors.
+Political views have the strongest effect on the dependent variable, given the largest deviance reduction. Age and sex also have a significant impact, with similar deviance reductions. Socioeconomic status (sei10) matters but has a smaller effect compared to other predictors.
 
 ```{r model-summary, results='asis', echo=FALSE , fig.cap="Table 1"}
 
@@ -562,4 +559,3 @@ ses_plot
 ```{r plot-polviews, echo=FALSE, fig.cap="Figure 3: Effect of Political Views on Satisfaction with Mass Transportation", fig.height=10, fig.width=12}
 pol_plot
 ```
-
