@@ -9,7 +9,7 @@ about:
       href: https://x.com/StevenMesquiti
     - icon: google scholar
       text: Google Scholar
-      href: https://scholar.google.com/citations?user=jMPn4hoAAAAJ&hl=en
+      href: https://scholar.google.com/citations?user=jMPn4hoAAAAJ&hl=en&inst=10749622055976013885
     - icon: github
       text: Github
       href: https://github.com/scm1210
