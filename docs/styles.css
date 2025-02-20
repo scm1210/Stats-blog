@@ -1,1 +1,15 @@
 /* css styles */
+:root {
+  --q-primary: #4D4861;          /* Primary color */
+  --q-secondary: #c44536;        /* Secondary color */
+  --q-font-family-base: 'Arial', sans-serif;  /* Base font */
+}
+
+/* Example: Use primary color for the navbar background */
+.navbar {
+  background-color: var(--q-secondary);
+}
+
+a {
+  color: var(--q-secondary);
+}

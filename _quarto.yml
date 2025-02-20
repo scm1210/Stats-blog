@@ -3,20 +3,26 @@ project:
   output-dir: docs
 
 website:
-  title: "Stats-blog"
-  
+  title: "**Stats-blog**"
+  description: "A blog about PSY-504"
   navbar:
+    left: 
+      - text: Home
+        href: about.qmd
     right:
       - about.qmd
       - icon: github
-        href: https://github.com/
+        href: https://github.com/scm1210
       - icon: twitter
-        href: https://twitter.com
+        href: https://x.com/StevenMesquiti
+      - icon: google scholar 
+        href: https://scholar.google.com/citations?user=0Y1Y1aMAAAAJ&hl=en
 format:
   html:
     theme:
-      - cosmo
+      - cyborg
       - brand
+    toc: true                     # Show a table of contents on pages
     css: styles.css
 
 editor: visual
