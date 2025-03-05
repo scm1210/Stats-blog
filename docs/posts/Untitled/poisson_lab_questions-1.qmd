@@ -1,0 +1,341 @@
+---
+title: "Poisson Lab Answers"
+subtitle: "Princeton University"
+author: "Steven Mesquiti"
+output: 
+  tufte::tufte_html:
+    css: 
+    tufte_variant: "envisioned"
+    highlight: github-dark
+    fig_height: 10
+    fig_width: 16
+    toc: true
+    toc_depth: 1
+execute: 
+  message: false
+  warning: false
+format: html
+engine: knitr
+---
+1.  To complete this lab:
+
+-   Load packages
+
+```{r}
+#| label: set-up-chunk
+library(pacman)
+pacman::p_load(MASS,tidyverse,emmeans,ggeffects,easystats,performance,knitr, naniar,skimr,install = T)
+
+
+palette <- c(
+  "#772e25", "#c44536", "#ee9b00", "#197278", "#283d3b", 
+  "#9CC5A1", "#6195C6", "#ADA7C9", "#4D4861", "grey50",
+  "#d4a373", "#8a5a44", "#4a6a74", "#5c80a8", "#a9c5a0",
+  "#7b9b8e", "#e1b16a", "#a69b7c", "#9d94c4", "#665c54"
+)
+
+palette_condition = c("#ee9b00", "#c44536","#005f73", "#283d3b", "#9CC5A1", "#6195C6", "#ADA7C9", "#4D4861")
+
+plot_aes = theme_minimal() +
+  theme(
+    legend.position = "top",
+    legend.text = element_text(size = 12),
+    text = element_text(size = 16, family = "Futura Medium"),
+    axis.text = element_text(color = "black"),
+    axis.ticks.y = element_blank(),
+    plot.title = element_text(size = 20, hjust = 0.5) # Adjusted title size and centering
+  )
+```
+
+- Download the dataset:
+
+```{r}
+data <- read_delim("https://raw.githubusercontent.com/jgeller112/psy504-advanced-stats/main/slides/Poisson/data/2010.csv")
+
+data |> 
+  head() |> 
+  DT::datatable()
+
+```
+
+2. Conduct the analysis described in the preregistration document
+
+a.  The number of hours per week that a person spends on the Internet ("WWWHR") will\
+    be predicted by their vocabulary ("WORDSUM"), age ("AGE"), sex ("SEX"), religiosity\
+    ("RELITEN"), political orientation ("POLVIEWS"), and how often they work from home\
+    ("WRKHOME").
+
+
+- Let's use the `naniar` package's function `replace_with_na`to clean the data. 
+
+```{r}
+
+### clean the data 
+
+data_pos <- data %>%
+  dplyr::select(wwwhr, wordsum, age, sex, reliten, polviews, wrkhome) %>%
+replace_with_na(.,
+             replace = list(wwwhr = c(-1, 998, 999),
+                          wordsum = c(-1, 99),
+                          reliten = c(0, 8, 9), 
+             polviews = c(0, 8, 9), 
+             wrkhome = c(0,8,9), 
+             age=c(0, 98, 99)))
+
+data_pos |> 
+  head() |> 
+  DT::datatable()
+```
+
+Q: Can you explain what might be going on in the above code?
+
+A: *The `replace_with_na` function is replacing zeros with NAs*
+
+Q: The next step in data cleaning would be to ensure that the data in your code are aligned with the description/ usage context of the variables
+
+- Recode sex and reliten as necessary
+
+```{r}
+#| label: recode-sex-and-reliten
+
+data_pos <- data_pos |> 
+  mutate(sex = factor(ifelse(sex == -1, "Male", 
+                             ifelse(sex == 1, "Female", NA)), 
+                      levels = c("Male", "Female")),
+         reliten_recode = factor(reliten, levels = 1:5))
+
+```
+## Missingness
+```{r}
+data_pos %>%
+  dplyr::select(reliten, reliten_recode)
+
+skimr::skim(data_pos)
+
+```
+
+## Fit a Poisson model to the data.
+
+```{r}
+
+poisson_model <- glm(wwwhr ~ wordsum + age + sex + reliten+ polviews + wrkhome, 
+                     data = data_pos, 
+                     family = poisson(link = "log"))
+
+model_summary <- summary(poisson_model)$coefficients
+ci <- confint(poisson_model)  # Compute confidence intervals
+
+# Create a tidy dataframe
+effects_table <- as.data.frame(model_summary) |> 
+  tibble::rownames_to_column(var = "Predictor") |> 
+  dplyr::mutate(
+    `Estimate` = round(Estimate, 3),
+    `Std. Error` = round(`Std. Error`, 3),
+    `z value` = round(`z value`, 3),
+    `Pr(>|z|)` = round(`Pr(>|z|)`, 3),
+    `CI Lower` = round(ci[,1], 3),
+    `CI Upper` = round(ci[,2], 3)
+  )
+
+# Display the table using kable
+kable(effects_table, format = "markdown", caption = "Poisson Model Coefficients")
+
+```
+## Carry out model checking
+
+Hint: performance package has the function you're looking for
+
+```{r}
+#| fig-height: 12
+#| fig-width: 12
+check_model(poisson_model,plot = T)
+```
+
+## Find any outliers
+
+```{r}
+# Calculate the mean and standard deviation of wwwhr, and identify outliers
+data_pos_filtered <- data_pos %>%
+  mutate(mean_wwwhr = mean(wwwhr, na.rm = TRUE),
+         sd_wwwhr = sd(wwwhr, na.rm = TRUE)) %>%
+  
+  # Identify outliers (before filtering)
+  mutate(is_outlier = if_else(wwwhr < (mean_wwwhr - 3 * sd_wwwhr) | wwwhr > (mean_wwwhr + 3 * sd_wwwhr), TRUE, FALSE)) %>%
+  
+  # Count the number of outliers
+  summarise(outliers_count = sum(is_outlier, na.rm = TRUE)) %>%
+  pull(outliers_count) -> outliers_count
+
+# Filter the data to remove outliers
+data_pos_filtered <- data_pos %>%
+  mutate(mean_wwwhr = mean(wwwhr, na.rm = TRUE),
+         sd_wwwhr = sd(wwwhr, na.rm = TRUE)) %>%
+  filter(wwwhr >= (mean_wwwhr - 3 * sd_wwwhr) & wwwhr <= (mean_wwwhr + 3 * sd_wwwhr)) %>%
+  select(-mean_wwwhr, -sd_wwwhr)  # Remove the temporary columns
+
+# Print the number of outliers and check the filtered data
+cat("Number of outliers:", outliers_count, "\n")
+
+```
+
+## Refit the model after excluding outliers
+
+```{r}
+
+
+poisson_model_filtered <- glm(wwwhr ~ wordsum + age + sex + reliten+ polviews + wrkhome, 
+                     data = data_pos_filtered, 
+                     family = poisson(link = "log"))
+
+model_summary <- summary(poisson_model_filtered)$coefficients
+ci <- confint(poisson_model_filtered)  # Compute confidence intervals
+
+# Create a tidy dataframe
+effects_table <- as.data.frame(model_summary) |> 
+  tibble::rownames_to_column(var = "Predictor") |> 
+  dplyr::mutate(
+    `Estimate` = round(Estimate, 3),
+    `Std. Error` = round(`Std. Error`, 3),
+    `z value` = round(`z value`, 3),
+    `Pr(>|z|)` = round(`Pr(>|z|)`, 3),
+    `CI Lower` = round(ci[,1], 3),
+    `CI Upper` = round(ci[,2], 3)
+  )
+
+# Display the table using kable
+kable(effects_table, format = "markdown", caption = "Poisson Model Coefficients (Excluding Outliers)") 
+```
+
+### Check for Overdispersion 
+
+Hint: performance package has the function you're looking for
+```{r}
+check_overdispersion(poisson_model_filtered)
+```
+
+What do you notice?
+
+> That we are expriencing overdispersion 
+
+And what's a good next step forward?
+
+> We can deal with this using a Negative Binomial regression model instead of a Poisson model.
+
+Can there be another model class that can fit the data? If so, fit this model to the data. 
+
+> A Negative Binomial regression model
+
+```{r}
+nb_model <- glm.nb(wwwhr ~ wordsum + age + sex + reliten_recode + polviews + wrkhome, 
+                   data = data_pos_filtered)
+
+model_summary <- summary(nb_model)$coefficients
+ci <- confint(nb_model)  # Compute confidence intervals
+
+# Create a tidy dataframe
+effects_table <- as.data.frame(model_summary) |> 
+  tibble::rownames_to_column(var = "Predictor") |> 
+  dplyr::mutate(
+    `Estimate` = round(Estimate, 3),
+    `Std. Error` = round(`Std. Error`, 3),
+    `z value` = round(`z value`, 3),
+    `Pr(>|z|)` = round(`Pr(>|z|)`, 3),
+    `CI Lower` = round(ci[,1], 3),
+    `CI Upper` = round(ci[,2], 3)
+  )
+
+# Display the table using kable
+kable(effects_table, format = "markdown", caption = "Negative Binomial (Without Outliers)") 
+```
+
+## Which one is better- your earlier model, or later model?
+
+```{r}
+AIC(poisson_model_filtered, nb_model)
+
+# Alternatively, you can compare the residual deviance and degrees of freedom:
+deviance_poisson <- deviance(poisson_model_filtered)
+df_poisson <- df.residual(poisson_model_filtered)
+deviance_ratio_poisson <- deviance_poisson / df_poisson
+
+# Calculate deviance and degrees of freedom for Negative Binomial model
+deviance_nb <- deviance(nb_model)
+df_nb <- df.residual(nb_model)
+deviance_ratio_nb <- deviance_nb / df_nb
+
+# Check for overdispersion and compare the models
+better_model <- ifelse(deviance_ratio_poisson > 1, 
+                       "Negative Binomial Model is better due to overdispersion", 
+                       ifelse(deviance_ratio_poisson > deviance_ratio_nb, 
+                              "Poisson Model is better", 
+                              "Negative Binomial Model is better"))
+
+# Print out the results
+cat("Deviance-to-DF Ratio for Poisson Model: ", deviance_ratio_poisson, "\n")
+cat("Deviance-to-DF Ratio for Negative Binomial Model: ", deviance_ratio_nb, "\n")
+cat("Model Comparison: ", better_model)
+```
+
+> The Negative Binomial model has a much lower AIC (3808.681) compared to the Poisson model (7136.602), suggesting that the Negative Binomial model provides a better fit to the data.
+
+> Based on deviance, the negative binomial model is better. 
+
+## What is zero inflation? Is there zero-inflation in your chosen model?
+
+> Zero-inflation occurs when the data contains an excess number of zero outcomes that cannot be explained by the underlying model, such as a Poisson or Negative Binomial model. In other words, there are more zero values in the data than expected given the distribution (Poisson or Negative Binomial), which can indicate that a separate process is generating these excess zeros.
+
+```{r}
+num_zeros <- sum(data_pos_filtered$wwwhr == 0)
+
+# Predict the expected number of zeros using both models
+predicted_zeros <- c(
+  Poisson = sum(predict(poisson_model_filtered, type = "response") == 0),
+  NegativeBinomial = sum(predict(nb_model, type = "response") == 0)
+)
+
+# Compare observed and predicted zeros for both models
+results <- ifelse(num_zeros > predicted_zeros, 
+                  paste("Zero Inflation detected in", names(predicted_zeros), "model"), 
+                  paste("No Zero Inflation in", names(predicted_zeros), "model"))
+
+# Output the results
+cat("Observed Zeros: ", num_zeros, "\n")
+cat("Predicted Zeros (Poisson Model): ", predicted_zeros["Poisson"], "\n")
+cat("Predicted Zeros (Negative Binomial Model): ", predicted_zeros["NegativeBinomial"], "\n")
+cat(results, "\n")
+```
+
+
+## Log Lambda
+
+```{r}
+lambda_poisson <- predict(poisson_model_filtered, type = "response")
+lambda_nb <- predict(nb_model, type = "response")
+
+# Log transform the lambda values
+log_lambda_poisson <- log(lambda_poisson)
+log_lambda_nb <- log(lambda_nb)
+
+# Output the log lambda values for a subset of the data
+head(data.frame(log_lambda_poisson, log_lambda_nb))
+
+```
+
+## Mean Count
+
+```{r}
+predicted_counts_poisson <- predict(poisson_model_filtered, type = "response")
+predicted_counts_nb <- predict(nb_model, type = "response")
+
+# Calculate the mean of predicted counts for each model
+mean_count_poisson <- mean(predicted_counts_poisson, na.rm = TRUE)
+mean_count_nb <- mean(predicted_counts_nb, na.rm = TRUE)
+
+# Output the mean counts
+cat("Mean Count (Poisson Model): ", mean_count_poisson, "\n")
+cat("Mean Count (Negative Binomial Model): ", mean_count_nb, "\n")
+```
+
+## Report your conclusions
+
+> These results show that, on average, both models predict almost the same number of hours, with the Negative Binomial model giving a slightly higher estimate. This small difference could reflect model nuances, but both models suggest a similar central tendency in internet usage.
