@@ -56,6 +56,97 @@
     "text": "brms\n\nBelow is a model implementation using the brms package. We will just use the default priors for this. The exercise is to run this code and note your observations. What are salient differences you observe in how the model fitting takes place With respect to the results, how do you compare the results of the model you fit with clm and the one you fit with brms?\n\n\nmodel_path &lt;- file.path(\"/Users/sm9518/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/PSY-504/stevens-blog/posts/Lab-3/models/brms_model.rds\")\n\nif (!file.exists(model_path)) {\n  # If the RDS file does not exist, create the model\n  ols2_brm &lt;- brm(Technical_Rank ~ Gender * Age, data = gb, \n                  family = cumulative, cores = 4, chains = 4)\n  \n  # Save the model output to an RDS file\n  saveRDS(ols2_brm, model_path)\n} else {\n  # If the RDS file already exists, load the data from it\n  ols2_brm &lt;- readRDS(model_path)\n}\n\n\nThe results are the same since we are using an uninformative prior and the estimates are similar to that of ML (frequentist estimations)\n\n\nThe conditional_effects function is used to plot predicted probabilities by Gender and Age across each rank.\n\n\nconditional_effects(ols2_brm, categorical = T)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ncheck_predictions from the easystats performance package is used for examining model fit (i.e., does the data fit the model being used?).\n\nRun the below code. What do you think?\n\ncheck_predictions(ols2_brm) |&gt;  plot() + plot_aes\n\n\n\n\n\n\n\n\n\nYes, the model appears to fit the data"
   },
   {
+    "objectID": "posts/Lab-5/poisson_lab_questions-1.html",
+    "href": "posts/Lab-5/poisson_lab_questions-1.html",
+    "title": "Poisson Lab Answers",
+    "section": "",
+    "text": "To complete this lab:\nlibrary(pacman)\npacman::p_load(MASS,tidyverse,emmeans,ggeffects,easystats,performance,knitr, naniar,skimr,install = T)\n\n\npalette &lt;- c(\n  \"#772e25\", \"#c44536\", \"#ee9b00\", \"#197278\", \"#283d3b\", \n  \"#9CC5A1\", \"#6195C6\", \"#ADA7C9\", \"#4D4861\", \"grey50\",\n  \"#d4a373\", \"#8a5a44\", \"#4a6a74\", \"#5c80a8\", \"#a9c5a0\",\n  \"#7b9b8e\", \"#e1b16a\", \"#a69b7c\", \"#9d94c4\", \"#665c54\"\n)\n\npalette_condition = c(\"#ee9b00\", \"#c44536\",\"#005f73\", \"#283d3b\", \"#9CC5A1\", \"#6195C6\", \"#ADA7C9\", \"#4D4861\")\n\nplot_aes = theme_minimal() +\n  theme(\n    legend.position = \"top\",\n    legend.text = element_text(size = 12),\n    text = element_text(size = 16, family = \"Futura Medium\"),\n    axis.text = element_text(color = \"black\"),\n    axis.ticks.y = element_blank(),\n    plot.title = element_text(size = 20, hjust = 0.5) # Adjusted title size and centering\n  )\ndata &lt;- read_delim(\"https://raw.githubusercontent.com/jgeller112/psy504-advanced-stats/main/slides/Poisson/data/2010.csv\")\n\ndata |&gt; \n  head() |&gt; \n  DT::datatable()\n### clean the data \n\ndata_pos &lt;- data %&gt;%\n  dplyr::select(wwwhr, wordsum, age, sex, reliten, polviews, wrkhome) %&gt;%\nreplace_with_na(.,\n             replace = list(wwwhr = c(-1, 998, 999),\n                          wordsum = c(-1, 99),\n                          reliten = c(0, 8, 9), \n             polviews = c(0, 8, 9), \n             wrkhome = c(0,8,9), \n             age=c(0, 98, 99)))\n\ndata_pos |&gt; \n  head() |&gt; \n  DT::datatable()\nQ: Can you explain what might be going on in the above code?\nA: The replace_with_na function is replacing zeros with NAs\nQ: The next step in data cleaning would be to ensure that the data in your code are aligned with the description/ usage context of the variables\ndata_pos &lt;- data_pos |&gt; \n  mutate(sex = factor(ifelse(sex == -1, \"Male\", \n                             ifelse(sex == 1, \"Female\", NA)), \n                      levels = c(\"Male\", \"Female\")),\n         reliten_recode = factor(reliten, levels = 1:5))"
+  },
+  {
+    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#missingness",
+    "href": "posts/Lab-5/poisson_lab_questions-1.html#missingness",
+    "title": "Poisson Lab Answers",
+    "section": "Missingness",
+    "text": "Missingness\n\ndata_pos %&gt;%\n  dplyr::select(reliten, reliten_recode)\n\n# A tibble: 2,044 × 2\n   reliten reliten_recode\n     &lt;dbl&gt; &lt;fct&gt;         \n 1       1 1             \n 2       4 4             \n 3       1 1             \n 4       1 1             \n 5       1 1             \n 6       4 4             \n 7       3 3             \n 8       1 1             \n 9       1 1             \n10       1 1             \n# ℹ 2,034 more rows\n\nskimr::skim(data_pos)\n\n\nData summary\n\n\nName\ndata_pos\n\n\nNumber of rows\n2044\n\n\nNumber of columns\n8\n\n\n_______________________\n\n\n\nColumn type frequency:\n\n\n\nfactor\n2\n\n\nnumeric\n6\n\n\n________________________\n\n\n\nGroup variables\nNone\n\n\n\nVariable type: factor\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nordered\nn_unique\ntop_counts\n\n\n\n\nsex\n0\n1.00\nFALSE\n2\nMal: 1153, Fem: 891\n\n\nreliten_recode\n99\n0.95\nFALSE\n4\n2: 747, 1: 707, 4: 363, 3: 128\n\n\n\nVariable type: numeric\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nmean\nsd\np0\np25\np50\np75\np100\nhist\n\n\n\n\nwwwhr\n996\n0.51\n9.79\n13.41\n0\n2\n5\n14\n168\n▇▁▁▁▁\n\n\nwordsum\n657\n0.68\n6.03\n2.07\n0\n5\n6\n7\n10\n▁▃▇▅▂\n\n\nage\n3\n1.00\n47.97\n17.68\n18\n33\n47\n61\n89\n▇▇▇▅▃\n\n\nreliten\n99\n0.95\n2.08\n1.08\n1\n1\n2\n3\n4\n▇▇▁▂▃\n\n\npolviews\n71\n0.97\n4.08\n1.46\n1\n3\n4\n5\n7\n▃▂▇▃▅\n\n\nwrkhome\n882\n0.57\n2.26\n1.72\n1\n1\n1\n4\n6\n▇▁▁▂▁"
+  },
+  {
+    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#fit-a-poisson-model-to-the-data.",
+    "href": "posts/Lab-5/poisson_lab_questions-1.html#fit-a-poisson-model-to-the-data.",
+    "title": "Poisson Lab Answers",
+    "section": "Fit a Poisson model to the data.",
+    "text": "Fit a Poisson model to the data.\n\npoisson_model &lt;- glm(wwwhr ~ wordsum + age + sex + reliten+ polviews + wrkhome, \n                     data = data_pos, \n                     family = poisson(link = \"log\"))\n\nmodel_summary &lt;- summary(poisson_model)$coefficients\nci &lt;- confint(poisson_model)  # Compute confidence intervals\n\n# Create a tidy dataframe\neffects_table &lt;- as.data.frame(model_summary) |&gt; \n  tibble::rownames_to_column(var = \"Predictor\") |&gt; \n  dplyr::mutate(\n    `Estimate` = round(Estimate, 3),\n    `Std. Error` = round(`Std. Error`, 3),\n    `z value` = round(`z value`, 3),\n    `Pr(&gt;|z|)` = round(`Pr(&gt;|z|)`, 3),\n    `CI Lower` = round(ci[,1], 3),\n    `CI Upper` = round(ci[,2], 3)\n  )\n\n# Display the table using kable\nkable(effects_table, format = \"markdown\", caption = \"Poisson Model Coefficients\")\n\n\nPoisson Model Coefficients\n\n\n\n\n\n\n\n\n\n\n\nPredictor\nEstimate\nStd. Error\nz value\nPr(&gt;|z|)\nCI Lower\nCI Upper\n\n\n\n\n(Intercept)\n1.649\n0.082\n20.225\n0\n1.489\n1.809\n\n\nwordsum\n0.100\n0.008\n12.836\n0\n0.084\n0.115\n\n\nage\n-0.016\n0.001\n-15.132\n0\n-0.019\n-0.014\n\n\nsexFemale\n0.259\n0.026\n9.836\n0\n0.208\n0.311\n\n\nreliten\n0.199\n0.012\n16.726\n0\n0.176\n0.222\n\n\npolviews\n-0.036\n0.010\n-3.666\n0\n-0.054\n-0.017\n\n\nwrkhome\n0.078\n0.008\n10.243\n0\n0.063\n0.093"
+  },
+  {
+    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#carry-out-model-checking",
+    "href": "posts/Lab-5/poisson_lab_questions-1.html#carry-out-model-checking",
+    "title": "Poisson Lab Answers",
+    "section": "Carry out model checking",
+    "text": "Carry out model checking\nHint: performance package has the function you’re looking for\n\ncheck_model(poisson_model,plot = T)"
+  },
+  {
+    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#find-any-outliers",
+    "href": "posts/Lab-5/poisson_lab_questions-1.html#find-any-outliers",
+    "title": "Poisson Lab Answers",
+    "section": "Find any outliers",
+    "text": "Find any outliers\n\n# Filter the data to remove outliers\ndata_pos_filtered &lt;- data_pos %&gt;%\n  mutate(mean_wwwhr = mean(wwwhr, na.rm = TRUE),\n         sd_wwwhr = sd(wwwhr, na.rm = TRUE)) %&gt;%\n  filter(wwwhr &gt;= (mean_wwwhr - 3 * sd_wwwhr) & wwwhr &lt;= (mean_wwwhr + 3 * sd_wwwhr)) %&gt;%\n  select(-mean_wwwhr, -sd_wwwhr)  # Remove the temporary columns\n\n\n\n\ncheck_outliers(poisson_model)\n\n3 outliers detected: cases 72, 156, 363.\n- Based on the following method and threshold: cook (0.9).\n- For variable: (Whole model)."
+  },
+  {
+    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#refit-the-model-after-excluding-outliers",
+    "href": "posts/Lab-5/poisson_lab_questions-1.html#refit-the-model-after-excluding-outliers",
+    "title": "Poisson Lab Answers",
+    "section": "Refit the model after excluding outliers",
+    "text": "Refit the model after excluding outliers\n\npoisson_model_filtered &lt;- glm(wwwhr ~ wordsum + age + sex + reliten+ polviews + wrkhome, \n                     data = data_pos_filtered, \n                     family = poisson(link = \"log\"))\n\nmodel_summary &lt;- summary(poisson_model_filtered)$coefficients\nci &lt;- confint(poisson_model_filtered)  # Compute confidence intervals\n\n# Create a tidy dataframe\neffects_table &lt;- as.data.frame(model_summary) |&gt; \n  tibble::rownames_to_column(var = \"Predictor\") |&gt; \n  dplyr::mutate(\n    `Estimate` = round(Estimate, 3),\n    `Std. Error` = round(`Std. Error`, 3),\n    `z value` = round(`z value`, 3),\n    `Pr(&gt;|z|)` = round(`Pr(&gt;|z|)`, 3),\n    `CI Lower` = round(ci[,1], 3),\n    `CI Upper` = round(ci[,2], 3)\n  )\n\n# Display the table using kable\nkable(effects_table, format = \"markdown\", caption = \"Poisson Model Coefficients (Excluding Outliers)\") \n\n\nPoisson Model Coefficients (Excluding Outliers)\n\n\n\n\n\n\n\n\n\n\n\nPredictor\nEstimate\nStd. Error\nz value\nPr(&gt;|z|)\nCI Lower\nCI Upper\n\n\n\n\n(Intercept)\n1.631\n0.086\n18.885\n0.000\n1.461\n1.800\n\n\nwordsum\n0.091\n0.008\n11.002\n0.000\n0.075\n0.107\n\n\nage\n-0.011\n0.001\n-9.705\n0.000\n-0.013\n-0.009\n\n\nsexFemale\n0.142\n0.028\n5.071\n0.000\n0.087\n0.197\n\n\nreliten\n0.143\n0.013\n11.254\n0.000\n0.118\n0.168\n\n\npolviews\n-0.022\n0.010\n-2.118\n0.034\n-0.042\n-0.002\n\n\nwrkhome\n0.040\n0.008\n4.758\n0.000\n0.023\n0.056\n\n\n\n\n\n\nCheck for Overdispersion\nHint: performance package has the function you’re looking for\n\ncheck_overdispersion(poisson_model_filtered)\n\n# Overdispersion test\n\n       dispersion ratio =   10.684\n  Pearson's Chi-Squared = 6282.259\n                p-value =  &lt; 0.001\n\n\nWhat do you notice?\n\nThat we are expriencing overdispersion\n\nAnd what’s a good next step forward?\n\nWe can deal with this using a Negative Binomial regression model instead of a Poisson model.\n\nCan there be another model class that can fit the data? If so, fit this model to the data.\n\nA Negative Binomial regression model\n\n\nnb_model &lt;- glm.nb(wwwhr ~ wordsum + age + sex + reliten_recode + polviews + wrkhome, \n                   data = data_pos_filtered)\n\nmodel_summary &lt;- summary(nb_model)$coefficients\nci &lt;- confint(nb_model)  # Compute confidence intervals\n\n# Create a tidy dataframe\neffects_table &lt;- as.data.frame(model_summary) |&gt; \n  tibble::rownames_to_column(var = \"Predictor\") |&gt; \n  dplyr::mutate(\n    `Estimate` = round(Estimate, 3),\n    `Std. Error` = round(`Std. Error`, 3),\n    `z value` = round(`z value`, 3),\n    `Pr(&gt;|z|)` = round(`Pr(&gt;|z|)`, 3),\n    `CI Lower` = round(ci[,1], 3),\n    `CI Upper` = round(ci[,2], 3)\n  )\n\n# Display the table using kable\nkable(effects_table, format = \"markdown\", caption = \"Negative Binomial (Without Outliers)\") \n\n\nNegative Binomial (Without Outliers)\n\n\n\n\n\n\n\n\n\n\n\nPredictor\nEstimate\nStd. Error\nz value\nPr(&gt;|z|)\nCI Lower\nCI Upper\n\n\n\n\n(Intercept)\n1.720\n0.252\n6.829\n0.000\n1.224\n2.221\n\n\nwordsum\n0.101\n0.025\n3.972\n0.000\n0.049\n0.153\n\n\nage\n-0.012\n0.003\n-3.608\n0.000\n-0.019\n-0.005\n\n\nsexFemale\n0.105\n0.088\n1.201\n0.230\n-0.067\n0.278\n\n\nreliten_recode2\n0.293\n0.106\n2.766\n0.006\n0.085\n0.500\n\n\nreliten_recode3\n0.397\n0.200\n1.984\n0.047\n0.016\n0.806\n\n\nreliten_recode4\n0.478\n0.125\n3.815\n0.000\n0.236\n0.721\n\n\npolviews\n-0.024\n0.032\n-0.740\n0.460\n-0.086\n0.038\n\n\nwrkhome\n0.035\n0.026\n1.330\n0.183\n-0.017\n0.089"
+  },
+  {
+    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#which-one-is-better--your-earlier-model-or-later-model",
+    "href": "posts/Lab-5/poisson_lab_questions-1.html#which-one-is-better--your-earlier-model-or-later-model",
+    "title": "Poisson Lab Answers",
+    "section": "Which one is better- your earlier model, or later model?",
+    "text": "Which one is better- your earlier model, or later model?\n\nAIC(poisson_model_filtered, nb_model)\n\n                       df      AIC\npoisson_model_filtered  7 7136.602\nnb_model               10 3808.681\n\n# Alternatively, you can compare the residual deviance and degrees of freedom:\ndeviance_poisson &lt;- deviance(poisson_model_filtered)\ndf_poisson &lt;- df.residual(poisson_model_filtered)\ndeviance_ratio_poisson &lt;- deviance_poisson / df_poisson\n\n# Calculate deviance and degrees of freedom for Negative Binomial model\ndeviance_nb &lt;- deviance(nb_model)\ndf_nb &lt;- df.residual(nb_model)\ndeviance_ratio_nb &lt;- deviance_nb / df_nb\n\n# Check for overdispersion and compare the models\nbetter_model &lt;- ifelse(deviance_ratio_poisson &gt; 1, \n                       \"Negative Binomial Model is better due to overdispersion\", \n                       ifelse(deviance_ratio_poisson &gt; deviance_ratio_nb, \n                              \"Poisson Model is better\", \n                              \"Negative Binomial Model is better\"))\n\n# Print out the results\ncat(\"Deviance-to-DF Ratio for Poisson Model: \", deviance_ratio_poisson, \"\\n\")\n\nDeviance-to-DF Ratio for Poisson Model:  8.721789 \n\ncat(\"Deviance-to-DF Ratio for Negative Binomial Model: \", deviance_ratio_nb, \"\\n\")\n\nDeviance-to-DF Ratio for Negative Binomial Model:  1.129097 \n\ncat(\"Model Comparison: \", better_model)\n\nModel Comparison:  Negative Binomial Model is better due to overdispersion\n\n\n\nThe Negative Binomial model has a much lower AIC (3808.681) compared to the Poisson model (7136.602), suggesting that the Negative Binomial model provides a better fit to the data.\n\n\nBased on deviance, the negative binomial model is better."
+  },
+  {
+    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#what-is-zero-inflation-is-there-zero-inflation-in-your-chosen-model",
+    "href": "posts/Lab-5/poisson_lab_questions-1.html#what-is-zero-inflation-is-there-zero-inflation-in-your-chosen-model",
+    "title": "Poisson Lab Answers",
+    "section": "What is zero inflation? Is there zero-inflation in your chosen model?",
+    "text": "What is zero inflation? Is there zero-inflation in your chosen model?\n\nZero-inflation occurs when the data contains an excess number of zero outcomes that cannot be explained by the underlying model, such as a Poisson or Negative Binomial model. In other words, there are more zero values in the data than expected given the distribution (Poisson or Negative Binomial), which can indicate that a separate process is generating these excess zeros.\n\n\nperformance::check_zeroinflation(nb_model)\n\n# Check for zero-inflation\n\n   Observed zeros: 40\n  Predicted zeros: 63\n            Ratio: 1.57"
+  },
+  {
+    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#log-lambda",
+    "href": "posts/Lab-5/poisson_lab_questions-1.html#log-lambda",
+    "title": "Poisson Lab Answers",
+    "section": "Log Lambda",
+    "text": "Log Lambda\n\nlambda_poisson &lt;- predict(poisson_model_filtered, type = \"response\")\nlambda_nb &lt;- predict(nb_model, type = \"response\")\n\n# Log transform the lambda values\nlog_lambda_poisson &lt;- log(lambda_poisson)\nlog_lambda_nb &lt;- log(lambda_nb)\n\n# Output the log lambda values for a subset of the data\nhead(data.frame(log_lambda_poisson, log_lambda_nb))\n\n   log_lambda_poisson log_lambda_nb\n1            2.171034      2.079081\n2            2.881145      2.913070\n4            2.115022      2.220856\n8            2.191091      2.252398\n9            1.992306      2.030755\n12           2.578640      2.592963"
+  },
+  {
+    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#mean-count",
+    "href": "posts/Lab-5/poisson_lab_questions-1.html#mean-count",
+    "title": "Poisson Lab Answers",
+    "section": "Mean Count",
+    "text": "Mean Count\n\npredicted_counts_poisson &lt;- predict(poisson_model_filtered, type = \"response\")\npredicted_counts_nb &lt;- predict(nb_model, type = \"response\")\n\n# Calculate the mean of predicted counts for each model\nmean_count_poisson &lt;- mean(predicted_counts_poisson, na.rm = TRUE)\nmean_count_nb &lt;- mean(predicted_counts_nb, na.rm = TRUE)\n\n# Output the mean counts\ncat(\"Mean Count (Poisson Model): \", mean_count_poisson, \"\\n\")\n\nMean Count (Poisson Model):  8.821849 \n\ncat(\"Mean Count (Negative Binomial Model): \", mean_count_nb, \"\\n\")\n\nMean Count (Negative Binomial Model):  8.836638"
+  },
+  {
+    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#report-your-conclusions",
+    "href": "posts/Lab-5/poisson_lab_questions-1.html#report-your-conclusions",
+    "title": "Poisson Lab Answers",
+    "section": "Report your conclusions",
+    "text": "Report your conclusions\n\nThese results show that, on average, both models predict almost the same number of hours, with the Negative Binomial model giving a slightly higher estimate. This small difference could reflect model nuances, but both models suggest a similar central tendency in internet usage."
+  },
+  {
+    "objectID": "posts/Lab-6/MLM_intro_questions.html",
+    "href": "posts/Lab-6/MLM_intro_questions.html",
+    "title": "Intro to MLM Exercise/Walkthrough",
+    "section": "",
+    "text": "New Packages!\n\n\n\n\n\nThese are the main packages we’re going to use in this block. It might make sense to install them now if you do not have them already\n\ntidyverse : for organising data\n\nlme4 : for fitting generalised linear mixed effects models\nbroom.mixed : tidying methods for mixed models\neffects : for tabulating and graphing effects in linear models\nlmerTest: for quick p-values from mixed models\nparameters: various inferential methods for mixed models"
+  },
+  {
+    "objectID": "posts/Lab-6/MLM_intro_questions.html#footnotes",
+    "href": "posts/Lab-6/MLM_intro_questions.html#footnotes",
+    "title": "Intro to MLM Exercise/Walkthrough",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nImage sources:http://tophatsasquatch.com/2012-tmnt-classics-action-figures/https://www.dezeen.com/2016/02/01/barbie-dolls-fashionista-collection-mattel-new-body-types/https://www.wish.com/product/5da9bc544ab36314cfa7f70chttps://www.worldwideshoppingmall.co.uk/toys/jumbo-farm-animals.asphttps://www.overstock.com/Sports-Toys/NJ-Croce-Scooby-Doo-5pc.-Bendable-Figure-Set-with-Scooby-Doo-Shaggy-Daphne-Velma-and-Fred/28534567/product.htmlhttps://tvtropes.org/pmwiki/pmwiki.php/Toys/Furbyhttps://www.fun.com/toy-story-4-figure-4-pack.htmlhttps://www.johnlewis.com/lego-minifigures-71027-series-20-pack/p5079461↩︎"
+  },
+  {
     "objectID": "posts/Lab-2/index.html",
     "href": "posts/Lab-2/index.html",
     "title": "Lab 2: Logistic Regression",
@@ -180,96 +271,5 @@
     "title": "Stats-blog (PSY-504)",
     "section": "",
     "text": "Intro to MLM Exercise/Walkthrough\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nLab 2: Logistic Regression\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nPoisson Lab Answers\n\n\nPrinceton University\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nLab 4: Multinomial Regression\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nOrdinal Regression Lab Answers\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "posts/Lab-5/poisson_lab_questions-1.html",
-    "href": "posts/Lab-5/poisson_lab_questions-1.html",
-    "title": "Poisson Lab Answers",
-    "section": "",
-    "text": "To complete this lab:\nlibrary(pacman)\npacman::p_load(MASS,tidyverse,emmeans,ggeffects,easystats,performance,knitr, naniar,skimr,install = T)\n\n\npalette &lt;- c(\n  \"#772e25\", \"#c44536\", \"#ee9b00\", \"#197278\", \"#283d3b\", \n  \"#9CC5A1\", \"#6195C6\", \"#ADA7C9\", \"#4D4861\", \"grey50\",\n  \"#d4a373\", \"#8a5a44\", \"#4a6a74\", \"#5c80a8\", \"#a9c5a0\",\n  \"#7b9b8e\", \"#e1b16a\", \"#a69b7c\", \"#9d94c4\", \"#665c54\"\n)\n\npalette_condition = c(\"#ee9b00\", \"#c44536\",\"#005f73\", \"#283d3b\", \"#9CC5A1\", \"#6195C6\", \"#ADA7C9\", \"#4D4861\")\n\nplot_aes = theme_minimal() +\n  theme(\n    legend.position = \"top\",\n    legend.text = element_text(size = 12),\n    text = element_text(size = 16, family = \"Futura Medium\"),\n    axis.text = element_text(color = \"black\"),\n    axis.ticks.y = element_blank(),\n    plot.title = element_text(size = 20, hjust = 0.5) # Adjusted title size and centering\n  )\ndata &lt;- read_delim(\"https://raw.githubusercontent.com/jgeller112/psy504-advanced-stats/main/slides/Poisson/data/2010.csv\")\n\ndata |&gt; \n  head() |&gt; \n  DT::datatable()\n### clean the data \n\ndata_pos &lt;- data %&gt;%\n  dplyr::select(wwwhr, wordsum, age, sex, reliten, polviews, wrkhome) %&gt;%\nreplace_with_na(.,\n             replace = list(wwwhr = c(-1, 998, 999),\n                          wordsum = c(-1, 99),\n                          reliten = c(0, 8, 9), \n             polviews = c(0, 8, 9), \n             wrkhome = c(0,8,9), \n             age=c(0, 98, 99)))\n\ndata_pos |&gt; \n  head() |&gt; \n  DT::datatable()\nQ: Can you explain what might be going on in the above code?\nA: The replace_with_na function is replacing zeros with NAs\nQ: The next step in data cleaning would be to ensure that the data in your code are aligned with the description/ usage context of the variables\ndata_pos &lt;- data_pos |&gt; \n  mutate(sex = factor(ifelse(sex == -1, \"Male\", \n                             ifelse(sex == 1, \"Female\", NA)), \n                      levels = c(\"Male\", \"Female\")),\n         reliten_recode = factor(reliten, levels = 1:5))"
-  },
-  {
-    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#missingness",
-    "href": "posts/Lab-5/poisson_lab_questions-1.html#missingness",
-    "title": "Poisson Lab Answers",
-    "section": "Missingness",
-    "text": "Missingness\n\ndata_pos %&gt;%\n  dplyr::select(reliten, reliten_recode)\n\n# A tibble: 2,044 × 2\n   reliten reliten_recode\n     &lt;dbl&gt; &lt;fct&gt;         \n 1       1 1             \n 2       4 4             \n 3       1 1             \n 4       1 1             \n 5       1 1             \n 6       4 4             \n 7       3 3             \n 8       1 1             \n 9       1 1             \n10       1 1             \n# ℹ 2,034 more rows\n\nskimr::skim(data_pos)\n\n\nData summary\n\n\nName\ndata_pos\n\n\nNumber of rows\n2044\n\n\nNumber of columns\n8\n\n\n_______________________\n\n\n\nColumn type frequency:\n\n\n\nfactor\n2\n\n\nnumeric\n6\n\n\n________________________\n\n\n\nGroup variables\nNone\n\n\n\nVariable type: factor\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nordered\nn_unique\ntop_counts\n\n\n\n\nsex\n0\n1.00\nFALSE\n2\nMal: 1153, Fem: 891\n\n\nreliten_recode\n99\n0.95\nFALSE\n4\n2: 747, 1: 707, 4: 363, 3: 128\n\n\n\nVariable type: numeric\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nmean\nsd\np0\np25\np50\np75\np100\nhist\n\n\n\n\nwwwhr\n996\n0.51\n9.79\n13.41\n0\n2\n5\n14\n168\n▇▁▁▁▁\n\n\nwordsum\n657\n0.68\n6.03\n2.07\n0\n5\n6\n7\n10\n▁▃▇▅▂\n\n\nage\n3\n1.00\n47.97\n17.68\n18\n33\n47\n61\n89\n▇▇▇▅▃\n\n\nreliten\n99\n0.95\n2.08\n1.08\n1\n1\n2\n3\n4\n▇▇▁▂▃\n\n\npolviews\n71\n0.97\n4.08\n1.46\n1\n3\n4\n5\n7\n▃▂▇▃▅\n\n\nwrkhome\n882\n0.57\n2.26\n1.72\n1\n1\n1\n4\n6\n▇▁▁▂▁"
-  },
-  {
-    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#fit-a-poisson-model-to-the-data.",
-    "href": "posts/Lab-5/poisson_lab_questions-1.html#fit-a-poisson-model-to-the-data.",
-    "title": "Poisson Lab Answers",
-    "section": "Fit a Poisson model to the data.",
-    "text": "Fit a Poisson model to the data.\n\npoisson_model &lt;- glm(wwwhr ~ wordsum + age + sex + reliten+ polviews + wrkhome, \n                     data = data_pos, \n                     family = poisson(link = \"log\"))\n\nmodel_summary &lt;- summary(poisson_model)$coefficients\nci &lt;- confint(poisson_model)  # Compute confidence intervals\n\n# Create a tidy dataframe\neffects_table &lt;- as.data.frame(model_summary) |&gt; \n  tibble::rownames_to_column(var = \"Predictor\") |&gt; \n  dplyr::mutate(\n    `Estimate` = round(Estimate, 3),\n    `Std. Error` = round(`Std. Error`, 3),\n    `z value` = round(`z value`, 3),\n    `Pr(&gt;|z|)` = round(`Pr(&gt;|z|)`, 3),\n    `CI Lower` = round(ci[,1], 3),\n    `CI Upper` = round(ci[,2], 3)\n  )\n\n# Display the table using kable\nkable(effects_table, format = \"markdown\", caption = \"Poisson Model Coefficients\")\n\n\nPoisson Model Coefficients\n\n\n\n\n\n\n\n\n\n\n\nPredictor\nEstimate\nStd. Error\nz value\nPr(&gt;|z|)\nCI Lower\nCI Upper\n\n\n\n\n(Intercept)\n1.649\n0.082\n20.225\n0\n1.489\n1.809\n\n\nwordsum\n0.100\n0.008\n12.836\n0\n0.084\n0.115\n\n\nage\n-0.016\n0.001\n-15.132\n0\n-0.019\n-0.014\n\n\nsexFemale\n0.259\n0.026\n9.836\n0\n0.208\n0.311\n\n\nreliten\n0.199\n0.012\n16.726\n0\n0.176\n0.222\n\n\npolviews\n-0.036\n0.010\n-3.666\n0\n-0.054\n-0.017\n\n\nwrkhome\n0.078\n0.008\n10.243\n0\n0.063\n0.093"
-  },
-  {
-    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#carry-out-model-checking",
-    "href": "posts/Lab-5/poisson_lab_questions-1.html#carry-out-model-checking",
-    "title": "Poisson Lab Answers",
-    "section": "Carry out model checking",
-    "text": "Carry out model checking\nHint: performance package has the function you’re looking for\n\ncheck_model(poisson_model,plot = T)"
-  },
-  {
-    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#find-any-outliers",
-    "href": "posts/Lab-5/poisson_lab_questions-1.html#find-any-outliers",
-    "title": "Poisson Lab Answers",
-    "section": "Find any outliers",
-    "text": "Find any outliers\n\n# Filter the data to remove outliers\ndata_pos_filtered &lt;- data_pos %&gt;%\n  mutate(mean_wwwhr = mean(wwwhr, na.rm = TRUE),\n         sd_wwwhr = sd(wwwhr, na.rm = TRUE)) %&gt;%\n  filter(wwwhr &gt;= (mean_wwwhr - 3 * sd_wwwhr) & wwwhr &lt;= (mean_wwwhr + 3 * sd_wwwhr)) %&gt;%\n  select(-mean_wwwhr, -sd_wwwhr)  # Remove the temporary columns\n\n\n\n\ncheck_outliers(poisson_model)\n\n3 outliers detected: cases 72, 156, 363.\n- Based on the following method and threshold: cook (0.9).\n- For variable: (Whole model)."
-  },
-  {
-    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#refit-the-model-after-excluding-outliers",
-    "href": "posts/Lab-5/poisson_lab_questions-1.html#refit-the-model-after-excluding-outliers",
-    "title": "Poisson Lab Answers",
-    "section": "Refit the model after excluding outliers",
-    "text": "Refit the model after excluding outliers\n\npoisson_model_filtered &lt;- glm(wwwhr ~ wordsum + age + sex + reliten+ polviews + wrkhome, \n                     data = data_pos_filtered, \n                     family = poisson(link = \"log\"))\n\nmodel_summary &lt;- summary(poisson_model_filtered)$coefficients\nci &lt;- confint(poisson_model_filtered)  # Compute confidence intervals\n\n# Create a tidy dataframe\neffects_table &lt;- as.data.frame(model_summary) |&gt; \n  tibble::rownames_to_column(var = \"Predictor\") |&gt; \n  dplyr::mutate(\n    `Estimate` = round(Estimate, 3),\n    `Std. Error` = round(`Std. Error`, 3),\n    `z value` = round(`z value`, 3),\n    `Pr(&gt;|z|)` = round(`Pr(&gt;|z|)`, 3),\n    `CI Lower` = round(ci[,1], 3),\n    `CI Upper` = round(ci[,2], 3)\n  )\n\n# Display the table using kable\nkable(effects_table, format = \"markdown\", caption = \"Poisson Model Coefficients (Excluding Outliers)\") \n\n\nPoisson Model Coefficients (Excluding Outliers)\n\n\n\n\n\n\n\n\n\n\n\nPredictor\nEstimate\nStd. Error\nz value\nPr(&gt;|z|)\nCI Lower\nCI Upper\n\n\n\n\n(Intercept)\n1.631\n0.086\n18.885\n0.000\n1.461\n1.800\n\n\nwordsum\n0.091\n0.008\n11.002\n0.000\n0.075\n0.107\n\n\nage\n-0.011\n0.001\n-9.705\n0.000\n-0.013\n-0.009\n\n\nsexFemale\n0.142\n0.028\n5.071\n0.000\n0.087\n0.197\n\n\nreliten\n0.143\n0.013\n11.254\n0.000\n0.118\n0.168\n\n\npolviews\n-0.022\n0.010\n-2.118\n0.034\n-0.042\n-0.002\n\n\nwrkhome\n0.040\n0.008\n4.758\n0.000\n0.023\n0.056\n\n\n\n\n\n\nCheck for Overdispersion\nHint: performance package has the function you’re looking for\n\ncheck_overdispersion(poisson_model_filtered)\n\n# Overdispersion test\n\n       dispersion ratio =   10.684\n  Pearson's Chi-Squared = 6282.259\n                p-value =  &lt; 0.001\n\n\nWhat do you notice?\n\nThat we are expriencing overdispersion\n\nAnd what’s a good next step forward?\n\nWe can deal with this using a Negative Binomial regression model instead of a Poisson model.\n\nCan there be another model class that can fit the data? If so, fit this model to the data.\n\nA Negative Binomial regression model\n\n\nnb_model &lt;- glm.nb(wwwhr ~ wordsum + age + sex + reliten_recode + polviews + wrkhome, \n                   data = data_pos_filtered)\n\nmodel_summary &lt;- summary(nb_model)$coefficients\nci &lt;- confint(nb_model)  # Compute confidence intervals\n\n# Create a tidy dataframe\neffects_table &lt;- as.data.frame(model_summary) |&gt; \n  tibble::rownames_to_column(var = \"Predictor\") |&gt; \n  dplyr::mutate(\n    `Estimate` = round(Estimate, 3),\n    `Std. Error` = round(`Std. Error`, 3),\n    `z value` = round(`z value`, 3),\n    `Pr(&gt;|z|)` = round(`Pr(&gt;|z|)`, 3),\n    `CI Lower` = round(ci[,1], 3),\n    `CI Upper` = round(ci[,2], 3)\n  )\n\n# Display the table using kable\nkable(effects_table, format = \"markdown\", caption = \"Negative Binomial (Without Outliers)\") \n\n\nNegative Binomial (Without Outliers)\n\n\n\n\n\n\n\n\n\n\n\nPredictor\nEstimate\nStd. Error\nz value\nPr(&gt;|z|)\nCI Lower\nCI Upper\n\n\n\n\n(Intercept)\n1.720\n0.252\n6.829\n0.000\n1.224\n2.221\n\n\nwordsum\n0.101\n0.025\n3.972\n0.000\n0.049\n0.153\n\n\nage\n-0.012\n0.003\n-3.608\n0.000\n-0.019\n-0.005\n\n\nsexFemale\n0.105\n0.088\n1.201\n0.230\n-0.067\n0.278\n\n\nreliten_recode2\n0.293\n0.106\n2.766\n0.006\n0.085\n0.500\n\n\nreliten_recode3\n0.397\n0.200\n1.984\n0.047\n0.016\n0.806\n\n\nreliten_recode4\n0.478\n0.125\n3.815\n0.000\n0.236\n0.721\n\n\npolviews\n-0.024\n0.032\n-0.740\n0.460\n-0.086\n0.038\n\n\nwrkhome\n0.035\n0.026\n1.330\n0.183\n-0.017\n0.089"
-  },
-  {
-    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#which-one-is-better--your-earlier-model-or-later-model",
-    "href": "posts/Lab-5/poisson_lab_questions-1.html#which-one-is-better--your-earlier-model-or-later-model",
-    "title": "Poisson Lab Answers",
-    "section": "Which one is better- your earlier model, or later model?",
-    "text": "Which one is better- your earlier model, or later model?\n\nAIC(poisson_model_filtered, nb_model)\n\n                       df      AIC\npoisson_model_filtered  7 7136.602\nnb_model               10 3808.681\n\n# Alternatively, you can compare the residual deviance and degrees of freedom:\ndeviance_poisson &lt;- deviance(poisson_model_filtered)\ndf_poisson &lt;- df.residual(poisson_model_filtered)\ndeviance_ratio_poisson &lt;- deviance_poisson / df_poisson\n\n# Calculate deviance and degrees of freedom for Negative Binomial model\ndeviance_nb &lt;- deviance(nb_model)\ndf_nb &lt;- df.residual(nb_model)\ndeviance_ratio_nb &lt;- deviance_nb / df_nb\n\n# Check for overdispersion and compare the models\nbetter_model &lt;- ifelse(deviance_ratio_poisson &gt; 1, \n                       \"Negative Binomial Model is better due to overdispersion\", \n                       ifelse(deviance_ratio_poisson &gt; deviance_ratio_nb, \n                              \"Poisson Model is better\", \n                              \"Negative Binomial Model is better\"))\n\n# Print out the results\ncat(\"Deviance-to-DF Ratio for Poisson Model: \", deviance_ratio_poisson, \"\\n\")\n\nDeviance-to-DF Ratio for Poisson Model:  8.721789 \n\ncat(\"Deviance-to-DF Ratio for Negative Binomial Model: \", deviance_ratio_nb, \"\\n\")\n\nDeviance-to-DF Ratio for Negative Binomial Model:  1.129097 \n\ncat(\"Model Comparison: \", better_model)\n\nModel Comparison:  Negative Binomial Model is better due to overdispersion\n\n\n\nThe Negative Binomial model has a much lower AIC (3808.681) compared to the Poisson model (7136.602), suggesting that the Negative Binomial model provides a better fit to the data.\n\n\nBased on deviance, the negative binomial model is better."
-  },
-  {
-    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#what-is-zero-inflation-is-there-zero-inflation-in-your-chosen-model",
-    "href": "posts/Lab-5/poisson_lab_questions-1.html#what-is-zero-inflation-is-there-zero-inflation-in-your-chosen-model",
-    "title": "Poisson Lab Answers",
-    "section": "What is zero inflation? Is there zero-inflation in your chosen model?",
-    "text": "What is zero inflation? Is there zero-inflation in your chosen model?\n\nZero-inflation occurs when the data contains an excess number of zero outcomes that cannot be explained by the underlying model, such as a Poisson or Negative Binomial model. In other words, there are more zero values in the data than expected given the distribution (Poisson or Negative Binomial), which can indicate that a separate process is generating these excess zeros.\n\n\nperformance::check_zeroinflation(nb_model)\n\n# Check for zero-inflation\n\n   Observed zeros: 40\n  Predicted zeros: 63\n            Ratio: 1.57"
-  },
-  {
-    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#log-lambda",
-    "href": "posts/Lab-5/poisson_lab_questions-1.html#log-lambda",
-    "title": "Poisson Lab Answers",
-    "section": "Log Lambda",
-    "text": "Log Lambda\n\nlambda_poisson &lt;- predict(poisson_model_filtered, type = \"response\")\nlambda_nb &lt;- predict(nb_model, type = \"response\")\n\n# Log transform the lambda values\nlog_lambda_poisson &lt;- log(lambda_poisson)\nlog_lambda_nb &lt;- log(lambda_nb)\n\n# Output the log lambda values for a subset of the data\nhead(data.frame(log_lambda_poisson, log_lambda_nb))\n\n   log_lambda_poisson log_lambda_nb\n1            2.171034      2.079081\n2            2.881145      2.913070\n4            2.115022      2.220856\n8            2.191091      2.252398\n9            1.992306      2.030755\n12           2.578640      2.592963"
-  },
-  {
-    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#mean-count",
-    "href": "posts/Lab-5/poisson_lab_questions-1.html#mean-count",
-    "title": "Poisson Lab Answers",
-    "section": "Mean Count",
-    "text": "Mean Count\n\npredicted_counts_poisson &lt;- predict(poisson_model_filtered, type = \"response\")\npredicted_counts_nb &lt;- predict(nb_model, type = \"response\")\n\n# Calculate the mean of predicted counts for each model\nmean_count_poisson &lt;- mean(predicted_counts_poisson, na.rm = TRUE)\nmean_count_nb &lt;- mean(predicted_counts_nb, na.rm = TRUE)\n\n# Output the mean counts\ncat(\"Mean Count (Poisson Model): \", mean_count_poisson, \"\\n\")\n\nMean Count (Poisson Model):  8.821849 \n\ncat(\"Mean Count (Negative Binomial Model): \", mean_count_nb, \"\\n\")\n\nMean Count (Negative Binomial Model):  8.836638"
-  },
-  {
-    "objectID": "posts/Lab-5/poisson_lab_questions-1.html#report-your-conclusions",
-    "href": "posts/Lab-5/poisson_lab_questions-1.html#report-your-conclusions",
-    "title": "Poisson Lab Answers",
-    "section": "Report your conclusions",
-    "text": "Report your conclusions\n\nThese results show that, on average, both models predict almost the same number of hours, with the Negative Binomial model giving a slightly higher estimate. This small difference could reflect model nuances, but both models suggest a similar central tendency in internet usage."
-  },
-  {
-    "objectID": "posts/Lab-6/MLM_intro_questions.html",
-    "href": "posts/Lab-6/MLM_intro_questions.html",
-    "title": "Intro to MLM Exercise/Walkthrough",
-    "section": "",
-    "text": "New Packages!\n\n\n\n\n\nThese are the main packages we’re going to use in this block. It might make sense to install them now if you do not have them already\n\ntidyverse : for organising data\n\nlme4 : for fitting generalised linear mixed effects models\nbroom.mixed : tidying methods for mixed models\neffects : for tabulating and graphing effects in linear models\nlmerTest: for quick p-values from mixed models\nparameters: various inferential methods for mixed models"
-  },
-  {
-    "objectID": "posts/Lab-6/MLM_intro_questions.html#footnotes",
-    "href": "posts/Lab-6/MLM_intro_questions.html#footnotes",
-    "title": "Intro to MLM Exercise/Walkthrough",
-    "section": "Footnotes",
-    "text": "Footnotes\n\n\nImage sources:http://tophatsasquatch.com/2012-tmnt-classics-action-figures/https://www.dezeen.com/2016/02/01/barbie-dolls-fashionista-collection-mattel-new-body-types/https://www.wish.com/product/5da9bc544ab36314cfa7f70chttps://www.worldwideshoppingmall.co.uk/toys/jumbo-farm-animals.asphttps://www.overstock.com/Sports-Toys/NJ-Croce-Scooby-Doo-5pc.-Bendable-Figure-Set-with-Scooby-Doo-Shaggy-Daphne-Velma-and-Fred/28534567/product.htmlhttps://tvtropes.org/pmwiki/pmwiki.php/Toys/Furbyhttps://www.fun.com/toy-story-4-figure-4-pack.htmlhttps://www.johnlewis.com/lego-minifigures-71027-series-20-pack/p5079461↩︎"
   }
 ]
