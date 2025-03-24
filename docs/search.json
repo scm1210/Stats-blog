@@ -179,7 +179,7 @@
     "href": "index.html",
     "title": "Stats-blog (PSY-504)",
     "section": "",
-    "text": "Lab 2: Logistic Regression\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nPoisson Lab Answers\n\n\nPrinceton University\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nLab 4: Multinomial Regression\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nOrdinal Regression Lab Answers\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\nNo matching items"
+    "text": "Intro to MLM Exercise/Walkthrough\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nLab 2: Logistic Regression\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nPoisson Lab Answers\n\n\nPrinceton University\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nLab 4: Multinomial Regression\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nOrdinal Regression Lab Answers\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/Lab-5/poisson_lab_questions-1.html",
@@ -257,5 +257,19 @@
     "title": "Poisson Lab Answers",
     "section": "Report your conclusions",
     "text": "Report your conclusions\n\nThese results show that, on average, both models predict almost the same number of hours, with the Negative Binomial model giving a slightly higher estimate. This small difference could reflect model nuances, but both models suggest a similar central tendency in internet usage."
+  },
+  {
+    "objectID": "posts/Lab-6/MLM_intro_questions.html",
+    "href": "posts/Lab-6/MLM_intro_questions.html",
+    "title": "Intro to MLM Exercise/Walkthrough",
+    "section": "",
+    "text": "New Packages!\n\n\n\n\n\nThese are the main packages we’re going to use in this block. It might make sense to install them now if you do not have them already\n\ntidyverse : for organising data\n\nlme4 : for fitting generalised linear mixed effects models\nbroom.mixed : tidying methods for mixed models\neffects : for tabulating and graphing effects in linear models\nlmerTest: for quick p-values from mixed models\nparameters: various inferential methods for mixed models"
+  },
+  {
+    "objectID": "posts/Lab-6/MLM_intro_questions.html#footnotes",
+    "href": "posts/Lab-6/MLM_intro_questions.html#footnotes",
+    "title": "Intro to MLM Exercise/Walkthrough",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nImage sources:http://tophatsasquatch.com/2012-tmnt-classics-action-figures/https://www.dezeen.com/2016/02/01/barbie-dolls-fashionista-collection-mattel-new-body-types/https://www.wish.com/product/5da9bc544ab36314cfa7f70chttps://www.worldwideshoppingmall.co.uk/toys/jumbo-farm-animals.asphttps://www.overstock.com/Sports-Toys/NJ-Croce-Scooby-Doo-5pc.-Bendable-Figure-Set-with-Scooby-Doo-Shaggy-Daphne-Velma-and-Fred/28534567/product.htmlhttps://tvtropes.org/pmwiki/pmwiki.php/Toys/Furbyhttps://www.fun.com/toy-story-4-figure-4-pack.htmlhttps://www.johnlewis.com/lego-minifigures-71027-series-20-pack/p5079461↩︎"
   }
 ]
