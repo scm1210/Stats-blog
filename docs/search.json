@@ -133,6 +133,461 @@
     "text": "Report your conclusions\n\nThese results show that, on average, both models predict almost the same number of hours, with the Negative Binomial model giving a slightly higher estimate. This small difference could reflect model nuances, but both models suggest a similar central tendency in internet usage."
   },
   {
+    "objectID": "posts/Lab-7/mlm-02.html",
+    "href": "posts/Lab-7/mlm-02.html",
+    "title": "Lab-7",
+    "section": "",
+    "text": "When to use them:\n\nNested designs\nRepeated measures\nLongitudinal data\nComplex designs\n\nWhy use them:\n\nCaptures variance occurring between groups and within groups\n\nWhat they are:\n\nLinear model with extra residuals"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#multilevel-models",
+    "href": "posts/Lab-7/mlm-02.html#multilevel-models",
+    "title": "Lab-7",
+    "section": "",
+    "text": "When to use them:\n\nNested designs\nRepeated measures\nLongitudinal data\nComplex designs\n\nWhy use them:\n\nCaptures variance occurring between groups and within groups\n\nWhat they are:\n\nLinear model with extra residuals"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#today",
+    "href": "posts/Lab-7/mlm-02.html#today",
+    "title": "Lab-7",
+    "section": "Today",
+    "text": "Today\n\nEverything you need to know to run and report a MLM\n\nOrganizing data for MLM analysis\nEstimation\nFit and interpret multilevel models\nVisualization\nEffect size\nReporting\nPower"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#packages",
+    "href": "posts/Lab-7/mlm-02.html#packages",
+    "title": "Lab-7",
+    "section": "Packages",
+    "text": "Packages\n\nknitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = FALSE,fig.path = \"Lab-6-figs/fig_\")\noptions(scipen=999)\n\nlibrary(pacman)\n\npacman::p_load(tidyverse, knitr, lme4, lmerTest, broom.mixed, afex, emmeans, ggeffects, easystats,ggeffects,ggrain,easystats,afex, install = T)\noptions(scipen=999) # get rid of sci notation\n\n\n### create plot aesthetics \npalette &lt;- c(\n  \"#772e25\", \"#c44536\", \"#ee9b00\", \"#197278\", \"#283d3b\", \n  \"#9CC5A1\", \"#6195C6\", \"#ADA7C9\", \"#4D4861\", \"grey50\",\n  \"#d4a373\", \"#8a5a44\", \"#4a6a74\", \"#5c80a8\", \"#a9c5a0\",\n  \"#7b9b8e\", \"#e1b16a\", \"#a69b7c\", \"#9d94c4\", \"#665c54\"\n)\n\npalette_condition = c(\"#ee9b00\", \"#c44536\",\"#005f73\", \"#283d3b\", \"#9CC5A1\", \"#6195C6\", \"#ADA7C9\", \"#4D4861\")\nplot_aes = theme_minimal() +\n  theme(\n    legend.position = \"top\",\n    legend.text = element_text(size = 12),\n    text = element_text(size = 16, family = \"Futura Medium\"),\n    axis.text = element_text(color = \"black\"),\n    axis.ticks.y = element_blank(),\n    plot.title = element_text(size = 20, hjust = 0.5) # Adjusted title size and centering\n  )\n\n\nFind the .qmd document here to follow along: https://github.com/suyoghc/PSY-504_Spring-2025/blob/main/Multilevel%20Modeling/mlm-02.qmd"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#todays-data",
+    "href": "posts/Lab-7/mlm-02.html#todays-data",
+    "title": "Lab-7",
+    "section": "Today’s data",
+    "text": "Today’s data\n\nWhat did you say?\n\nPs (N = 31) listened to both clear (NS) and 6 channel vocoded speech (V6)\n\n(https://www.mrc-cbu.cam.ac.uk/personal/matt.davis/vocode/a1_6.wav)\n\nFixed factor: ?\nRandom factor: ?"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#todays-data-1",
+    "href": "posts/Lab-7/mlm-02.html#todays-data-1",
+    "title": "Lab-7",
+    "section": "Today’s data",
+    "text": "Today’s data\n\neye  &lt;- read_csv(\"https://raw.githubusercontent.com/suyoghc/PSY-504_Spring-2025/refs/heads/main/Multilevel%20Modeling/data/vocoded_pupil.csv\") # data for class"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#data-organization",
+    "href": "posts/Lab-7/mlm-02.html#data-organization",
+    "title": "Lab-7",
+    "section": "Data organization",
+    "text": "Data organization\n\nData Structure\n\nMLM analysis (in R) requires data in long format"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#data-organization-1",
+    "href": "posts/Lab-7/mlm-02.html#data-organization-1",
+    "title": "Lab-7",
+    "section": "Data organization",
+    "text": "Data organization\n\nLevel 1: trial\nLevel 2: subject\n\n\n\n\n\n\nsubject\ntrial\nvocoded\nmean_pupil\n\n\n\n\nEYE15\n3\nV6\n0.0839555\n\n\nEYE15\n4\nV6\n0.0141083\n\n\nEYE15\n5\nV6\n0.0224967\n\n\nEYE15\n6\nV6\n0.0007424\n\n\nEYE15\n7\nV6\n0.0242540\n\n\nEYE15\n8\nV6\n0.0267617"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#centering",
+    "href": "posts/Lab-7/mlm-02.html#centering",
+    "title": "Lab-7",
+    "section": "Centering",
+    "text": "Centering\n\n\n\nIn a single-level regression, centering ensures that the zero value for each predictor is meaningful before running the model\nIn MLM, if you have specific questions about within, between, and contextual effects, you need to center!"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#group--vs.-grand-mean-centering",
+    "href": "posts/Lab-7/mlm-02.html#group--vs.-grand-mean-centering",
+    "title": "Lab-7",
+    "section": "Group- vs. Grand-Mean Centering",
+    "text": "Group- vs. Grand-Mean Centering\n\nGrand-mean centering: \\(x_{ij} - x\\)\n\nVariable represents each observation’s deviation from everyone’s norm, regardless of group\n\nGroup-mean centering: \\(x_{ij} - x_j\\)\n\nVariable represents each observation’s deviation from their group’s norm (removes group effect)"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#group--vs.-grand-mean-centering-1",
+    "href": "posts/Lab-7/mlm-02.html#group--vs.-grand-mean-centering-1",
+    "title": "Lab-7",
+    "section": "Group- vs. Grand-Mean Centering",
+    "text": "Group- vs. Grand-Mean Centering\n\n\n\nLevel 1 predictors\n\nGrand-mean centering\n\nInclude means of level 2\n\nAllows us to directly test within-group effect\nCoefficient associated with the Level 2 group mean represents contextual effect\n\n\n\n\n\n\nGroup-mean centering\n\nLevel 1 coefficient will always be with within-group effect, regardless of whether the group means are included at Level 2 or not\nIf level 2 means included, coefficient represents the between-groups effect\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nCan apply to categorical predictors as well (see Yaremych, Preacher, & Hedeker, 2023)"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#centering-in-r",
+    "href": "posts/Lab-7/mlm-02.html#centering-in-r",
+    "title": "Lab-7",
+    "section": "Centering in R",
+    "text": "Centering in R\n\n# how to group mean center \nd &lt;- d %&gt;% \n  # Grand mean centering (CMC)\n  mutate(iv.gmc = iv-mean(iv)) %&gt;%\n  # group  mean centering (more generally, centering within cluster)\n  group_by(id) %&gt;% \n  mutate(iv.cm = mean(iv),\n         iv.cwc = iv-iv.cm)\n\nlibrary(datawizard) #easystats \n\n#data wizard way\nx &lt;- demean(x, select=c(\"x\"), group=\"ID\") #gets within-group and included cluster means"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#maximum-likelihood",
+    "href": "posts/Lab-7/mlm-02.html#maximum-likelihood",
+    "title": "Lab-7",
+    "section": "Maximum Likelihood",
+    "text": "Maximum Likelihood\n\n\n\n\nIn MLM we try to maximize the likelihood of the data\n\nNo OLS!"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#probability-vs.-likelihood",
+    "href": "posts/Lab-7/mlm-02.html#probability-vs.-likelihood",
+    "title": "Lab-7",
+    "section": "Probability vs. Likelihood",
+    "text": "Probability vs. Likelihood\n\nProbability\n\n\nIf I assume a distribution with certain parameters (fixed), what is the probability I see a particular value in the data?\n\n\n\n\nPr⁡(𝑦&gt;0│𝜇=0,𝜎=1)=.50\nPr⁡(−1&lt;𝑦&lt;1│𝜇=0,𝜎=1)=.68\nPr⁡(0&lt;𝑦&lt;1│𝜇=0,𝜎=1)=.34\nPr⁡(𝑦&gt;2│𝜇=0,𝜎=1)=.02"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#likelihood",
+    "href": "posts/Lab-7/mlm-02.html#likelihood",
+    "title": "Lab-7",
+    "section": "Likelihood",
+    "text": "Likelihood\n\n\n\n\\(L(𝜇,𝜎│𝑥)\\)\nHolding a sample of data constant, which parameter values are more likely?\n\nWhich values have higher likelihood?\n\nHere data is fixed and distribution can change"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#likelihood-1",
+    "href": "posts/Lab-7/mlm-02.html#likelihood-1",
+    "title": "Lab-7",
+    "section": "Likelihood",
+    "text": "Likelihood"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#likelihood-2",
+    "href": "posts/Lab-7/mlm-02.html#likelihood-2",
+    "title": "Lab-7",
+    "section": "Likelihood",
+    "text": "Likelihood"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#likelihood-3",
+    "href": "posts/Lab-7/mlm-02.html#likelihood-3",
+    "title": "Lab-7",
+    "section": "Likelihood",
+    "text": "Likelihood"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#likelihood-4",
+    "href": "posts/Lab-7/mlm-02.html#likelihood-4",
+    "title": "Lab-7",
+    "section": "Likelihood",
+    "text": "Likelihood"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#likelihood-5",
+    "href": "posts/Lab-7/mlm-02.html#likelihood-5",
+    "title": "Lab-7",
+    "section": "Likelihood",
+    "text": "Likelihood"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#likelihood-6",
+    "href": "posts/Lab-7/mlm-02.html#likelihood-6",
+    "title": "Lab-7",
+    "section": "Likelihood",
+    "text": "Likelihood\nInteractive: Understanding Maximum Likelihood Estimation: https://rpsychologist.com/likelihood/"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#log-likelihood",
+    "href": "posts/Lab-7/mlm-02.html#log-likelihood",
+    "title": "Lab-7",
+    "section": "Log likelihood",
+    "text": "Log likelihood\n\nWith large samples, likelihood values ℒ(𝜇,𝜎│𝑥) get very small very fast\n\nTo make them easier to work with, we usually work with the log-likelihood\n\nMeasure of how well the model fits the data\nHigher values of \\(\\log L\\) are better\n\n\nDeviance = \\(-2logL\\)\n\n\\(-2logL\\) follows a \\(\\chi^2\\) distribution with \\(n (\\text{sample size}) - p (\\text{paramters}) - 1\\) degrees of freedom"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#chi2-distribution",
+    "href": "posts/Lab-7/mlm-02.html#chi2-distribution",
+    "title": "Lab-7",
+    "section": "\\(\\chi^2\\) distribution",
+    "text": "\\(\\chi^2\\) distribution"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#comparing-nested-models",
+    "href": "posts/Lab-7/mlm-02.html#comparing-nested-models",
+    "title": "Lab-7",
+    "section": "Comparing nested models",
+    "text": "Comparing nested models\n\nSuppose there are two models:\n\nReduced model includes predictors \\(x_1, \\ldots, x_q\\)\nFull model includes predictors \\(x_1, \\ldots, x_q, x_{q+1}, \\ldots, x_p\\)\n\nWe want to test the hypotheses:\n\n\\(H_0\\): smaller model is better\n\\(H_1\\): Larger model is better\n\nTo do so, we will use the drop-in-deviance test (also known as the nested likelihood ratio test)"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#drop-in-deviance-test",
+    "href": "posts/Lab-7/mlm-02.html#drop-in-deviance-test",
+    "title": "Lab-7",
+    "section": "Drop-In-Deviance Test",
+    "text": "Drop-In-Deviance Test\n\nHypotheses:\n\n\\(H_0\\): smaller model is better\n\\(H_1\\): Larger model is better\n\nTest Statistic: \\[G = (-2 \\log L_{reduced}) - (-2 \\log L_{full})\\]\nP-value: \\(P(\\chi^2 &gt; G)\\):\n\nCalculated using a \\(\\chi^2\\) distribution\ndf = \\(df_1\\) - \\(df_2\\)"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#testing-deviance",
+    "href": "posts/Lab-7/mlm-02.html#testing-deviance",
+    "title": "Lab-7",
+    "section": "Testing deviance",
+    "text": "Testing deviance\n\nWe can use the anova function to conduct this test\n\nAdd test = “Chisq” to conduct the drop-in-deviance test\n\nI like test_likelihoodratio from easystats\n\n\nanova(model1, model2, test=\"chisq\")\n\n# test using easystats function\n\ntest_likelihoodratio(model1, model2)"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#model-fitting-ml-or-reml",
+    "href": "posts/Lab-7/mlm-02.html#model-fitting-ml-or-reml",
+    "title": "Lab-7",
+    "section": "Model fitting: ML or REML?",
+    "text": "Model fitting: ML or REML?\n\nTwo flavors of maximum likelihood\n\nMaximum Likelihood (ML or FIML)\n\nJointly estimate the fixed effects and variance components using all the sample data\nCan be used to draw conclusions about fixed and random effects\nIssue:\n\nResults are biased because fixed effects are estimated without error"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#model-fitting-ml-or-reml-1",
+    "href": "posts/Lab-7/mlm-02.html#model-fitting-ml-or-reml-1",
+    "title": "Lab-7",
+    "section": "Model fitting: ML or REML",
+    "text": "Model fitting: ML or REML\n\nRestricted Maximum Likelihood (REML)\n\nEstimates the variance components using the sample residuals not the sample data\nIt is conditional on the fixed effects, so it accounts for uncertainty in fixed effects estimates\n\nThis results in unbiased estimates of variance components\nAssociated with error/penalty"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#model-fitting-ml-or-reml-2",
+    "href": "posts/Lab-7/mlm-02.html#model-fitting-ml-or-reml-2",
+    "title": "Lab-7",
+    "section": "Model fitting: ML or REML?",
+    "text": "Model fitting: ML or REML?\n\nResearch has not determined one method absolutely superior to the other\nREML (REML = TRUE; default in lmer) is preferable when:\n\nThe number of parameters is large\nPrimary objective is to obtain relaible estimates of the variance parameters\nFor REML, likelihood ratio tests can only be used to draw conclusions about variance components\n\nML (REML = FALSE) must be used if you want to compare nested fixed effects models using a likelihood ratio test (e.g., a drop-in-deviance test)"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#ml-or-reml",
+    "href": "posts/Lab-7/mlm-02.html#ml-or-reml",
+    "title": "Lab-7",
+    "section": "ML or REML?",
+    "text": "ML or REML?\n\nWhat would we use if we wanted to compare the below models?\n\n\nx= lmer(DV ~ IV1 + IV2 + (1|ID))\n\ny= lmer(DV ~ IV1*IV2 + (1|ID))"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#ml-or-reml-1",
+    "href": "posts/Lab-7/mlm-02.html#ml-or-reml-1",
+    "title": "Lab-7",
+    "section": "ML or REML?",
+    "text": "ML or REML?\n\nWhat would we use if we wanted to compare the below models?\n\n\nx = lmer(DV ~ IV1 + IV2 + (1+IV2|ID))\n\ny = lmer(DV ~ IV1+ IV2 + (1|ID))"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#modeling-approach",
+    "href": "posts/Lab-7/mlm-02.html#modeling-approach",
+    "title": "Lab-7",
+    "section": "Modeling approach",
+    "text": "Modeling approach\n\nForward/backward approach\n\n\n\nKeep it maximal1\n\nWhatever can vary, should vary\n\nDecreases Type 1 error"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#modeling-approach-1",
+    "href": "posts/Lab-7/mlm-02.html#modeling-approach-1",
+    "title": "Lab-7",
+    "section": "Modeling approach",
+    "text": "Modeling approach\n\nFull (maximal) model\n\nOnly when there is convergence issues should you remove terms\n\nif non-convergence (pay attention to warning messages in summary output!):\n\nTry different optimizer (afex::all_fit())\n\nSort out random effects\n\nRemove correlations between slopes and intercepts\nRandom slopes\nRandom Intercepts\n\nSort out fixed effects (e.g., interaction)\nOnce you arrive at the final model present it using REML estimation"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#modeling-approach-2",
+    "href": "posts/Lab-7/mlm-02.html#modeling-approach-2",
+    "title": "Lab-7",
+    "section": "Modeling approach",
+    "text": "Modeling approach\n\nIf your model is singular (check output!!!!)\n\nVariance might be close to 0\nPerfect correlations (1 or -1)\n\nDrop the parameter!"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#modeling-approach-3",
+    "href": "posts/Lab-7/mlm-02.html#modeling-approach-3",
+    "title": "Lab-7",
+    "section": "Modeling approach",
+    "text": "Modeling approach\n\ndata &lt;- read.csv(\"https://raw.githubusercontent.com/suyoghc/PSY-504_Spring-2025/refs/heads/main/Multilevel%20Modeling/data/heck2011.csv\")\n\nsummary(lmer(math~ses + (1+ses|schcode), data=data))\n\nLinear mixed model fit by REML. t-tests use Satterthwaite's method [\nlmerModLmerTest]\nFormula: math ~ ses + (1 + ses | schcode)\n   Data: data\n\nREML criterion at convergence: 48190.1\n\nScaled residuals: \n    Min      1Q  Median      3Q     Max \n-3.8578 -0.5553  0.1290  0.6437  5.7098 \n\nRandom effects:\n Groups   Name        Variance Std.Dev. Corr \n schcode  (Intercept)  3.2042  1.7900        \n          ses          0.7794  0.8828   -1.00\n Residual             62.5855  7.9111        \nNumber of obs: 6871, groups:  schcode, 419\n\nFixed effects:\n             Estimate Std. Error        df t value            Pr(&gt;|t|)    \n(Intercept)   57.6959     0.1315  378.6378  438.78 &lt;0.0000000000000002 ***\nses            3.9602     0.1408 1450.7730   28.12 &lt;0.0000000000000002 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nCorrelation of Fixed Effects:\n    (Intr)\nses -0.284\noptimizer (nloptwrap) convergence code: 0 (OK)\nboundary (singular) fit: see help('isSingular')\n\n\n. . .\n\nlmer(math~ses + (1+ses||schcode), data=data) # removes correlation() with double pipes. Does not work with categorical variables"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#null-model-unconditional-means",
+    "href": "posts/Lab-7/mlm-02.html#null-model-unconditional-means",
+    "title": "Lab-7",
+    "section": "Null model (unconditional means)",
+    "text": "Null model (unconditional means)\nGet ICC\n\nICC is a standardized way of expressing how much variance is due to clustering/group\n\nRanges from 0-1\n\nCan also be interpreted as correlation among observations within cluster/group!\nIf ICC is sufficiently low (i.e., \\(\\rho\\) &lt; .1), then you don’t have to use MLM! BUT YOU PROBABLY SHOULD 🙂"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#null-model-unconditional-means-1",
+    "href": "posts/Lab-7/mlm-02.html#null-model-unconditional-means-1",
+    "title": "Lab-7",
+    "section": "Null model (unconditional means)",
+    "text": "Null model (unconditional means)\n\nlibrary(lme4) # pop linear modeling package\n\nnull_model &lt;- lmer(mean_pupil ~ (1|subject), data = eye, REML=TRUE)\n\nsummary(null_model)\n\nLinear mixed model fit by REML. t-tests use Satterthwaite's method [\nlmerModLmerTest]\nFormula: mean_pupil ~ (1 | subject)\n   Data: eye\n\nREML criterion at convergence: -19811.6\n\nScaled residuals: \n    Min      1Q  Median      3Q     Max \n-5.1411 -0.5530 -0.0463  0.4822 10.8130 \n\nRandom effects:\n Groups   Name        Variance  Std.Dev.\n subject  (Intercept) 0.0001303 0.01142 \n Residual             0.0016840 0.04104 \nNumber of obs: 5609, groups:  subject, 31\n\nFixed effects:\n             Estimate Std. Error        df t value Pr(&gt;|t|)  \n(Intercept)  0.005227   0.002124 29.457784   2.461   0.0199 *\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#calculating-icc",
+    "href": "posts/Lab-7/mlm-02.html#calculating-icc",
+    "title": "Lab-7",
+    "section": "Calculating ICC",
+    "text": "Calculating ICC\n\nRun baseline (null) model\nGet intercept variance and residual variance\n\n\\[\\mathrm{ICC}=\\frac{\\text { between-group variability }}{\\text { between-group variability+within-group variability}}\\]\n\\[\nICC=\\frac{\\operatorname{Var}\\left(u_{0 j}\\right)}{\\operatorname{Var}\\left(u_{0 j}\\right)+\\operatorname{Var}\\left(e_{i j}\\right)}=\\frac{\\tau_{00}}{\\tau_{00}+\\sigma^{2}}\n\\]\n\n# easystats \n#adjusted icc just random effects\n#unadjusted fixed effects taken into account\nperformance::icc(null_model)\n\n# Intraclass Correlation Coefficient\n\n    Adjusted ICC: 0.072\n  Unadjusted ICC: 0.072"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#maximal-model-fixed-effect-random-intercepts-subject-and-slopes-vocoded-model",
+    "href": "posts/Lab-7/mlm-02.html#maximal-model-fixed-effect-random-intercepts-subject-and-slopes-vocoded-model",
+    "title": "Lab-7",
+    "section": "Maximal model: Fixed effect random intercepts (subject) and slopes (vocoded) model",
+    "text": "Maximal model: Fixed effect random intercepts (subject) and slopes (vocoded) model\n\nmax_model &lt;- lmer(mean_pupil ~vocoded +(1+vocoded|subject), data = eye)\n\nsummary(max_model)\n\nLinear mixed model fit by REML. t-tests use Satterthwaite's method [\nlmerModLmerTest]\nFormula: mean_pupil ~ vocoded + (1 + vocoded | subject)\n   Data: eye\n\nREML criterion at convergence: -19813.7\n\nScaled residuals: \n    Min      1Q  Median      3Q     Max \n-5.0296 -0.5509 -0.0467  0.4810 10.7164 \n\nRandom effects:\n Groups   Name        Variance   Std.Dev. Corr \n subject  (Intercept) 0.00013592 0.011658      \n          vocodedV6   0.00002816 0.005307 -0.19\n Residual             0.00167497 0.040926      \nNumber of obs: 5609, groups:  subject, 31\n\nFixed effects:\n             Estimate Std. Error        df t value Pr(&gt;|t|)  \n(Intercept)  0.003643   0.002235 28.852288    1.63   0.1140  \nvocodedV6    0.003124   0.001453 30.471988    2.15   0.0396 *\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nCorrelation of Fixed Effects:\n          (Intr)\nvocodedV6 -0.306"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#fixed-effects",
+    "href": "posts/Lab-7/mlm-02.html#fixed-effects",
+    "title": "Lab-7",
+    "section": "Fixed effects",
+    "text": "Fixed effects\n\nInterpretation same as lm\n\n\n#grab the fixed effects\nsummary(max_model)\n\nLinear mixed model fit by REML. t-tests use Satterthwaite's method [\nlmerModLmerTest]\nFormula: mean_pupil ~ vocoded + (1 + vocoded | subject)\n   Data: eye\n\nREML criterion at convergence: -19813.7\n\nScaled residuals: \n    Min      1Q  Median      3Q     Max \n-5.0296 -0.5509 -0.0467  0.4810 10.7164 \n\nRandom effects:\n Groups   Name        Variance   Std.Dev. Corr \n subject  (Intercept) 0.00013592 0.011658      \n          vocodedV6   0.00002816 0.005307 -0.19\n Residual             0.00167497 0.040926      \nNumber of obs: 5609, groups:  subject, 31\n\nFixed effects:\n             Estimate Std. Error        df t value Pr(&gt;|t|)  \n(Intercept)  0.003643   0.002235 28.852288    1.63   0.1140  \nvocodedV6    0.003124   0.001453 30.471988    2.15   0.0396 *\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nCorrelation of Fixed Effects:\n          (Intr)\nvocodedV6 -0.306"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#degrees-of-freedom-and-p-values",
+    "href": "posts/Lab-7/mlm-02.html#degrees-of-freedom-and-p-values",
+    "title": "Lab-7",
+    "section": "Degrees of freedom and p-values",
+    "text": "Degrees of freedom and p-values\n\nDegrees of freedom (denominator) and p-values can be assessed with several methods:\n\nSatterthwaite (default when install lmerTest and then run lmer)\nAsymptotic (Inf) (default behavior lme4)\nKenward-Rogers"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#random-effectsvariance-components",
+    "href": "posts/Lab-7/mlm-02.html#random-effectsvariance-components",
+    "title": "Lab-7",
+    "section": "Random effects/variance components",
+    "text": "Random effects/variance components\n\nTells us how much variability there is around the fixed intercept/slope\n\nHow much does the average pupil size change between participants\n\n\n\nsummary(max_model)\n\nLinear mixed model fit by REML. t-tests use Satterthwaite's method [\nlmerModLmerTest]\nFormula: mean_pupil ~ vocoded + (1 + vocoded | subject)\n   Data: eye\n\nREML criterion at convergence: -19813.7\n\nScaled residuals: \n    Min      1Q  Median      3Q     Max \n-5.0296 -0.5509 -0.0467  0.4810 10.7164 \n\nRandom effects:\n Groups   Name        Variance   Std.Dev. Corr \n subject  (Intercept) 0.00013592 0.011658      \n          vocodedV6   0.00002816 0.005307 -0.19\n Residual             0.00167497 0.040926      \nNumber of obs: 5609, groups:  subject, 31\n\nFixed effects:\n             Estimate Std. Error        df t value Pr(&gt;|t|)  \n(Intercept)  0.003643   0.002235 28.852288    1.63   0.1140  \nvocodedV6    0.003124   0.001453 30.471988    2.15   0.0396 *\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nCorrelation of Fixed Effects:\n          (Intr)\nvocodedV6 -0.306"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#random-effectsvariance-components-1",
+    "href": "posts/Lab-7/mlm-02.html#random-effectsvariance-components-1",
+    "title": "Lab-7",
+    "section": "Random effects/variance components",
+    "text": "Random effects/variance components\n\nCorrelation between random intercepts and slopes\n\nNegative correlation\n\nHigher intercept (for normal speech) less of effect (lower slope)\n\n\n\n\n\nParameter1 |  Parameter2 |     r |        95% CI | t(29) |     p\n----------------------------------------------------------------\nvocodedV6  | (Intercept) | -0.10 | [-0.44, 0.26] | -0.57 | 0.576\n\nObservations: 31"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#visualize-random-effects",
+    "href": "posts/Lab-7/mlm-02.html#visualize-random-effects",
+    "title": "Lab-7",
+    "section": "Visualize Random Effects",
+    "text": "Visualize Random Effects\n\n# use easystats to grab group variance\nrandom &lt;- estimate_grouplevel(max_model)\n\nplot(random) + plot_aes"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#model-comparisons",
+    "href": "posts/Lab-7/mlm-02.html#model-comparisons",
+    "title": "Lab-7",
+    "section": "Model comparisons",
+    "text": "Model comparisons\n\nCan compare models using anova function or test_likelihoodratio from easystats\n\nWill be refit using ML if interested in fixed effects\n\n\n\n# you try\n\nanova(max_model,null_model)\n\nData: eye\nModels:\nnull_model: mean_pupil ~ (1 | subject)\nmax_model: mean_pupil ~ vocoded + (1 + vocoded | subject)\n           npar    AIC    BIC logLik deviance  Chisq Df Pr(&gt;Chisq)   \nnull_model    3 -19816 -19796 9911.1   -19822                        \nmax_model     6 -19823 -19784 9917.7   -19835 13.269  3    0.00409 **\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#aic",
+    "href": "posts/Lab-7/mlm-02.html#aic",
+    "title": "Lab-7",
+    "section": "AIC",
+    "text": "AIC\n\nAIC:\n\n\\[\nD + 2p\n\\]\n\nwhere d = deviance and p = # of parameters in model\nCan compare AICs2:\n\\[\n\\Delta_i = AIC_{i} - AIC_{min}\n\\]\nLess than 2: More parsimonious model is preferred\nBetween 4 and 7: some evidence for lower AIC model\nGreater than 10,: strong evidence for lower AIC"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#bic",
+    "href": "posts/Lab-7/mlm-02.html#bic",
+    "title": "Lab-7",
+    "section": "BIC",
+    "text": "BIC\n\nBIC:\n\n\\[\nD + ln(n)*p\n\\]\n\nwhere d = deviance, p = # of parameters in model, n = sample size\nChange in BIC:\n\n\\(\\Delta{BIC}\\) &lt;= 2 (No difference)\n\\(\\Delta{BIC}\\) &gt; 3 (evidence for smaller BIC model)"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#aicbic-1",
+    "href": "posts/Lab-7/mlm-02.html#aicbic-1",
+    "title": "Lab-7",
+    "section": "AIC/BIC",
+    "text": "AIC/BIC\n\nperformance::model_performance(max_model) %&gt;% # easystats\n  kable()\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAIC\nAICc\nBIC\nR2_conditional\nR2_marginal\nICC\nRMSE\nSigma\n\n\n\n\n-19801.66\n-19801.65\n-19761.87\n0.0773469\n0.0013442\n0.076105\n0.0407697\n0.0409264"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#hypothesis-testing",
+    "href": "posts/Lab-7/mlm-02.html#hypothesis-testing",
+    "title": "Lab-7",
+    "section": "Hypothesis testing",
+    "text": "Hypothesis testing\n\nMultiple options\n\nt/F tests with approximate degrees of freedom (Kenward-Rogers or Satterwaithe)\nParametric bootstrap\nLikelihood ratio test (LRT)\n\n\nCan be interpreted as main effects and interactions\nUse afex package to do that"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#hypothesis-testing---afex",
+    "href": "posts/Lab-7/mlm-02.html#hypothesis-testing---afex",
+    "title": "Lab-7",
+    "section": "Hypothesis testing - afex",
+    "text": "Hypothesis testing - afex\n\nlibrary(afex) # load afex in \n\nm &lt;- mixed(mean_pupil ~ 1 + vocoded +  (1+vocoded|subject), data =eye, method = \"LRT\") # fit lmer using afex\n\nnice(m) %&gt;%\n  kable()\n\n\n\n\nEffect\ndf\nChisq\np.value\n\n\n\n\nvocoded\n1\n4.47 *\n.034"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#using-emmeans",
+    "href": "posts/Lab-7/mlm-02.html#using-emmeans",
+    "title": "Lab-7",
+    "section": "Using emmeans",
+    "text": "Using emmeans\n\nGet means and contrasts\n\n\nlibrary(emmeans) # get marginal means \n\nemmeans(max_model, specs = \"vocoded\") %&gt;% \n  kable() # grabs means/SEs for each level of vocode \n\n\n\n\nvocoded\nemmean\nSE\ndf\nasymp.LCL\nasymp.UCL\n\n\n\n\nNS\n0.0036427\n0.0022348\nInf\n-0.0007374\n0.0080229\n\n\nV6\n0.0067668\n0.0022618\nInf\n0.0023337\n0.0111999\n\n\n\n\npairs(emmeans(max_model, specs = \"vocoded\")) %&gt;%\n  confint() %&gt;%\n  kable()\n\n\n\n\ncontrast\nestimate\nSE\ndf\nasymp.LCL\nasymp.UCL\n\n\n\n\nNS - V6\n-0.0031241\n0.0014532\nInf\n-0.0059723\n-0.0002759\n\n\n\n\n# use this to get pariwise compairsons between levels of factors"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#check-assumptions",
+    "href": "posts/Lab-7/mlm-02.html#check-assumptions",
+    "title": "Lab-7",
+    "section": "Check assumptions",
+    "text": "Check assumptions\n\n\n\nLinearity\nNormality\n\nLevel 1 residuals are normally distributed around zero\nLevel 2 residuals are multivariate-normal with a mean of zero\n\nHomoskedacticity\n\nLevel 1/Level 2 predictors and residuals are homoskedastic\n\n\n\n\nCollinearity\nOutliers"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#assumptions-1",
+    "href": "posts/Lab-7/mlm-02.html#assumptions-1",
+    "title": "Lab-7",
+    "section": "Assumptions",
+    "text": "Assumptions\n\nlibrary(easystats) # performance package\n\ncheck_model(max_model)"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#visualization",
+    "href": "posts/Lab-7/mlm-02.html#visualization",
+    "title": "Lab-7",
+    "section": "Visualization",
+    "text": "Visualization"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#ggeffects",
+    "href": "posts/Lab-7/mlm-02.html#ggeffects",
+    "title": "Lab-7",
+    "section": "ggeffects",
+    "text": "ggeffects\n\nggemmeans(max_model, terms=c(\"vocoded\")) %&gt;% plot()"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#effect-size",
+    "href": "posts/Lab-7/mlm-02.html#effect-size",
+    "title": "Lab-7",
+    "section": "Effect size",
+    "text": "Effect size\n\nReport pseudo-\\(R^2\\) for marginal (fixed) and conditional model (full model) (Nakagawa et al. 2017)\n\n\\[\nR^2_{LMM(c)} = \\frac{\\sigma_f^2\\text{fixed} + \\sigma_a^2\\text{random}}{\\sigma_f^2\\text{fixed} + \\sigma_a^2\\text{random} + \\sigma_e^2\\text{residual}}\n\\]\n\\[\nR^2_{\\text{LMM}(m)} = \\frac{\\sigma_f^2\\text{fixed}}{\\sigma_f^2\\text{fixed} + \\sigma_a^2\\text{random} + \\sigma_e^2\\text{residual}}\n\\]\n\nReport semi-partial \\(R^2\\) for each predictor variable\n\n\\(R^2_\\beta\\)\n\npartR2 package in R does this for you"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#effect-size-1",
+    "href": "posts/Lab-7/mlm-02.html#effect-size-1",
+    "title": "Lab-7",
+    "section": "Effect size",
+    "text": "Effect size\n\n#get r2 for model with performance from easystats\n\nperformance::r2(max_model) \n\n# R2 for Mixed Models\n\n  Conditional R2: 0.077\n     Marginal R2: 0.001\n\n\n\n# get semi-part\nlibrary(partR2)\n# does not work with random slopes for some reason :/\nR2_3 &lt;- partR2(max_model,data=eye, \n  partvars = c(\"vocoded\"),\n  R2_type = \"marginal\", nboot = 10, CI = 0.95\n)"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#effect-size-2",
+    "href": "posts/Lab-7/mlm-02.html#effect-size-2",
+    "title": "Lab-7",
+    "section": "Effect size",
+    "text": "Effect size\n\nCohen’s \\(d\\) for treatment effects/categorical predictions3\n\n\\[\nd = \\frac{\\text{Effect}}{\\sqrt{\\sigma^2_\\text{Intercept} + \\sigma^2_\\text{slope} + \\sigma^2_\\text{residual}}}\n\\]\n\nemmeans(max_model,~ vocoded) %&gt;% \n eff_size(.,sigma=.04, edf=30) # need to calcuate sigma and add dfs\n\n contrast effect.size     SE  df asymp.LCL asymp.UCL\n NS - V6      -0.0781 0.0377 Inf    -0.152  -0.00421\n\nsigma used for effect sizes: 0.04 \nDegrees-of-freedom method: inherited from asymptotic when re-gridding \nConfidence level used: 0.95"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#describing-a-mlm-analysis---structure",
+    "href": "posts/Lab-7/mlm-02.html#describing-a-mlm-analysis---structure",
+    "title": "Lab-7",
+    "section": "Describing a MLM analysis - Structure",
+    "text": "Describing a MLM analysis - Structure\n\nWhat was the nested data structure (e.g., how many levels; what were the units at each level?)\n• How many units were in each level, on average?\n• What was the range of the number of lower-level units in each group/cluster?"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#describing-a-mlm-analysis---model",
+    "href": "posts/Lab-7/mlm-02.html#describing-a-mlm-analysis---model",
+    "title": "Lab-7",
+    "section": "Describing a MLM analysis - Model",
+    "text": "Describing a MLM analysis - Model\n\n\n\nWhat equation can best represent your model?\nWhat estimation method was used (e.g., ML, REML)?\nIf there were convergence issues, how was this addressed?\nWhat software (and version) was used (when using R, what packages as well)?\n\n\n\nIf degrees of freedom were used, what kind?\nWhat type of models were estimated (i.e., unconditional, random intercept, random slope, max)?\nWhat variables were centered and what kind of centering was used?\nWhat model assumptions were checked and what were the results?"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#describing-a-mlm-analysis---results",
+    "href": "posts/Lab-7/mlm-02.html#describing-a-mlm-analysis---results",
+    "title": "Lab-7",
+    "section": "Describing a MLM analysis - Results",
+    "text": "Describing a MLM analysis - Results\n\n\n\nWhat was the ICC of the outcome variable?\nAre fixed effects and variance components reported?\nWhat inferential statistics were used (e.g., t-statistics, LRTs)?\nHow precise were the results (report the standard errors and/or confidence intervals)?\n\n\n\nWere model comparisons performed (e.g., AIC, BIC, if using an LRT,report the χ2, degrees of freedom, and p value)?\nWere effect sizes reported for overall model and individual predictors (e.g., Cohen’s d, \\(R^2\\) )?"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#write-up",
+    "href": "posts/Lab-7/mlm-02.html#write-up",
+    "title": "Lab-7",
+    "section": "Write-up",
+    "text": "Write-up\n\nreport::report(max_model) # easystats report function\n\nWe fitted a linear mixed model (estimated using REML and nloptwrap optimizer) to predict mean_pupil with vocoded (formula: mean_pupil ~ vocoded). The model included vocoded as random effects (formula: ~1 + vocoded | subject). The model’s total explanatory power is weak (conditional R2 = 0.08) and the part related to the fixed effects alone (marginal R2) is of 1.34e-03. The model’s intercept, corresponding to vocoded = NS, is at 3.64e-03 (95% CI [-7.38e-04, 8.02e-03], t(5603) = 1.63, p = 0.103). Within this model:\n\nThe effect of vocoded [V6] is statistically significant and positive (beta = 3.12e-03, 95% CI [2.75e-04, 5.97e-03], t(5603) = 2.15, p = 0.032; Std. beta = 0.07, 95% CI [6.49e-03, 0.14])\n\nStandardized parameters were obtained by fitting the model on a standardized version of the dataset. 95% Confidence Intervals (CIs) and p-values were computed using a Wald t-distribution approximation."
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#table",
+    "href": "posts/Lab-7/mlm-02.html#table",
+    "title": "Lab-7",
+    "section": "Table",
+    "text": "Table\n\nmodelsummary::modelsummary(list(\"max model\" = max_model), output=\"html\") # modelsummary package\n\n\n\n    \n\n    \n    \n      \n        \n        \n              \n                 \n                max model\n              \n        \n        \n        \n                \n                  (Intercept)\n                  0.004\n                \n                \n                  \n                  (0.002)\n                \n                \n                  vocodedV6\n                  0.003\n                \n                \n                  \n                  (0.001)\n                \n                \n                  SD (Intercept subject)\n                  0.012\n                \n                \n                  SD (vocodedV6 subject)\n                  0.005\n                \n                \n                  Cor (Intercept~vocodedV6 subject)\n                  −0.195\n                \n                \n                  SD (Observations)\n                  0.041\n                \n                \n                  Num.Obs.\n                  5609\n                \n                \n                  R2 Marg.\n                  0.001\n                \n                \n                  R2 Cond.\n                  0.077\n                \n                \n                  AIC\n                  −19801.7\n                \n                \n                  BIC\n                  −19761.9\n                \n                \n                  ICC\n                  0.1\n                \n                \n                  RMSE\n                  0.04"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#power",
+    "href": "posts/Lab-7/mlm-02.html#power",
+    "title": "Lab-7",
+    "section": "Power",
+    "text": "Power\n\nSimulation-based power analyses\n\nSimulate new data\n\nfaux (https://debruine.github.io/faux/articles/sim_mixed.html)\n\nUse pilot data (what I would do)\n\nmixedpower(https://link.springer.com/article/10.3758/s13428-021-01546-0)\nsimr (https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12504)"
+  },
+  {
+    "objectID": "posts/Lab-7/mlm-02.html#footnotes",
+    "href": "posts/Lab-7/mlm-02.html#footnotes",
+    "title": "Lab-7",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nBarr, D. J., Levy, R., Scheepers, C., & Tily, H. J. (2013). Random effects structure for confirmatory hypothesis testing: Keep it maximal. Journal of memory and language, 68(3), 10.1016/j.jml.2012.11.001. https://doi.org/10.1016/j.jml.2012.11.001↩︎\nBURNHAM, ANDERSON, & HUYVAERT (2011)↩︎\nBrysbaert, M., & Debeer, D. (2023, September 12). How to run linear mixed effects analysis for pairwise comparisons? A tutorial and a proposal for the calculation of standardized effect sizes. https://doi.org/10.31234/osf.io/esnku↩︎"
+  },
+  {
     "objectID": "posts/Lab-6/MLM_intro_questions.html",
     "href": "posts/Lab-6/MLM_intro_questions.html",
     "title": "Intro to MLM Exercise/Walkthrough",
@@ -270,6 +725,6 @@
     "href": "index.html",
     "title": "Stats-blog (PSY-504)",
     "section": "",
-    "text": "Intro to MLM Exercise/Walkthrough\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nLab 2: Logistic Regression\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nPoisson Lab Answers\n\n\nPrinceton University\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nLab 4: Multinomial Regression\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nOrdinal Regression Lab Answers\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\nNo matching items"
+    "text": "Intro to MLM Exercise/Walkthrough\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nLab-7\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nLab 2: Logistic Regression\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nPoisson Lab Answers\n\n\nPrinceton University\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nLab 4: Multinomial Regression\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\n\n\n\n\n\n\nOrdinal Regression Lab Answers\n\n\nPrinceton University\n\n\n\nLab\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nSteven Mesquiti\n\n\n\n\n\n\nNo matching items"
   }
 ]

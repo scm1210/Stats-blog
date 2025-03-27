@@ -214,8 +214,7 @@ ggplot(toy2, aes(x = hrs_week)) +
   geom_line(aes(y=pred_rs), col = "orange") + plot_aes
 ```
 
-`r qend()`
-We should be using the model with the random slopes and intercepts as the data is nested and each toy ahs the different slopes and intercepts. 
+`r qend()` We should be using the model with the random slopes and intercepts as the data is nested and each toy ahs the different slopes and intercepts.
 
 `r solbegin(show=TRUE, toggle=params$TOGGLE)`
 
@@ -301,10 +300,10 @@ broom.mixed::augment(ri_mod) |>
 
 Choose from these options:
 
--   where the black line cuts the y axis (at x=0)\ `the grand mean or intecept`
--   the slope of the black line\ `the fixed effect`
--   the standard deviation of the distances from all the individual datapoints (toys) to their respective toy-type lines\ `the residual standard deviation`
--   the standard deviation of the distances from all the toy-type lines to the black line \ `the random effect standard deviation`
+-   where the black line cuts the y axis (at x=0) `the grand mean or intecept`
+-   the slope of the black line `the fixed effect`
+-   the standard deviation of the distances from all the individual datapoints (toys) to their respective toy-type lines `the residual standard deviation`
+-   the standard deviation of the distances from all the toy-type lines to the black line  `the random effect standard deviation`
 :::
 
 `r qend()`
@@ -584,17 +583,17 @@ There are plenty of other ways (e.g., you could use combinations of `group_by()`
 Consider the following questions about the study:
 
 -   What is our outcome of interest?\
-      - SDMT scores
+    -   SDMT scores
 -   What variables are we seeking to investigate in terms of their impact on the outcome?\
-      - audio type and the interaction audio type $\times$ wearing headphones
+    -   audio type and the interaction audio type $\times$ wearing headphones
 -   What are the units of observations?\
-      - individual trials
+    -   individual trials
 -   Are the observations clustered/grouped? In what way?\
-      - participants
+    -   participants
 -   What varies *within* these clusters?\
-      - the type of audio
+    -   the type of audio
 -   What varies *between* these clusters?
-      - whether they listen via headphones or speakers
+    -   whether they listen via headphones or speakers
 
 `r qend()` `r solbegin(show=params$SHOW_SOLS, toggle=params$TOGGLE)`
 
