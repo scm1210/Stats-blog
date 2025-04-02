@@ -17,12 +17,9 @@ execute:
 format: html
 engine: knitr
 categories: [Lab, code, analysis]
-
 ---
 
-Lab Goal: Predict voting frequency using demographic variables
-Data source: FiveThirtyEight "Why Many Americans Don't Vote" survey
-Method: Multinomial logistic regression
+Lab Goal: Predict voting frequency using demographic variables Data source: FiveThirtyEight "Why Many Americans Don't Vote" survey Method: Multinomial logistic regression
 
 ## Data
 
@@ -123,8 +120,8 @@ voter_data |>
 
 ```
 
-- Center the age variable to make the intercept more interepretable. 
-That is, so that it reflects the log-odds for an average-aged person rather than a 0-year old person
+-   Center the age variable to make the intercept more interepretable. That is, so that it reflects the log-odds for an average-aged person rather than a 0-year old person
+
 ```{r}
 # enter code 
 voter_data <- voter_data |> 
@@ -190,6 +187,7 @@ gender_vote = voter_data %>%
 ```
 
 The plots can be combined into a single plot using the patchwork package.
+
 ```{r}
 #| fig-height: 8
 #| fig-width: 12
@@ -211,7 +209,7 @@ voter_model <- multinom(
 ```
 
 -   *Should party identification be added to the model?*
-- #Hint: Use an anova test to make the determination
+-   #Hint: Use an anova test to make the determination
 
 ```{r}
 #Enter code
@@ -226,12 +224,14 @@ anova(voter_model, voter_model_expanded, test = "Chisq")
 
 ```
 
-    > Enter answer based on your code: We should include `pol_ident_new` since it significantly improves the model.
-    > Moving forward, we'll be using it in the rest of the analyses 
+```         
+> Enter answer based on your code: We should include `pol_ident_new` since it significantly improves the model.
+> Moving forward, we'll be using it in the rest of the analyses 
+```
 
 **Use the model you select for the remainder of the assignment**.
 
-## LRT 
+## LRT
 
 -   Run the full model and report overall significance of each of the terms
 
@@ -242,8 +242,6 @@ voter_model_expanded |>
 DT::datatable(options = list(pageLength = 10, scrollX = TRUE))
 
 ```
-
-
 
 ## Marginal Effects Political Group - Emmeans
 
@@ -260,7 +258,6 @@ coefs = contrast(regrid(multinomial_id, "log"),"trt.vs.ctrl1",  by="pol_ident_ne
 update(coefs, by = "contrast")  
 ```
 
-
 ## Marginal Effects of Education - Emmeans
 
 ```{r}
@@ -276,7 +273,7 @@ update(coefs, by = "contrast")
 
 ```
 
-- Next, plot the predicted probabilities of voter category as a function of Age and Party ID
+-   Next, plot the predicted probabilities of voter category as a function of Age and Party ID
 
 ```{r}
 predictions <- ggemmeans(voter_model_expanded, terms = c("age_centered", "pol_ident_new"))
@@ -301,7 +298,8 @@ ggplot(predictions, aes(x = x, y = predicted, fill = response.level)) +
 
 ```
 
-Plot predicted probabilities as a function of education and voting frequency. 
+Plot predicted probabilities as a function of education and voting frequency.
+
 ```{r}
 
 predictions <- ggemmeans(voter_model_expanded, terms = c("educ"))
@@ -325,11 +323,9 @@ ggplot(predictions, aes(x = x, y = predicted, fill = response.level)) +
 
 ```
 
-
 ## Write-up
-    
-> Age: The older people get the less likely they are to note vote, regardless of political idenitiy. However, younger, Independents are the least likely to vote the 
-> Education: People with a college education are more likely to sometimes and always vote that than counterpart, and less likely to never vote. On the other hand, people with a high school education or less are more likely to not engage in voting than their counterparts
+
+> Age: The older people get the less likely they are to note vote, regardless of political idenitiy. However, younger, Independents are the least likely to vote the Education: People with a college education are more likely to sometimes and always vote that than counterpart, and less likely to never vote. On the other hand, people with a high school education or less are more likely to not engage in voting than their counterparts
 
 ### Differences between political groups and voting behavior - Emmeans
 
@@ -364,6 +360,4 @@ contrast(coefs, "revpairwise", by = "contrast") %>%
   kable(format = "markdown", digits = 3)
 ```
 
-Enter your interpretation here:
-> The contrast analysis reveals significant differences in voting frequency based on educational attainment. Individuals with a high school education or less are less likely to vote sporadically or always compared to those with a college education. Those with some college education show mixed results; they are less likely to vote always compared to college graduates but more likely to vote sporadically than those with a high school education or less. Overall, these findings highlight the significant impact of education on voting behavior, indicating that higher educational attainment is associated with increased likelihood of electoral participation.
-
+Enter your interpretation here: \> The contrast analysis reveals significant differences in voting frequency based on educational attainment. Individuals with a high school education or less are less likely to vote sporadically or always compared to those with a college education. Those with some college education show mixed results; they are less likely to vote always compared to college graduates but more likely to vote sporadically than those with a high school education or less. Overall, these findings highlight the significant impact of education on voting behavior, indicating that higher educational attainment is associated with increased likelihood of electoral participation.

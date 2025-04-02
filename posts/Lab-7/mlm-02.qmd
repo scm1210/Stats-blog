@@ -22,7 +22,6 @@ engine: knitr
 categories: [Lab, code, analysis]
 ---
 
-
 ## Multilevel models
 
 -   When to use them:
