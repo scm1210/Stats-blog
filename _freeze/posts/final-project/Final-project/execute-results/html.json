@@ -1,0 +1,15 @@
+{
+  "hash": "f7c8f43fe029988b304f96ba2ca2c4d8",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Final Project\"\nsubtitle: \"Princeton University\"\nauthor: \"Steven Mesquiti\"\noutput: \n  tufte::tufte_html:\n    css: \n    tufte_variant: \"envisioned\"\n    highlight: github-dark\n    fig_height: 10\n    fig_width: 16\n    toc: true\n    toc_depth: 1\nexecute: \n  message: false\n  warning: false\nparams: \n    SHOW_SOLS: TRUE\n    TOGGLE: TRUE\nformat: html\nengine: knitr\ncategories: [Final-Project, code, analysis]\n---\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

@@ -429,7 +429,7 @@ if (!file.exists(model_path)) {
   data = gentoo,
   bill_length_mm ~ 1 + body_mass_g
 )
-  saveRDS(fit1.b, model_path)
+  saveRDS(fit2, model_path)
 } else {
   # If the RDS file already exists, load the data from it
   fit2 <- readRDS(model_path)

@@ -1,0 +1,23 @@
+---
+title: "Final Project"
+subtitle: "Princeton University"
+author: "Steven Mesquiti"
+output: 
+  tufte::tufte_html:
+    css: 
+    tufte_variant: "envisioned"
+    highlight: github-dark
+    fig_height: 10
+    fig_width: 16
+    toc: true
+    toc_depth: 1
+execute: 
+  message: false
+  warning: false
+params: 
+    SHOW_SOLS: TRUE
+    TOGGLE: TRUE
+format: html
+engine: knitr
+categories: [Final-Project, code, analysis]
+---
