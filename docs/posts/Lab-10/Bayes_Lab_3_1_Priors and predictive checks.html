@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Steven Mesquiti">
+
+<title>Priors and Predicitive Checks – Stats-blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ea72dc5fed832574809a9c94082fbbb.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-0063d04294f35071145263a56bfbe081.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="../../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="../../site_libs/datatables-binding-0.33/datatables.js"></script>
+<script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="../../site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="../../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="../../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title"><strong>Stats-blog</strong></span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/scm1210"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://x.com/StevenMesquiti"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://scholar.google.com/citations?user=jMPn4hoAAAAJ&amp;hl=en&amp;inst=10749622055976013885"> <i class="bi bi-google scholar" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Priors and Predicitive Checks</h1>
+            <p class="subtitle lead">Pinceton University</p>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Lab</div>
+                <div class="quarto-category">code</div>
+                <div class="quarto-category">analysis</div>
+                <div class="quarto-category">bayes</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Steven Mesquiti </p>
+            </div>
+    </div>
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup-packages-and-data" id="toc-setup-packages-and-data" class="nav-link active" data-scroll-target="#setup-packages-and-data">Setup: Packages and data</a></li>
+  <li><a href="#intercept-only-model" id="toc-intercept-only-model" class="nav-link" data-scroll-target="#intercept-only-model">Intercept-only model</a>
+  <ul class="collapse">
+  <li><a href="#visualize-possible-prior-distributions." id="toc-visualize-possible-prior-distributions." class="nav-link" data-scroll-target="#visualize-possible-prior-distributions.">Visualize possible prior distributions.</a></li>
+  <li><a href="#prior-predictive-checks-by-hand." id="toc-prior-predictive-checks-by-hand." class="nav-link" data-scroll-target="#prior-predictive-checks-by-hand.">Prior-predictive checks (by hand).</a></li>
+  <li><a href="#fit-the-model-that-you-prefer" id="toc-fit-the-model-that-you-prefer" class="nav-link" data-scroll-target="#fit-the-model-that-you-prefer">Fit the model that you prefer</a></li>
+  </ul></li>
+  <li><a href="#prior-predictive-checks-by-sample_prior-only" id="toc-prior-predictive-checks-by-sample_prior-only" class="nav-link" data-scroll-target="#prior-predictive-checks-by-sample_prior-only">Prior-predictive checks (by <code>sample_prior = "only"</code>)</a></li>
+  <li><a href="#univariable-predictor-model" id="toc-univariable-predictor-model" class="nav-link" data-scroll-target="#univariable-predictor-model">Univariable predictor model</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  <li><a href="#session-information" id="toc-session-information" class="nav-link" data-scroll-target="#session-information">Session information</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<p><br>
+During the first Bayes Lab you considered exploratory data analysis, compared default brms with lm(), and extracted posteriors after fitting models. You summarized posterior distributions and also generated a distribution of predictions using these posterior draws.<br>
+<br>
+During the second Bayes lab, you looked at the different types of distributions that are relevant for Bayesian analysis, including priors.</p>
+<p>During today’s lab, you will go into prior predictive checks and some HMC diagnostics. While we look at the simple linear modeling case, this workflow is relevant for all Bayesian models.</p>
+<section id="setup-packages-and-data" class="level2">
+<h2 class="anchored" data-anchor-id="setup-packages-and-data">Setup: Packages and data</h2>
+<p>Load the primary packages.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pacman)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, brms, tidybayes,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               ggdist,bayesplot,moderndive,faux,GGally,ggmcmc,<span class="at">install =</span> T)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>palette <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"#772e25"</span>, <span class="st">"#c44536"</span>, <span class="st">"#ee9b00"</span>, <span class="st">"#197278"</span>, <span class="st">"#283d3b"</span>, </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"#9CC5A1"</span>, <span class="st">"#6195C6"</span>, <span class="st">"#ADA7C9"</span>, <span class="st">"#4D4861"</span>, <span class="st">"grey50"</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"#d4a373"</span>, <span class="st">"#8a5a44"</span>, <span class="st">"#4a6a74"</span>, <span class="st">"#5c80a8"</span>, <span class="st">"#a9c5a0"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"#7b9b8e"</span>, <span class="st">"#e1b16a"</span>, <span class="st">"#a69b7c"</span>, <span class="st">"#9d94c4"</span>, <span class="st">"#665c54"</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>palette_condition <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"#ee9b00"</span>, <span class="st">"#c44536"</span>,<span class="st">"#005f73"</span>, <span class="st">"#283d3b"</span>, <span class="st">"#9CC5A1"</span>, <span class="st">"#6195C6"</span>, <span class="st">"#ADA7C9"</span>, <span class="st">"#4D4861"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>plot_aes <span class="ot">=</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">16</span>, <span class="at">family =</span> <span class="st">"Futura Medium"</span>),</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>) <span class="co"># Adjusted title size and centering</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This time we’ll be taking data from the <strong>moderndive</strong> package. We want the <code>evals</code> data set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(evals, <span class="at">package =</span> <span class="st">"moderndive"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>evals</code> data were originally in the paper by Hamermesh and Parker (2005; <a href="https://doi.org/10.1016/j.econedurev.2004.07.013)." class="uri">https://doi.org/10.1016/j.econedurev.2004.07.013).</a> You can learn more about the data like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>?moderndive<span class="sc">::</span>evals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can learn even more information about the data from <a href="https://www.openintro.org/data/index.php?data=evals." class="uri">https://www.openintro.org/data/index.php?data=evals.</a></p>
+<p>Anyway, we need to subset the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>evals94 <span class="ot">&lt;-</span> evals <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(prof_ID) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(evals94) <span class="sc">|&gt;</span> </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  DT<span class="sc">::</span><span class="fu">datatable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 94
+Columns: 14
+$ ID           &lt;int&gt; 1, 5, 8, 10, 18, 24, 31, 36, 43, 50, 60, 63, 68, 75, 79, …
+$ prof_ID      &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17…
+$ score        &lt;dbl&gt; 4.7, 4.6, 4.1, 4.5, 4.8, 4.4, 4.4, 3.4, 4.8, 4.0, 3.6, 4.…
+$ age          &lt;int&gt; 36, 59, 51, 40, 31, 62, 33, 51, 33, 47, 35, 37, 42, 49, 3…
+$ bty_avg      &lt;dbl&gt; 5.000, 3.000, 3.333, 3.167, 7.333, 5.500, 4.167, 4.000, 4…
+$ gender       &lt;fct&gt; female, male, male, female, female, male, female, female,…
+$ ethnicity    &lt;fct&gt; minority, not minority, not minority, not minority, not m…
+$ language     &lt;fct&gt; english, english, english, english, english, english, eng…
+$ rank         &lt;fct&gt; tenure track, tenured, tenured, tenured, tenure track, te…
+$ pic_outfit   &lt;fct&gt; not formal, not formal, not formal, not formal, not forma…
+$ pic_color    &lt;fct&gt; color, color, color, color, color, color, color, color, c…
+$ cls_did_eval &lt;int&gt; 24, 17, 55, 40, 42, 182, 33, 25, 48, 16, 18, 30, 28, 30, …
+$ cls_students &lt;int&gt; 43, 20, 55, 46, 48, 282, 41, 41, 60, 19, 25, 34, 40, 36, …
+$ cls_level    &lt;fct&gt; upper, upper, upper, upper, upper, upper, upper, upper, u…</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-30e4409849e39179307f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-30e4409849e39179307f">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94"],[1,5,8,10,18,24,31,36,43,50,60,63,68,75,79,83,89,94,102,111,121,127,128,133,140,142,147,154,158,162,163,170,173,178,191,194,198,209,217,218,223,227,231,234,238,241,242,245,252,265,271,275,282,288,291,294,296,298,308,310,313,314,315,317,320,327,333,335,338,339,348,358,364,369,373,375,377,383,387,390,394,398,409,414,419,427,430,432,439,442,444,447,454,460],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94],[4.7,4.6,4.1,4.5,4.8,4.4,4.4,3.4,4.8,4,3.6,4.1,4.1,3.5,2.9,4.6,4.4,4,4.9,3.5,3.7,3.4,4.3,4.5,4.8,4.4,4.4,3.6,4.6,2.3,4.3,4.9,4.2,4.2,4.3,3.9,3.9,4.8,3.3,4.4,4.3,3.3,4,4.5,4.9,3.7,3.9,4.4,4.4,4.5,4.3,4.8,4.1,3.5,4,4.4,3.8,4.1,3.7,3.2,4.2,4.5,3.8,3.7,4.5,3.8,4.5,2.4,3,4.5,4.6,3.5,4.8,4.2,4,3.7,4.5,4.7,4.3,4,4.8,3.5,3.3,4.2,4.8,4.9,4.5,3.3,3.3,3.6,4.1,3.7,4.5,3.5],[36,59,51,40,31,62,33,51,33,47,35,37,42,49,37,45,56,48,46,57,52,29,62,64,34,58,52,73,70,41,63,47,39,47,54,44,47,60,37,42,35,39,49,61,33,58,56,50,52,33,57,38,34,34,32,32,42,43,35,62,42,39,52,52,52,64,50,60,51,43,50,52,51,38,47,43,38,43,57,51,45,57,47,54,58,42,33,62,35,61,52,60,32,42],[5,3,3.333,3.167,7.333,5.5,4.167,4,4.667,5.5,4.833,4.333,4.833,4,5.5,4.167,2.5,4.333,4.333,4.333,4.833,2.833,3,4.167,7.833,3.833,4.833,3,3,5.167,4.333,2.667,5.5,4.333,2.333,6.5,2.333,3.667,6.167,4,4.833,8.167,6.5,4.833,7,4.667,3.833,3.167,3.167,5.833,5.667,6.5,1.667,6.667,3.667,3.833,6.167,3.333,3.667,3.5,2.667,5.667,6,6.5,2.333,2.333,7.167,1.667,5.167,3.5,3.333,5.833,6.167,3.333,5.167,4.167,2.5,4.333,3,6.333,3.333,2.833,6.667,6.833,7.833,7.833,5.833,2,7.833,3.333,4.5,4.333,6.833,5.333],["female","male","male","female","female","male","female","female","female","male","male","male","male","male","female","male","female","male","female","female","female","female","male","male","female","male","male","male","male","female","male","male","male","female","male","female","male","male","male","male","male","female","male","male","male","female","female","female","male","female","male","female","female","male","male","male","female","female","male","female","male","male","female","female","female","male","male","male","female","male","male","male","male","male","female","female","female","male","male","female","male","male","female","female","male","male","male","male","female","male","female","female","male","female"],["minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","minority","not minority","not minority","not minority","not minority","minority","not minority","not minority","not minority","not minority","not minority","not minority","minority","not minority","minority","minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","minority","not minority","not minority","not minority","not minority","minority","not minority","not minority","not minority","not minority","not minority","not minority","not minority","minority","not minority","not minority","not minority","not minority","minority","not minority","not minority","not minority","not minority","minority"],["english","english","english","english","english","english","english","english","english","english","non-english","english","english","non-english","english","english","english","english","english","english","english","non-english","english","english","english","english","non-english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","non-english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","english","non-english","english","non-english"],["tenure track","tenured","tenured","tenured","tenure track","tenured","tenure track","tenured","tenure track","teaching","tenure track","teaching","tenured","tenured","tenure track","tenured","teaching","teaching","tenured","teaching","teaching","tenure track","tenured","tenured","tenure track","tenured","tenured","tenured","tenured","tenure track","teaching","tenured","tenured","tenure track","tenured","tenured","tenured","tenured","tenure track","tenure track","tenured","teaching","tenured","tenured","tenure track","tenured","tenured","teaching","tenured","tenure track","tenured","tenured","tenure track","tenure track","tenure track","tenure track","tenured","tenured","tenure track","tenured","tenured","tenured","tenured","tenured","teaching","tenured","tenured","tenured","tenured","tenure track","teaching","tenured","tenured","tenured","tenured","tenured","teaching","tenured","tenured","tenured","teaching","tenured","teaching","tenured","teaching","tenured","tenure track","tenured","tenure track","tenured","tenured","tenure track","tenure track","tenure track"],["not formal","not formal","not formal","not formal","not formal","formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","formal","formal","formal","not formal","not formal","not formal","not formal","not formal","formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","formal","formal","formal","formal","formal","not formal","not formal","not formal","not formal","formal","not formal","not formal","formal","formal","not formal","not formal","not formal","not formal","not formal","not formal","formal","not formal","not formal","not formal","not formal","not formal","formal","not formal","not formal","not formal","formal","not formal","formal","formal","not formal","formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","not formal","formal","not formal","not formal"],["color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","black&amp;white","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","black&amp;white","color","color","color","black&amp;white","black&amp;white","black&amp;white","color","color","black&amp;white","black&amp;white","color","color","black&amp;white","color","color","color","black&amp;white","black&amp;white","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","color","black&amp;white","black&amp;white","black&amp;white","black&amp;white","black&amp;white","color","color","color","color","color","black&amp;white","color","color"],[24,17,55,40,42,182,33,25,48,16,18,30,28,30,23,23,27,100,25,17,19,19,30,15,20,84,13,12,47,10,28,10,86,21,15,30,20,25,15,13,42,22,28,22,30,26,12,22,57,10,69,46,54,24,85,20,44,35,11,22,45,22,64,31,59,9,15,23,47,19,17,46,348,44,19,47,33,10,7,9,12,13,16,18,16,15,85,11,60,27,61,23,98,48],[43,20,55,46,48,282,41,41,60,19,25,34,40,36,28,33,41,135,31,28,22,26,39,24,26,159,16,17,134,12,43,15,246,21,15,55,27,34,17,14,51,24,45,27,31,34,19,27,67,15,77,65,91,36,248,22,62,51,19,27,86,29,88,44,75,11,16,32,67,22,24,69,574,87,24,103,68,13,13,11,17,14,21,18,17,18,120,38,96,39,111,27,132,84],["upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","lower","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","lower","lower","upper","upper","upper","upper","upper","upper","upper","lower","upper","lower","upper","upper","upper","lower","upper","upper","upper","upper","lower","upper","lower","upper","lower","lower","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","upper","lower","lower","upper","lower","lower","lower","lower","lower","lower","upper","upper","lower","lower","lower","lower","lower","lower","lower","lower","lower","lower","lower","upper","lower","upper"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>prof_ID<\/th>\n      <th>score<\/th>\n      <th>age<\/th>\n      <th>bty_avg<\/th>\n      <th>gender<\/th>\n      <th>ethnicity<\/th>\n      <th>language<\/th>\n      <th>rank<\/th>\n      <th>pic_outfit<\/th>\n      <th>pic_color<\/th>\n      <th>cls_did_eval<\/th>\n      <th>cls_students<\/th>\n      <th>cls_level<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,12,13]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"ID","targets":1},{"name":"prof_ID","targets":2},{"name":"score","targets":3},{"name":"age","targets":4},{"name":"bty_avg","targets":5},{"name":"gender","targets":6},{"name":"ethnicity","targets":7},{"name":"language","targets":8},{"name":"rank","targets":9},{"name":"pic_outfit","targets":10},{"name":"pic_color","targets":11},{"name":"cls_did_eval","targets":12},{"name":"cls_students","targets":13},{"name":"cls_level","targets":14}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="intercept-only-model" class="level2">
+<h2 class="anchored" data-anchor-id="intercept-only-model">Intercept-only model</h2>
+<p>Let’s start by fitting an intercept-only model</p>
+<p><span class="math display">\[
+\begin{align}
+\text{bty_avg}_i &amp; \sim \operatorname{Normal}(\mu_i, \sigma) \\
+\mu_i &amp; = \beta_0 \\
+\beta_0 &amp; \sim \text{???} \\
+\sigma &amp; \sim \text{???},
+\end{align}
+\]</span></p>
+<p>where <span class="math inline">\(\beta_0\)</span> is the same as the unconditional population mean, and the population standard deviation is <span class="math inline">\(\sigma\)</span>. Our next task will be choosing our priors.</p>
+<section id="question-1-why-have-we-left-some-of-the-specification-above-unfilled-with-questions-marks-at-this-point" class="level4">
+<h4 class="anchored" data-anchor-id="question-1-why-have-we-left-some-of-the-specification-above-unfilled-with-questions-marks-at-this-point">Question 1: Why have we left some of the specification above unfilled / with questions marks at this point?</h4>
+<p>[[Answer: We have left some of the specifcation abvoe unfilled because we have not ovserved the data yet and therefore do not have priors]]</p>
+</section>
+<section id="visualize-possible-prior-distributions." class="level3">
+<h3 class="anchored" data-anchor-id="visualize-possible-prior-distributions.">Visualize possible prior distributions.</h3>
+<p>In this exercise, we’ll choose the priors together. Let’s start with prior on <span class="math inline">\(\beta_0\)</span>. Below are a few candidate distributions visualized with <strong>ggdist</strong> and friends.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">5.5</span>, <span class="dv">1</span>)),</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">8</span>, <span class="dv">2</span>)),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">5.5</span>, <span class="dv">2</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">parse_dist</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">xdist =</span> .dist_obj, <span class="at">y =</span> prior)) <span class="sc">+</span> </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_halfeye</span>(<span class="at">point_interval =</span> mean_qi, <span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">5</span>, .<span class="dv">95</span>)) <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"The red lines mark the lower and upper boundaries."</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="fu">expression</span>(<span class="fu">italic</span>(p)(beta[<span class="dv">0</span>])),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The red lines in the figures (shown at x=1 and x=10) represent the lower and upper boundaries for the beauty ratings scale used in the study. With the simple intercept model, setting a prior on the intercept parameter is the same as setting a prior on the expected mean in observation space.</p>
+<p>Now let’s visualize a few potential priors for <span class="math inline">\(\sigma\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>)), </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">lb =</span> <span class="dv">0</span>), </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">2</span>, <span class="fl">0.3</span>), <span class="at">lb =</span> <span class="dv">0</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">parse_dist</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">xdist =</span> .dist_obj, <span class="at">y =</span> prior)) <span class="sc">+</span> </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_halfeye</span>(<span class="at">point_interval =</span> mean_qi, <span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">5</span>, .<span class="dv">95</span>)) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="fu">expression</span>(<span class="fu">italic</span>(p)(sigma))) <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="cn">NULL</span>) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="question-2-given-that-sigma-refers-to-the-standard-deviation-are-these-three-priors-theoretically-possible-if-yes-give-an-example-of-a-theoretically-impossible-prior-for-sigma." class="level4">
+<h4 class="anchored" data-anchor-id="question-2-given-that-sigma-refers-to-the-standard-deviation-are-these-three-priors-theoretically-possible-if-yes-give-an-example-of-a-theoretically-impossible-prior-for-sigma.">Question 2: Given that <span class="math inline">\(\sigma\)</span> refers to the standard deviation, are these three priors theoretically possible? If yes, give an example of a theoretically impossible prior for <span class="math inline">\(\sigma\)</span>.</h4>
+<p>[[Answer: Yes, these three priors are theoretically possible. A theoretically impossible prior for sigma would be a normal distribution with a mean of 0 and a standard deviation of 1. This is because the standard deviation cannot be negative.]]</p>
+</section>
+</section>
+<section id="prior-predictive-checks-by-hand." class="level3">
+<h3 class="anchored" data-anchor-id="prior-predictive-checks-by-hand.">Prior-predictive checks (by hand).</h3>
+<p>Note: It’s possible we’ll need the <code>truncnorm::rtruncnorm()</code> function in this section. Once we have candidate priors for both <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\sigma\)</span>, we can simulate values from those priors and plot the implied distributions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># how many distributions do you want?</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate values from the priors</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">iter =</span> <span class="dv">1</span><span class="sc">:</span>n,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>       <span class="co"># choose the hyperparameter values with the class</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">beta0 =</span> <span class="fu">rnorm</span>(<span class="at">n =</span> n, <span class="at">mean =</span> <span class="fl">5.5</span>, <span class="at">sd =</span> <span class="dv">1</span>),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">sigma =</span> <span class="fu">rexp</span>(<span class="at">n =</span> n, <span class="at">rate =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_grid</span>(<span class="at">bty_avg =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">2</span>, <span class="at">to =</span> <span class="dv">13</span>, <span class="at">by =</span> <span class="fl">0.025</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">density =</span> <span class="fu">dnorm</span>(<span class="at">x =</span> bty_avg, <span class="at">mean =</span> beta0, <span class="at">sd =</span> sigma)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot!</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> bty_avg, <span class="at">y =</span> density, <span class="at">group =</span> iter)) <span class="sc">+</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">12</span>),</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">expression</span>(<span class="st">"Prior predictive distributions based on "</span><span class="sc">*</span><span class="fu">italic</span>(p)(beta[<span class="dv">0</span>])<span class="sc">~</span>and<span class="sc">~</span><span class="fu">italic</span>(p)(sigma))) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The simulated values constitute predictions that are made using our prior beliefs (a prior is set for beta0 and another for sigma) When you check if these predictions (prior predictive) make sense or not, it is called the prior predictive check. The point of the prior predictive check is to iterate on specifying the priors until the prior predictive is sensible/satisfactory.</p>
+<p>(Again, the red boundaries denote that the only possible bty_avg values are between 1 and 10.)</p>
+<section id="question-3-can-explain-what-the-section-of-the-previous-command-before-ggplot-is-doing" class="level4">
+<h4 class="anchored" data-anchor-id="question-3-can-explain-what-the-section-of-the-previous-command-before-ggplot-is-doing">Question 3: Can Explain what the section of the previous command, before ggplot is doing?</h4>
+<p>[[This code generates a dataset of normal distribution densities across a range of bty_avg values for n randomly sampled (mean = beta0, sd = sigma) parameter pairs.]]</p>
+</section>
+<section id="question-4-the-prior-predictive-above-is-for-one-combination-of-our-candidate-priors.-why-dont-you-also-try-the-beta_0-prior-centered-at-8-along-with-the-sigma-prior-centered-at-2-what-do-you-observe-among-these-two-which-would-you-pick-and-why-optional-try-others-too-if-youd-like" class="level4">
+<h4 class="anchored" data-anchor-id="question-4-the-prior-predictive-above-is-for-one-combination-of-our-candidate-priors.-why-dont-you-also-try-the-beta_0-prior-centered-at-8-along-with-the-sigma-prior-centered-at-2-what-do-you-observe-among-these-two-which-would-you-pick-and-why-optional-try-others-too-if-youd-like">Question 4: The prior predictive above is for one combination of our candidate priors. Why don’t you also try the <span class="math inline">\(\beta_0\)</span> prior centered at 8, along with the <span class="math inline">\(\sigma\)</span> prior centered at 2? What do you observe? Among these two , which would you pick? And why? (Optional: try others too if you’d like)</h4>
+<p>[[The second prior (with (_0) centered at 8 and () centered at 2) shifts the predictions higher and makes them more spread out; I would pick the one that best matches what I expect in the real data—if I expect higher and more variable values, I’d go with this new one.]]</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># how many distributions do you want?</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># do you want to make the simulation reproducible?</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># set.seed(1)</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate values from the priors</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">iter =</span> <span class="dv">1</span><span class="sc">:</span>n,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>       <span class="co"># choose the hyperparameter values with the class</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">beta0 =</span> <span class="fu">rnorm</span>(<span class="at">n =</span> n, <span class="at">mean =</span> <span class="dv">8</span>, <span class="at">sd =</span> <span class="dv">2</span>),</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">sigma =</span> <span class="fu">rnorm</span>(<span class="at">n =</span> n, <span class="at">mean =</span> <span class="dv">2</span>, <span class="at">sd =</span> <span class="fl">0.3</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_grid</span>(<span class="at">bty_avg =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">2</span>, <span class="at">to =</span> <span class="dv">13</span>, <span class="at">by =</span> <span class="fl">0.025</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">density =</span> <span class="fu">dnorm</span>(<span class="at">x =</span> bty_avg, <span class="at">mean =</span> beta0, <span class="at">sd =</span> sigma)) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot!</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> bty_avg, <span class="at">y =</span> density, <span class="at">group =</span> iter)) <span class="sc">+</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">12</span>),</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">expression</span>(<span class="st">"Prior predictive distributions based on "</span><span class="sc">*</span><span class="fu">italic</span>(p)(beta[<span class="dv">0</span>])<span class="sc">~</span>and<span class="sc">~</span><span class="fu">italic</span>(p)(sigma))) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="fit-the-model-that-you-prefer" class="level3">
+<h3 class="anchored" data-anchor-id="fit-the-model-that-you-prefer">Fit the model that you prefer</h3>
+<p>We should practice writing out our model equation with our priors of choice:</p>
+<p><span class="math display">\[
+\begin{align}
+\text{bty_avg}_i &amp; \sim \operatorname{Normal}(\mu_i, \sigma) \\
+\mu_i &amp; = \beta_0 \\
+\beta_0 &amp; \sim \operatorname{Normal}(8,\ 2) \\
+\sigma &amp; \sim \operatorname{Normal}(2,\ 0.3)
+\end{align}
+\]</span></p>
+<p>Let’s fit a model with our priors of choice.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>model_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"~/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/Lab-10/models/fit9b.rds"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(model_path)) {</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>fit9.b <span class="ot">=</span> <span class="fu">brm</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> evals94,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> gaussian,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  bty_avg <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># make sure we're settled on our priors </span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># we don't need to use these; they're placeholders</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">5.5</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept) <span class="sc">+</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(fit9.b, model_path)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># If the RDS file already exists, load the data from it</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  fit9.b <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(model_path)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Check the model summary.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit9.b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: bty_avg ~ 1 
+   Data: evals94 (Number of observations: 94) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Regression Coefficients:
+          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept     4.63      0.17     4.29     4.95 1.00     2964     2310
+
+Further Distributional Parameters:
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     1.60      0.12     1.39     1.85 1.00     3568     2545
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<p>Now we might do a posterior predictive check to see how well our model describes the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit9.b, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"posterior predictive check"</span>) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit9.b, <span class="at">ndraws =</span> <span class="dv">8</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">type =</span> <span class="st">"hist"</span>, <span class="at">binwidth =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># yes, we can add our red lines to our pp-check</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">color =</span> <span class="st">"red"</span>)  <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"posterior predictive check"</span>) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Our simple Gaussian model doesn’t do a great job respecting the lower and upper boundaries, but this is about as good as it gets when you’re in Gaussian land. On the whole, the model did a pretty okay reproducing the gross features of the distribution of the sample data.</p>
+<section id="question-5-to-ensure-youve-understood-things-well-can-you-write-below-about-the-difference-between-the-prior-predictive-check-and-the-posterior-predictive-check-how-do-they-differ-in-their-objectives" class="level4">
+<h4 class="anchored" data-anchor-id="question-5-to-ensure-youve-understood-things-well-can-you-write-below-about-the-difference-between-the-prior-predictive-check-and-the-posterior-predictive-check-how-do-they-differ-in-their-objectives">Question 5: To ensure you’ve understood things well, can you write below about the difference between the prior predictive check and the posterior predictive check? How do they differ in their objectives?</h4>
+<p>[[The prior predictive check is used to evaluate the plausibility of the prior distributions before observing the data, while the posterior predictive check is used to evaluate how well the model fits the observed data after accounting for the priors and likelihood. The former focuses on the prior beliefs, while the latter focuses on the model’s performance with actual data.]]</p>
+</section>
+</section>
+</section>
+<section id="prior-predictive-checks-by-sample_prior-only" class="level2">
+<h2 class="anchored" data-anchor-id="prior-predictive-checks-by-sample_prior-only">Prior-predictive checks (by <code>sample_prior = "only"</code>)</h2>
+<p>We can also sample from the prior predictive distribution from <code>brm()</code> itself. To do so, we use the <code>sample_prior</code> argument, which has the following options:</p>
+<ul>
+<li><code>"no"</code>, which is the default, and does not sample from the prior;</li>
+<li><code>"yes",</code>, which will sample from both the prior and the posterior; and</li>
+<li><code>"only"</code>, which will only sample from the prior.</li>
+</ul>
+<p>Let’s set <code>sample_prior = "only"</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check to see if we want to use other priors</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>model_path <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"~/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/Lab-10/models/fit10b.rds"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(model_path)) {</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>fit10.b <span class="ot">=</span> <span class="fu">brm</span>(</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> evals94,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> gaussian,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  bty_avg <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">5.5</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept) <span class="sc">+</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma),</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># here's the magic</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># we can set our seed, too!</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">1</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(fit10.b, model_path)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># If the RDS file already exists, load the data from it</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  fit10.b <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(model_path)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Did you notice how we used the <code>seed</code> argument? This makes the results reproducible.</p>
+<p>Now the <code>summary()</code> function only returns summaries for the priors, NOT the posterior.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit10.b)  <span class="co"># this summarizes the prior</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: bty_avg ~ 1 
+   Data: evals94 (Number of observations: 94) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Regression Coefficients:
+          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept     5.50      1.00     3.61     7.49 1.00     1876     1938
+
+Further Distributional Parameters:
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     1.00      1.01     0.03     3.63 1.00     1957     1424
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<p>The <code>as_draws_df()</code> function also returns draws from the prior.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as_draws_df</span>(fit10.b) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  DT<span class="sc">::</span><span class="fu">datatable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-2e17466358a46d139971" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2e17466358a46d139971">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],[5.492759088082171,4.769111980281679,4.402793711046897,6.0584672280751,5.484559222447029,5.651943228769588],[0.8019175091438313,1.355200194182551,0.4609776691080583,0.7174536953284371,1.125867525998223,1.510549985807742],[5.492759088082171,4.769111980281679,4.402793711046897,6.0584672280751,5.484559222447029,5.651943228769588],[-1.720882257751205,-2.541237376071108,-1.981847022571851,-1.792335050950053,-2.044925268008616,-2.441031891396879],[-1.941631790586051,-2.237288187868459,-2.756252699843272,-2.124381920508573,-1.92637139530282,-2.02855807787358],[1,1,1,1,1,1],[1,2,3,4,5,6],[1,2,3,4,5,6]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>b_Intercept<\/th>\n      <th>sigma<\/th>\n      <th>Intercept<\/th>\n      <th>lprior<\/th>\n      <th>lp__<\/th>\n      <th>.chain<\/th>\n      <th>.iteration<\/th>\n      <th>.draw<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"b_Intercept","targets":1},{"name":"sigma","targets":2},{"name":"Intercept","targets":3},{"name":"lprior","targets":4},{"name":"lp__","targets":5},{"name":".chain","targets":6},{"name":".iteration","targets":7},{"name":".draw","targets":8}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>Here’s how we might use that <code>as_draws_df()</code> output to make a similar plot to the one we made before.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># how many distributions do you want?</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># do you want to make the results reproducible?</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># set.seed(1)</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">as_draws_df</span>(fit10.b) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># subset</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> n) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_grid</span>(<span class="at">bty_avg =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">2</span>, <span class="at">to =</span> <span class="dv">13</span>, <span class="at">by =</span> <span class="fl">0.025</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># notice we're defining the mean by b_Intercept</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">density =</span> <span class="fu">dnorm</span>(<span class="at">x =</span> bty_avg, <span class="at">mean =</span> b_Intercept, <span class="at">sd =</span> sigma)) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> bty_avg, <span class="at">y =</span> density, </span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>             <span class="co"># notice we're grouping by .draw</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">group =</span> .draw)) <span class="sc">+</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">12</span>),</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">expression</span>(<span class="st">"Prior predictive distributions based on "</span><span class="sc">*</span><span class="fu">italic</span>(p)(beta[<span class="dv">0</span>])<span class="sc">~</span>and<span class="sc">~</span><span class="fu">italic</span>(p)(sigma))) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can also use functions like <code>pp_check()</code> to compare the prior to the sample data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit10.b, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">12</span>),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"prior predictive check"</span>) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit10.b, <span class="at">ndraws =</span> <span class="dv">8</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">type =</span> <span class="st">"hist"</span>, <span class="at">binwidth =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># yes, we can add our red lines to our pp-check</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"prior predictive check"</span>) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="univariable-predictor-model" class="level2">
+<h2 class="anchored" data-anchor-id="univariable-predictor-model">Univariable predictor model</h2>
+<p>Now we’ll add <code>gender</code> as the sole predictor in the model,</p>
+<p><span class="math display">\[
+\begin{align}
+\text{bty_avg}_i &amp; \sim \operatorname{Normal}(\mu_i, \sigma) \\
+\mu_i &amp; = \beta_0 + \beta_1 \text{gender}_i \\
+\beta_0 &amp; \sim \text{???} \\
+\beta_1 &amp; \sim \text{???} \\
+\sigma &amp; \sim \text{???}.
+\end{align}
+\]</span></p>
+<p>Let’s try these same set of <span class="math inline">\(\beta_0\)</span> priors</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># change as needed</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">5.5</span>, <span class="dv">1</span>)),</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">7</span>, <span class="fl">0.5</span>)),</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">5.5</span>, <span class="dv">2</span>))</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">parse_dist</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">xdist =</span> .dist_obj, <span class="at">y =</span> prior)) <span class="sc">+</span> </span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_halfeye</span>(<span class="at">point_interval =</span> mean_qi, <span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">5</span>, .<span class="dv">95</span>)) <span class="sc">+</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"The red lines mark the lower and upper bondaries."</span>,</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="fu">expression</span>(<span class="fu">italic</span>(p)(beta[<span class="dv">0</span>])),</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now we update our by-hand prior predictive simulation to accomodate <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">iter =</span> <span class="dv">1</span><span class="sc">:</span>n,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">beta0 =</span> <span class="fu">rnorm</span>(<span class="at">n =</span> n, <span class="at">mean =</span> <span class="fl">5.5</span>, <span class="at">sd =</span> <span class="dv">1</span>),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>       <span class="co"># notice our new line</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">beta1 =</span> <span class="fu">rnorm</span>(<span class="at">n =</span> n, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">sigma =</span> <span class="fu">rexp</span>(<span class="at">n =</span> n, <span class="at">rate =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># we have a new expand_grid() line</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># make sure everyone understands this coding scheme</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_grid</span>(<span class="at">gendermale =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_grid</span>(<span class="at">bty_avg =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">2</span>, <span class="at">to =</span> <span class="dv">13</span>, <span class="at">by =</span> <span class="fl">0.025</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># notice the updated mean formula</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">density =</span> <span class="fu">dnorm</span>(<span class="at">x =</span> bty_avg, </span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>                         <span class="at">mean =</span> beta0 <span class="sc">+</span> beta1 <span class="sc">*</span> gendermale, </span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>                         <span class="at">sd =</span> sigma)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot!</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> bty_avg, <span class="at">y =</span> density, <span class="at">group =</span> iter)) <span class="sc">+</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">12</span>),</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">expression</span>(<span class="st">"Prior predictive distributions based on "</span><span class="sc">*</span><span class="fu">italic</span>(p)(beta[<span class="dv">0</span>])<span class="sc">~</span> and<span class="sc">~</span><span class="fu">italic</span>(p)(beta[<span class="dv">1</span>])<span class="sc">~</span>and<span class="sc">~</span><span class="fu">italic</span>(p)(sigma))) <span class="sc">+</span></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> gendermale, <span class="at">labeller =</span> label_both) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Before we fit the model, let’s practice the <code>sample_prior = "only"</code> approach.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check to see if we want to use other priors</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>model_path <span class="ot">=</span> <span class="st">'~/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/Lab-10/models/fit11b.rds'</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(model_path)) {</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>fit11.b <span class="ot">=</span> <span class="fu">brm</span>(</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> evals94,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> gaussian,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># notice the 0 + Intercept syntax</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  bty_avg <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> gender,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">5.5</span>, <span class="dv">1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> Intercept) <span class="sc">+</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> gendermale) <span class="sc">+</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma),</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># here's the magic</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">2</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(fit11.b, model_path)</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># If the RDS file already exists, load the data from it</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>  fit11.b <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(model_path)</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Check the prior summary.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit11.b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: bty_avg ~ 0 + Intercept + gender 
+   Data: evals94 (Number of observations: 94) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Regression Coefficients:
+           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept      5.46      1.00     3.53     7.43 1.00     3147     2820
+gendermale     0.02      0.99    -1.91     1.99 1.00     4109     2946
+
+Further Distributional Parameters:
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     1.02      0.98     0.03     3.66 1.00     3149     1903
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<p>Compare the prior with the data with <code>pp_check()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit11.b, </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">type =</span> <span class="st">"dens_overlay_grouped"</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">group =</span> <span class="st">"gender"</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">12</span>),</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"prior predictive check"</span>) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit11.b, <span class="at">ndraws =</span> <span class="dv">5</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">type =</span> <span class="st">"freqpoly_grouped"</span>, <span class="at">group =</span> <span class="st">"gender"</span>) <span class="sc">+</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># yes, we can add our red lines to our pp-check</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"prior predictive check"</span>) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-18-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>There isn’t a great grouped histogram option for <code>pp_check()</code>, so we experimented with <code>type = "freqpoly_grouped"</code> instead.</p>
+<p>If we wanted, we could also use the <code>predict()</code> function to simulate <code>bty_avg</code> values from the priors.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># walk through this slowly</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(fit11.b,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">summary =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">ndraws =</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> num [1:5, 1:94] 5.37 7.82 3.87 4.89 6.06 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : NULL
+  ..$ : NULL</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># customize the predictor grid, as desired</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>nd <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">gender =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"female"</span>, <span class="st">"male"</span>), <span class="at">each =</span> <span class="dv">50</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># this will make it easier to connect the nd data to the predict() output</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">row =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>())</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(fit11.b,</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">newdata =</span> nd,</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">summary =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">ndraws =</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">draw =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>draw) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">row =</span> <span class="fu">str_remove</span>(name, <span class="st">"X"</span>) <span class="sc">%&gt;%</span> <span class="fu">as.double</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(nd, <span class="at">by =</span> <span class="st">"row"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value)) <span class="sc">+</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.5</span>, <span class="at">boundary =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(draw <span class="sc">~</span> gender, <span class="at">labeller =</span> label_both) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Once we’ve settled on our priors, we should once again practice writing out the full model equation:</p>
+<p><span class="math display">\[
+\begin{align} \text{bty_avg}_i &amp; \sim \operatorname{Normal}(\mu_i, \sigma) \\ \mu_i &amp; = \beta_0 + \beta_1 \cdot \text{gender(male)}_i \\ \beta_0 &amp; \sim \operatorname{Normal}(5.46,\ 1.00) \\ \beta_1 &amp; \sim \operatorname{Normal}(0.02,\ 0.99) \\ \sigma &amp; \sim \operatorname{Normal}(1.02,\ 0.98) \end{align}
+\]</span></p>
+<p>Okay, let’s fit the real model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check to see if we want to use other priors</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>model_path <span class="ot">=</span> <span class="st">'~/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/Lab-10/models/fit12b.rds'</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(model_path)) {</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>fit12.b <span class="ot">=</span> <span class="fu">brm</span>(</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> evals94,</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> gaussian,</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  bty_avg <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> gender,</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">5.5</span>, <span class="dv">1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> Intercept) <span class="sc">+</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> gendermale) <span class="sc">+</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma),</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># yes, you can set your seed for your posteriors, too</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># this makes the results reproducible</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">3</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(fit12.b,model_path)</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>  fit12.b <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(model_path)</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Check the model summary.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit12.b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: bty_avg ~ 0 + Intercept + gender 
+   Data: evals94 (Number of observations: 94) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Regression Coefficients:
+           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept      4.93      0.24     4.48     5.40 1.00     2134     2345
+gendermale    -0.54      0.31    -1.14     0.06 1.00     2050     2218
+
+Further Distributional Parameters:
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     1.59      0.12     1.38     1.83 1.00     2431     2371
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<p>How does the posterior-predictive check look?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit12.b, </span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">type =</span> <span class="st">"dens_overlay_grouped"</span>,</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">group =</span> <span class="st">"gender"</span>,</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"posterior predictive check"</span>) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit12.b, <span class="at">ndraws =</span> <span class="dv">5</span>,</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">type =</span> <span class="st">"freqpoly_grouped"</span>, <span class="at">group =</span> <span class="st">"gender"</span>) <span class="sc">+</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># yes, we can add our red lines to our pp-check</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"prior predictive check"</span>) <span class="sc">+</span> plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Bayes_Lab_3_1_Priors-and-predictive-checks_files/figure-html/unnamed-chunk-22-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="question-6-does-the-posterior-predictive-check-look-satsifactory-to-you" class="level4">
+<h4 class="anchored" data-anchor-id="question-6-does-the-posterior-predictive-check-look-satsifactory-to-you">Question 6: Does the posterior predictive check look satsifactory to you?</h4>
+<p>[[The posterior predictive check looks satisfactory to me. The model seems to be able to capture the distribution of the data well, and the red lines marking the boundaries are respected.]]</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For more on prior predictive checks, see McElreath (from Chapter 4), and Solomon Kurz’s brms/tidverse implementations as well.</p>
+<p>For a comprehensive guide to set priors for a given situation, look at reccomendations made by the Stan team https://github.com/stan-dev/stan/wiki/prior-choice-recommendations</p>
+<p>They generally recommend against uniform priors on <span class="math inline">\(\beta\)</span> and <span class="math inline">\(\sigma\)</span> parameters. This is based on a general principle that you should not use a prior that places an artificial boundary on a parameter.</p>
+<p>E.g. <span class="math inline">\(\sigma\)</span> parameters have natural lower boundaries at zero, but they don’t have upper boundaries. Thus, a uniform prior adds an unnatural upper boundary. A better prior would be something that is weakly informative</p>
+</div>
+</div>
+</section>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Hamermesh, D. S., &amp; Parker, A. (2005). Beauty in the classroom: Instructors’ pulchritude and putative pedagogical productivity. <em>Economics of Education Review, 24</em>(4), 369-376. https://doi.org/10.1016/j.econedurev.2004.07.013</p>
+<p>Kurz, A. S. (2023). <em>Statistical Rethinking with brms, ggplot2, and the tidyverse: Second Edition</em> (version 0.4.0). https://bookdown.org/content/4857/</p>
+<p>McElreath, R. (2020). <em>Statistical rethinking: A Bayesian course with examples in R and Stan</em> (Second Edition). CRC Press. https://xcelab.net/rm/statistical-rethinking/</p>
+</section>
+<section id="session-information" class="level2">
+<h2 class="anchored" data-anchor-id="session-information">Session information</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.4.1 (2024-06-14)
+Platform: aarch64-apple-darwin20
+Running under: macOS 15.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/New_York
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] ggmcmc_1.5.1.1   GGally_2.2.1     faux_1.2.2       moderndive_0.7.0
+ [5] bayesplot_1.11.1 ggdist_3.3.2     tidybayes_3.0.7  brms_2.21.0     
+ [9] Rcpp_1.0.13      lubridate_1.9.3  forcats_1.0.0    stringr_1.5.1   
+[13] dplyr_1.1.4      purrr_1.0.4      readr_2.1.5      tidyr_1.3.1     
+[17] tibble_3.2.1     ggplot2_3.5.1    tidyverse_2.0.0  pacman_0.5.1    
+
+loaded via a namespace (and not attached):
+  [1] infer_1.0.7          RColorBrewer_1.1-3   tensorA_0.36.2.1    
+  [4] rstudioapi_0.17.1    jsonlite_1.8.9       magrittr_2.0.3      
+  [7] estimability_1.5.1   farver_2.1.2         nloptr_2.1.1        
+ [10] rmarkdown_2.28       vctrs_0.6.5          minqa_1.2.8         
+ [13] base64enc_0.1-3      janitor_2.2.1        htmltools_0.5.8.1   
+ [16] distributional_0.5.0 curl_5.2.2           broom_1.0.7         
+ [19] sass_0.4.9           StanHeaders_2.32.10  bslib_0.8.0         
+ [22] htmlwidgets_1.6.4    plyr_1.8.9           emmeans_1.10.7      
+ [25] zoo_1.8-12           cachem_1.1.0         igraph_2.0.3        
+ [28] mime_0.12            lifecycle_1.0.4      pkgconfig_2.0.3     
+ [31] colourpicker_1.3.0   Matrix_1.7-0         R6_2.5.1            
+ [34] fastmap_1.2.0        rbibutils_2.3        shiny_1.9.1         
+ [37] snakecase_0.11.1     digest_0.6.37        numDeriv_2016.8-1.1 
+ [40] colorspace_2.1-1     crosstalk_1.2.1      labeling_0.4.3      
+ [43] fansi_1.0.6          timechange_0.3.0     abind_1.4-5         
+ [46] compiler_4.4.1       withr_3.0.1          backports_1.5.0     
+ [49] inline_0.3.19        shinystan_2.6.0      ggstats_0.9.0       
+ [52] QuickJSR_1.3.1       pkgbuild_1.4.4       MASS_7.3-60.2       
+ [55] gtools_3.9.5         loo_2.8.0            tools_4.4.1         
+ [58] httpuv_1.6.15        threejs_0.3.3        glue_1.8.0          
+ [61] nlme_3.1-164         promises_1.3.0       grid_4.4.1          
+ [64] checkmate_2.3.2      reshape2_1.4.4       generics_0.1.3      
+ [67] operator.tools_1.6.3 gtable_0.3.5         tzdb_0.4.0          
+ [70] formula.tools_1.7.1  hms_1.1.3            utf8_1.2.4          
+ [73] pillar_1.9.0         markdown_1.13        posterior_1.6.0     
+ [76] later_1.3.2          splines_4.4.1        lattice_0.22-6      
+ [79] survival_3.6-4       tidyselect_1.2.1     miniUI_0.1.1.1      
+ [82] knitr_1.48           reformulas_0.4.0     arrayhelpers_1.1-0  
+ [85] gridExtra_2.3        V8_6.0.1             stats4_4.4.1        
+ [88] xfun_0.52            rstanarm_2.32.1      bridgesampling_1.1-2
+ [91] matrixStats_1.4.1    DT_0.33              rstan_2.32.6        
+ [94] stringi_1.8.4        yaml_2.3.10          boot_1.3-30         
+ [97] evaluate_1.0.0       codetools_0.2-20     cli_3.6.4           
+[100] RcppParallel_5.1.9   Rdpack_2.6.2         shinythemes_1.2.0   
+[103] xtable_1.8-4         munsell_0.5.1        jquerylib_0.1.4     
+[106] coda_0.19-4.1        svUnit_1.0.6         parallel_4.4.1      
+[109] rstantools_2.4.0     dygraphs_1.1.1.6     Brobdingnag_1.2-9   
+[112] lme4_1.1-36          mvtnorm_1.3-1        scales_1.3.0        
+[115] xts_0.14.1           rlang_1.1.5          shinyjs_2.1.0       </code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
