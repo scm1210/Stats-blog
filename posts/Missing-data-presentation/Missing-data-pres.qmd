@@ -246,9 +246,12 @@ ggplot(toy_long, aes(x = imputation, y = value, fill = imputation)) +
 
 
 ```
+
+
 ::: notes
 *   Visualize the original data and the imputed data to compare the distributions
 *   Notice the thick line at the mean
+
 :::
 
 
