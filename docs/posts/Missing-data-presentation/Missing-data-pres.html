@@ -343,11 +343,6 @@ Because of its pervasive nature, some methodologists have described missing data
 <li>as you can see we have missing data in the <code>y</code> variable</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a>toy <span class="sc">|&gt;</span> </span>
-<span id="cb2-2"><a></a><span class="fu">gg_miss_var</span>(<span class="at">show_pct =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb2-3"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Missing Data by Variable in our dataset"</span>) <span class="sc">+</span> </span>
-<span id="cb2-4"><a></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> palette) <span class="sc">+</span></span>
-<span id="cb2-5"><a></a>  plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -407,45 +402,13 @@ But this can create problems because it’ll reduce power (if you remove observa
 </li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="co"># Mean imputation</span></span>
-<span id="cb3-2"><a></a>toy<span class="sc">$</span>y_mean <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(toy<span class="sc">$</span>y), <span class="fu">mean</span>(toy<span class="sc">$</span>y, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), toy<span class="sc">$</span>y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="co"># Mean imputation</span></span>
+<span id="cb2-2"><a></a>toy<span class="sc">$</span>y_mean <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(toy<span class="sc">$</span>y), <span class="fu">mean</span>(toy<span class="sc">$</span>y, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), toy<span class="sc">$</span>y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="visualizing-mean-imputation" class="slide level2 scrollable">
 <h2>Visualizing Mean Imputation</h2>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="co"># make long </span></span>
-<span id="cb4-2"><a></a>toy_long <span class="ot">&lt;-</span> toy <span class="sc">|&gt;</span> </span>
-<span id="cb4-3"><a></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"y"</span>, <span class="st">"y_mean"</span>), <span class="at">names_to =</span> <span class="st">"imputation"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb4-4"><a></a>  <span class="fu">mutate</span>(<span class="at">imputation =</span> <span class="fu">recode</span>(imputation, <span class="st">"y"</span> <span class="ot">=</span> <span class="st">"Original"</span>, <span class="st">"y_mean"</span> <span class="ot">=</span> <span class="st">"Mean Imputation"</span>))</span>
-<span id="cb4-5"><a></a></span>
-<span id="cb4-6"><a></a><span class="fu">ggplot</span>(toy_long, <span class="fu">aes</span>(<span class="at">x =</span> imputation, <span class="at">y =</span> value, <span class="at">fill =</span> imputation)) <span class="sc">+</span></span>
-<span id="cb4-7"><a></a>  <span class="fu">geom_half_violin</span>(</span>
-<span id="cb4-8"><a></a>    <span class="at">side =</span> <span class="st">"r"</span>,</span>
-<span id="cb4-9"><a></a>    <span class="at">alpha =</span> <span class="fl">0.6</span>,</span>
-<span id="cb4-10"><a></a>    <span class="at">color =</span> <span class="cn">NA</span></span>
-<span id="cb4-11"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb4-12"><a></a>  <span class="fu">geom_boxplot</span>(</span>
-<span id="cb4-13"><a></a>    <span class="fu">aes</span>(<span class="at">color =</span> imputation),</span>
-<span id="cb4-14"><a></a>    <span class="at">width =</span> <span class="fl">0.1</span>,</span>
-<span id="cb4-15"><a></a>    <span class="at">outlier.shape =</span> <span class="cn">NA</span>,</span>
-<span id="cb4-16"><a></a>    <span class="at">alpha =</span> <span class="fl">0.4</span></span>
-<span id="cb4-17"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb4-18"><a></a>  <span class="fu">geom_half_point</span>(</span>
-<span id="cb4-19"><a></a>    <span class="fu">aes</span>(<span class="at">color =</span> imputation),</span>
-<span id="cb4-20"><a></a>    <span class="at">side =</span> <span class="st">"l"</span>,</span>
-<span id="cb4-21"><a></a>    <span class="at">alpha =</span> <span class="fl">0.1</span>,</span>
-<span id="cb4-22"><a></a>    <span class="at">shape =</span> <span class="dv">16</span>,</span>
-<span id="cb4-23"><a></a>    <span class="at">size =</span> <span class="dv">1</span></span>
-<span id="cb4-24"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb4-25"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Mean Imputation vs. Original Data"</span>, <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Value"</span>) <span class="sc">+</span></span>
-<span id="cb4-26"><a></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> palette_condition[<span class="dv">6</span><span class="sc">:</span><span class="dv">9</span>]) <span class="sc">+</span></span>
-<span id="cb4-27"><a></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> palette_condition[<span class="dv">6</span><span class="sc">:</span><span class="dv">9</span>]) <span class="sc">+</span>  <span class="co"># Add this line</span></span>
-<span id="cb4-28"><a></a>  plot_aes <span class="sc">+</span></span>
-<span id="cb4-29"><a></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb4-30"><a></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
-</div>
 <img data-src="Missing_data/fig_unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center r-stretch" width="768"><aside class="notes">
 <ul>
 <li>Visualize the original data and the imputed data to compare the distributions</li>
@@ -465,48 +428,7 @@ But this can create problems because it’ll reduce power (if you remove observa
 </section>
 <section id="how-does-this-influence-downstream-processes" class="slide level2 scrollable">
 <h2>How does this influence downstream processes?</h2>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="co"># Mean imputation</span></span>
-<span id="cb5-2"><a></a></span>
-<span id="cb5-3"><a></a><span class="co"># Fit the two linear models</span></span>
-<span id="cb5-4"><a></a>model_no_imp <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> toy)</span>
-<span id="cb5-5"><a></a>model_imp <span class="ot">&lt;-</span> <span class="fu">lm</span>(y_mean <span class="sc">~</span> x, <span class="at">data =</span> toy)</span>
-<span id="cb5-6"><a></a></span>
-<span id="cb5-7"><a></a><span class="co"># Extract coefficients and 95% CIs</span></span>
-<span id="cb5-8"><a></a>coef_no_imp <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(model_no_imp))[<span class="st">"x"</span>, ]</span>
-<span id="cb5-9"><a></a>ci_no_imp <span class="ot">&lt;-</span> <span class="fu">confint</span>(model_no_imp)[<span class="st">"x"</span>, ]</span>
-<span id="cb5-10"><a></a></span>
-<span id="cb5-11"><a></a>coef_imp <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(model_imp))[<span class="st">"x"</span>, ]</span>
-<span id="cb5-12"><a></a>ci_imp <span class="ot">&lt;-</span> <span class="fu">confint</span>(model_imp)[<span class="st">"x"</span>, ]</span>
-<span id="cb5-13"><a></a></span>
-<span id="cb5-14"><a></a><span class="co"># Format regression info text</span></span>
-<span id="cb5-15"><a></a>label_no_imp <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"β = %.2f [%.2f, %.2f]"</span>, coef_no_imp[<span class="st">"Estimate"</span>], ci_no_imp[<span class="dv">1</span>], ci_no_imp[<span class="dv">2</span>])</span>
-<span id="cb5-16"><a></a>label_imp <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"β = %.2f [%.2f, %.2f]"</span>, coef_imp[<span class="st">"Estimate"</span>], ci_imp[<span class="dv">1</span>], ci_imp[<span class="dv">2</span>])</span>
-<span id="cb5-17"><a></a></span>
-<span id="cb5-18"><a></a><span class="co"># Create the plots with annotation</span></span>
-<span id="cb5-19"><a></a>plot_no_imputation <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(toy, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
-<span id="cb5-20"><a></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
-<span id="cb5-21"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> palette[<span class="dv">1</span>]) <span class="sc">+</span></span>
-<span id="cb5-22"><a></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="cn">Inf</span>, <span class="at">y =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">label =</span> label_no_imp, <span class="at">hjust =</span> <span class="fl">1.1</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb5-23"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Regression Without Mean Imputation"</span>) <span class="sc">+</span></span>
-<span id="cb5-24"><a></a>  plot_aes <span class="sc">+</span></span>
-<span id="cb5-25"><a></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
-<span id="cb5-26"><a></a></span>
-<span id="cb5-27"><a></a>plot_with_imputation <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(toy, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y_mean)) <span class="sc">+</span></span>
-<span id="cb5-28"><a></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
-<span id="cb5-29"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> palette[<span class="dv">4</span>]) <span class="sc">+</span></span>
-<span id="cb5-30"><a></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="cn">Inf</span>, <span class="at">y =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">label =</span> label_imp, <span class="at">hjust =</span> <span class="fl">1.1</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb5-31"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Regression With Mean Imputation"</span>) <span class="sc">+</span></span>
-<span id="cb5-32"><a></a>  plot_aes <span class="sc">+</span></span>
-<span id="cb5-33"><a></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
-<span id="cb5-34"><a></a></span>
-<span id="cb5-35"><a></a><span class="co"># Combine with patchwork</span></span>
-<span id="cb5-36"><a></a>combined_plot <span class="ot">&lt;-</span> plot_no_imputation <span class="sc">/</span> plot_with_imputation</span>
-<span id="cb5-37"><a></a></span>
-<span id="cb5-38"><a></a><span class="co"># Display</span></span>
-<span id="cb5-39"><a></a>combined_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
-</div>
 <img data-src="Missing_data/fig_unnamed-chunk-6-1.png" class="quarto-figure quarto-figure-center r-stretch" width="768"><aside class="notes">
 <ul>
 <li>Now, let’s see how this affects our regression model.</li>
@@ -557,16 +479,16 @@ But this can create problems because it’ll reduce power (if you remove observa
 <div class="tab-content">
 <div id="tabset-2-1">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="co"># Multiple imputation</span></span>
-<span id="cb6-2"><a></a>imp <span class="ot">&lt;-</span> <span class="fu">mice</span>(toy[, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"z"</span>)], <span class="at">m =</span> <span class="dv">5</span>, <span class="at">method =</span> <span class="st">"pmm"</span>, <span class="at">seed =</span> <span class="dv">42</span>,<span class="at">printFlag =</span> F)</span>
-<span id="cb6-3"><a></a>fit_mi <span class="ot">&lt;-</span> <span class="fu">with</span>(imp, <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z))</span>
-<span id="cb6-4"><a></a>pooled_summary <span class="ot">=</span> <span class="fu">summary</span>(<span class="fu">pool</span>(fit_mi))</span>
-<span id="cb6-5"><a></a></span>
-<span id="cb6-6"><a></a>pooled_summary <span class="sc">|&gt;</span> </span>
-<span id="cb6-7"><a></a>  <span class="fu">as.data.frame</span>() <span class="sc">|&gt;</span></span>
-<span id="cb6-8"><a></a>  <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">3</span>)  <span class="sc">|&gt;</span> </span>
-<span id="cb6-9"><a></a>  DT<span class="sc">::</span><span class="fu">datatable</span>(<span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">10</span>, <span class="at">autoWidth =</span> <span class="cn">TRUE</span>), </span>
-<span id="cb6-10"><a></a>                <span class="at">rownames =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="co"># Multiple imputation</span></span>
+<span id="cb3-2"><a></a>imp <span class="ot">&lt;-</span> <span class="fu">mice</span>(toy[, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"z"</span>)], <span class="at">m =</span> <span class="dv">5</span>, <span class="at">method =</span> <span class="st">"pmm"</span>, <span class="at">seed =</span> <span class="dv">42</span>,<span class="at">printFlag =</span> F)</span>
+<span id="cb3-3"><a></a>fit_mi <span class="ot">&lt;-</span> <span class="fu">with</span>(imp, <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z))</span>
+<span id="cb3-4"><a></a>pooled_summary <span class="ot">=</span> <span class="fu">summary</span>(<span class="fu">pool</span>(fit_mi))</span>
+<span id="cb3-5"><a></a></span>
+<span id="cb3-6"><a></a>pooled_summary <span class="sc">|&gt;</span> </span>
+<span id="cb3-7"><a></a>  <span class="fu">as.data.frame</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-8"><a></a>  <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">3</span>)  <span class="sc">|&gt;</span> </span>
+<span id="cb3-9"><a></a>  DT<span class="sc">::</span><span class="fu">datatable</span>(<span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">10</span>, <span class="at">autoWidth =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb3-10"><a></a>                <span class="at">rownames =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-289f59430a0724b372cb" style="width:100%;height:auto;"></div>
 <script type="application/json" data-for="htmlwidget-289f59430a0724b372cb">{"x":{"filter":"none","vertical":false,"data":[["(Intercept)","x","z"],[-0.002,0.059,-0.019],[0.655,0.045,0.297],[-0.003,1.317,-0.063],[8.154,286.893,10.993],[0.998,0.189,0.951]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>term<\/th>\n      <th>estimate<\/th>\n      <th>std.error<\/th>\n      <th>statistic<\/th>\n      <th>df<\/th>\n      <th>p.value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"autoWidth":true,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5]},{"name":"term","targets":0},{"name":"estimate","targets":1},{"name":"std.error","targets":2},{"name":"statistic","targets":3},{"name":"df","targets":4},{"name":"p.value","targets":5}],"order":[],"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
@@ -586,16 +508,7 @@ But this can create problems because it’ll reduce power (if you remove observa
 </section>
 <section id="plotting-imputed-datasets-produced-from-mice" class="slide level2">
 <h2>Plotting Imputed Datasets produced from MICE</h2>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>long_imp <span class="ot">&lt;-</span> <span class="fu">complete</span>(imp, <span class="st">"long"</span>, <span class="at">include =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb7-2"><a></a><span class="fu">ggplot</span>(long_imp, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">color =</span> <span class="fu">factor</span>(.imp))) <span class="sc">+</span></span>
-<span id="cb7-3"><a></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
-<span id="cb7-4"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>,<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb7-5"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Imputed Datasets with Regression Lines"</span>, <span class="at">color =</span> <span class="st">"Imputation"</span>) <span class="sc">+</span></span>
-<span id="cb7-6"><a></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> palette_condition) <span class="sc">+</span></span>
-<span id="cb7-7"><a></a>  plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
-</div>
 <img data-src="Missing_data/fig_unnamed-chunk-8-1.png" class="quarto-figure quarto-figure-center r-stretch" width="768"></section>
 <section id="modern-method-maximum-likelihood-ml" class="slide level2 scrollable">
 <h2>Modern Method: Maximum Likelihood (ML)</h2>
@@ -642,18 +555,18 @@ But this can create problems because it’ll reduce power (if you remove observa
 <section id="implementation-example" class="slide level2 scrollable">
 <h2>Implementation Example</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="co"># Add auxiliary variable</span></span>
-<span id="cb8-2"><a></a>toy<span class="sc">$</span>aux <span class="ot">&lt;-</span> toy<span class="sc">$</span>x <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb8-3"><a></a>toy<span class="sc">$</span>y[<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">300</span>)] <span class="ot">&lt;-</span> <span class="cn">NA</span>  <span class="co"># More missingness</span></span>
-<span id="cb8-4"><a></a></span>
-<span id="cb8-5"><a></a>imp_aux <span class="ot">&lt;-</span> <span class="fu">mice</span>(toy[, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"z"</span>, <span class="st">"aux"</span>)], <span class="at">m =</span> <span class="dv">5</span>, <span class="at">method =</span> <span class="st">"pmm"</span>, <span class="at">seed =</span> <span class="dv">42</span>,<span class="at">printFlag =</span> F)</span>
-<span id="cb8-6"><a></a>fit_aux <span class="ot">&lt;-</span> <span class="fu">with</span>(imp_aux, <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> aux))</span>
-<span id="cb8-7"><a></a>pooled_summary <span class="ot">=</span> <span class="fu">summary</span>(<span class="fu">pool</span>(fit_aux))</span>
-<span id="cb8-8"><a></a>pooled_summary <span class="sc">|&gt;</span> </span>
-<span id="cb8-9"><a></a>  <span class="fu">as.data.frame</span>() <span class="sc">|&gt;</span></span>
-<span id="cb8-10"><a></a>  <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">3</span>)  <span class="sc">|&gt;</span> </span>
-<span id="cb8-11"><a></a>  DT<span class="sc">::</span><span class="fu">datatable</span>(<span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">10</span>, <span class="at">autoWidth =</span> <span class="cn">TRUE</span>), </span>
-<span id="cb8-12"><a></a>                <span class="at">rownames =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="co"># Add auxiliary variable</span></span>
+<span id="cb4-2"><a></a>toy<span class="sc">$</span>aux <span class="ot">&lt;-</span> toy<span class="sc">$</span>x <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb4-3"><a></a>toy<span class="sc">$</span>y[<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="dv">300</span>)] <span class="ot">&lt;-</span> <span class="cn">NA</span>  <span class="co"># More missingness</span></span>
+<span id="cb4-4"><a></a></span>
+<span id="cb4-5"><a></a>imp_aux <span class="ot">&lt;-</span> <span class="fu">mice</span>(toy[, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"z"</span>, <span class="st">"aux"</span>)], <span class="at">m =</span> <span class="dv">5</span>, <span class="at">method =</span> <span class="st">"pmm"</span>, <span class="at">seed =</span> <span class="dv">42</span>,<span class="at">printFlag =</span> F)</span>
+<span id="cb4-6"><a></a>fit_aux <span class="ot">&lt;-</span> <span class="fu">with</span>(imp_aux, <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> aux))</span>
+<span id="cb4-7"><a></a>pooled_summary <span class="ot">=</span> <span class="fu">summary</span>(<span class="fu">pool</span>(fit_aux))</span>
+<span id="cb4-8"><a></a>pooled_summary <span class="sc">|&gt;</span> </span>
+<span id="cb4-9"><a></a>  <span class="fu">as.data.frame</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-10"><a></a>  <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">3</span>)  <span class="sc">|&gt;</span> </span>
+<span id="cb4-11"><a></a>  DT<span class="sc">::</span><span class="fu">datatable</span>(<span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">10</span>, <span class="at">autoWidth =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb4-12"><a></a>                <span class="at">rownames =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-0db599c720acae7dee6d" style="width:100%;height:auto;"></div>
 <script type="application/json" data-for="htmlwidget-0db599c720acae7dee6d">{"x":{"filter":"none","vertical":false,"data":[["(Intercept)","x","z","aux"],[-0.036,0.222,0.049,-0.221],[0.385,0.234,0.199,0.225],[-0.095,0.95,0.249,-0.985],[114.422,68.312,128.582,87.264],[0.925,0.346,0.804,0.327]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>term<\/th>\n      <th>estimate<\/th>\n      <th>std.error<\/th>\n      <th>statistic<\/th>\n      <th>df<\/th>\n      <th>p.value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"autoWidth":true,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5]},{"name":"term","targets":0},{"name":"estimate","targets":1},{"name":"std.error","targets":2},{"name":"statistic","targets":3},{"name":"df","targets":4},{"name":"p.value","targets":5}],"order":[],"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
@@ -662,16 +575,7 @@ But this can create problems because it’ll reduce power (if you remove observa
 </section>
 <section id="plotting-imputed-datasets-produced-from-mice-with-auxiliary-variable" class="slide level2">
 <h2>Plotting Imputed Datasets produced from MICE with auxiliary variable</h2>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>long_imp <span class="ot">&lt;-</span> <span class="fu">complete</span>(imp_aux, <span class="st">"long"</span>, <span class="at">include =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb9-2"><a></a><span class="fu">ggplot</span>(long_imp, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">color =</span> <span class="fu">factor</span>(.imp))) <span class="sc">+</span></span>
-<span id="cb9-3"><a></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
-<span id="cb9-4"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>,<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb9-5"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Imputed Datasets with Regression Lines"</span>, <span class="at">color =</span> <span class="st">"Imputation"</span>) <span class="sc">+</span></span>
-<span id="cb9-6"><a></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> palette_condition) <span class="sc">+</span></span>
-<span id="cb9-7"><a></a>  plot_aes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
-</div>
 <img data-src="Missing_data/fig_unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="768"><aside class="notes">
 <p>Here we are testing whether adding the auxiliary variable aux improves your model’s estimation of y, especially given the extra missingness. Including helpful predictors like aux can improve the quality of imputations and regression estimates. To do that we compare stuff like fit stats between the two models to see which produces the better fit.</p>
 <style type="text/css">
@@ -740,7 +644,6 @@ But this can create problems because it’ll reduce power (if you remove observa
 <section id="package-citations" class="slide level2">
 <h2>Package Citations</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a>report<span class="sc">::</span><span class="fu">cite_packages</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  - Grolemund G, Wickham H (2011). "Dates and Times Made Easy with lubridate." _Journal of Statistical Software_, *40*(3), 1-25. &lt;https://www.jstatsoft.org/v40/i03/&gt;.
   - Müller K, Wickham H (2023). _tibble: Simple Data Frames_. R package version 3.2.1, &lt;https://CRAN.R-project.org/package=tibble&gt;.
