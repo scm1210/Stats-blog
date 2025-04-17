@@ -1,0 +1,118 @@
+/*-- scss:defaults --*/
+:root {
+  --q-primary: #4D4861; /* Primary color */
+  --q-secondary: #c44536; /* Secondary color */
+  --q-font-family-base: 'Arial', sans-serif; /* Base font */
+  --q-heading-font-family: 'Georgia', serif; /* Heading font */
+  --q-text-color: #333333; /* Text color */
+  --q-background-color: white; /* Background color */
+}
+
+
+/* General styles */
+body {
+  font-family: var(--q-font-family-base);
+  background-color: var(--q-background-color);
+  color: var(--q-text-color);
+  line-height: 1.6;
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--q-secondary);
+  color: #fff;
+}
+
+/* Navbar links */
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  color: var(--q-primary);
+}
+
+/* Links */
+a {
+  color: var(--q-secondary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--q-primary);
+  text-decoration: underline;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--q-heading-font-family);
+  color: var(--q-primary);
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+/* Footer */
+footer {
+  background-color: var(--q-primary);
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Code block styling */
+code {
+  background-color: #f4f4f4;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 1rem;
+}
+
+pre {
+  background-color: #2e2e2e;
+  color: #f5f5f5;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+/* Blockquotes */
+blockquote {
+  border-left: 4px solid var(--q-secondary);
+  padding-left: 16px;
+  font-style: italic;
+  color: var(--q-primary);
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: var(--q-primary);
+  color: white;
+}
+
+td {
+  background-color: #f9f9f9;
+}
+
+tr:nth-child(even) {
+  background-color: #f4f4f4;
+}
