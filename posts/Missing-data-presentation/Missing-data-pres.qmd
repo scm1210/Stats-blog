@@ -24,8 +24,14 @@ params:
   TOGGLE: true
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = FALSE,fig.path = "Missing_data/fig_")
+options(scipen=999)
+```
+
+
 ```{r}
-#| label: set-up-chunk
+#| label: get-started
 #| include: false
 
 library(pacman)
