@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.6.40">
 
   <meta name="author" content="Steven Mesquiti">
-  <meta name="dcterms.date" content="2025-04-17">
+  <meta name="dcterms.date" content="2025-04-20">
   <title>**Stats-blog** – Missing Data</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -217,7 +217,7 @@ Steven Mesquiti
     </div>
 </div>
 
-  <p class="date">2025-04-17</p>
+  <p class="date">2025-04-20</p>
 </section>
 <section id="overview" class="slide level2">
 <h2>Overview</h2>
@@ -284,27 +284,18 @@ Because of its pervasive nature, some methodologists have described missing data
           display:block!important;
       }</style></aside>
 </section>
-<section id="different-types-of-missing-data" class="slide level2">
+<section id="different-types-of-missing-data" class="slide level2 scrollable">
 <h2>Different <code>Types</code> of Missing Data</h2>
 <ul>
 <li><strong>Missing Completely at Random (MCAR)</strong>: Missingness is unrelated to observed or unobserved data</li>
 <li><strong>Missing at Random (MAR)</strong>: Missingness is related to observed data but not unobserved data</li>
 <li><strong>Missing Not at Random (MNAR)</strong>: Missingness is related to unobserved data</li>
 </ul>
-<aside class="notes">
-<p>There are theree different <code>types</code> of missing data. &nbsp; These mechanisms describe relationships between measured variables and the probability of missing data. While these terms have a precise probabilistic and mathematical meaning, they are essentially three different explanations for why the data are missing.</p>
-<p>CAR (Missing Completely at Random) Definition: The missingness is entirely unrelated to any variables in the dataset, including the variable with missing values.</p>
-<p>In Practice: Data are missing for reasons that are truly random.</p>
-<p>Example: A student moves to another district mid-study, and the move isn’t related to anything being measured (like grades or behavior).</p>
-<p>Implication: Analyses remain unbiased if MCAR is true, but it’s a rare scenario.</p>
-<p>MAR (Missing at Random) Definition: The missingness is related to other measured variables but not to the missing variable’s own values.</p>
-<p>In Practice: You can predict the missingness based on other known data.</p>
-<p>Example: Students who use substances more often are more likely to miss school and therefore miss a self-esteem questionnaire. The missing self-esteem data is related to substance use (which is observed), not self-esteem itself.</p>
-<p>Implication: Common in real-world data. Methods like multiple imputation or maximum likelihood can handle MAR well.</p>
-<p>MNAR (Missing Not at Random) Definition: The missingness depends on the missing values themselves.</p>
-<p>In Practice: The reason data is missing is due to what the missing value would have been.</p>
-<p>Example: Poor readers skip hard test items because they don’t understand them—so the missing responses depend on their actual (low) reading ability.</p>
-<p>Implication: This is the most difficult type to deal with statistically, because the missingness contains information that is unobserved.</p>
+
+<img data-src="images/missing-data-explanation.png" class="quarto-figure quarto-figure-center r-stretch" width="1200"><aside class="notes">
+<p>MCAR (Missing Completely at Random): -&nbsp;Missingness unrelated to any data. -&nbsp;E.g., a student moves districts for unrelated reasons. -&nbsp;Analyses remain unbiased—but true MCAR is rare.</p>
+<p>MAR (Missing at Random): -&nbsp;Missingness depends only on other observed variables. -&nbsp;E.g., students who use substances more often skip school—and thus a self‑esteem survey. -&nbsp;Can be handled well with multiple imputation or maximum likelihood.</p>
+<p>MNAR (Missing Not at Random): -&nbsp;Missingness depends on the unobserved value itself. -&nbsp;E.g., poor readers skip hard test items because they can’t answer them. -&nbsp;Statistically challenging, since the missingness conveys hidden information.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -356,7 +347,7 @@ Because of its pervasive nature, some methodologists have described missing data
 </div>
 <aside class="notes">
 <p>First, we’ll create our synthetic dataset using hte code provided.<br>
-The dataset contains three variables: <code>x</code>, <code>y</code>, and <code>z</code>.&nbsp;and y has ~300 missing values.<br>
+The dataset contains three variables: <code>x</code>, <code>y</code>, and <code>z</code> where <code>y</code> has ~300 missing values.<br>
 </p>
 <p>What are some ways in which we can deal with them?</p>
 <style type="text/css">
@@ -382,7 +373,7 @@ The dataset contains three variables: <code>x</code>, <code>y</code>, and <code>
 </ul>
 <aside class="notes">
 <p>Traditionally, people use things like listwise deletion or mean imputation to deal with missing data.<br>
-But this can create problems because it’ll reduce power (if you remove observations from your dataset) and can also introduce bias (if you replace missing values with the mean).&nbsp;Let’s see how we’d implement this in R</p>
+But this can create problems because it’ll reduce power (if you remove observations from your dataset) and can also introduce bias (if you replace missing values with the mean). Let’s see how we’d implement this in R</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -529,7 +520,8 @@ But this can create problems because it’ll reduce power (if you remove observa
 \end{align}
 \]</span></p>
 <aside class="notes">
-<p>Like multiple imputation, this approach assumes multivariate normality and MAR data. However, the mechanics of maximum likelihood are quite different. Rather than filling in the missing values, maximum likelihood uses all of the available data – complete and incomplete – to identify the parameter values that have the highest probability of producing the sample data. At a broad level, maximum likelihood estimation identifies the population parameter values that have the highest probability of producing the sample data. This estimation process uses a mathematical function called a log likelihood to quantify the standardized distance between the observed data points and the parameters of interest (e.g., the mean), and the goal is to identify parameter estimates that minimize these distances. This is conceptually similar to ordinary least squares estimation, where the goal is to identify the regression coefficients that minimize the collective distances between the data points and the predicted scores. The difference is that maximum likelihood uses all of the available data – complete and incomplete – to identify the parameter values that have the highest probability of producing the sample data.</p>
+<p>Assumes multivariate normality and MAR like multiple imputation, but instead of imputing missing values, MLE identifies the parameter values that maximize the log‑likelihood across all available data—complete and incomplete. Conceptually akin to OLS’s minimization of residuals, it uses the log‑likelihood function to select the parameters most likely to have generated the observed sample.</p>
+<p>MLE asks, “Which parameter values would make the data we actually observed most probable?”—using whatever data we have, without guessing missing entries.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -618,7 +610,7 @@ But this can create problems because it’ll reduce power (if you remove observa
 <td>ML</td>
 <td>✅ Low</td>
 <td>✅ Accurate</td>
-<td>⚠:Intermediate</td>
+<td>⚠ Intermediate</td>
 </tr>
 <tr class="even">
 <td>MI</td>
@@ -669,7 +661,7 @@ But this can create problems because it’ll reduce power (if you remove observa
 <section id="thanks-for-listening" class="slide level2">
 <h2>Thanks for listening!</h2>
 <div style="text-align: center;">
-<p><img data-src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ2t5cmgyeDVqbXc0djlsZ3BlcXE0bHd3N3h4Z282MmMxdmRxaDJ5NiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKF44elNqqK84U0/giphy.gif"></p>
+<p><img data-src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnN5MTBlOTkzMXBidmR2cHJ5dW1hdThhY2kydWJraXo0eTE3bDYxYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oz8xHEisOJuebgmhq/giphy.gif"></p>
 </div>
 </section>
 <section class="slide level2">
