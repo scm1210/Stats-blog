@@ -1,0 +1,3307 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>pokemon_gpt_simulator – **Stats-blog**</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ea72dc5fed832574809a9c94082fbbb.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-0063d04294f35071145263a56bfbe081.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title"><strong>Stats-blog</strong></span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/scm1210"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://x.com/StevenMesquiti"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://scholar.google.com/citations?user=jMPn4hoAAAAJ&amp;hl=en&amp;inst=10749622055976013885"> <i class="bi bi-google scholar" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block"></header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<div id="cell-0" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> openai <span class="im">import</span> OpenAI, RateLimitError, APIError, APITimeoutError</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tqdm.notebook <span class="im">import</span> tqdm</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> argparse</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-1" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>cd <span class="st">"/Users/sm9518/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/final-project"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>/Users/sm9518/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/final-project</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/sm9518/Library/Python/3.9/lib/python/site-packages/IPython/core/magics/osm.py:417: UserWarning: using dhist requires you to install the `pickleshare` library.
+  self.shell.db['dhist'] = compress_dhist(dhist)[-100:]</code></pre>
+</div>
+</div>
+<div id="cell-2" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>load_dotenv(<span class="st">"/Users/sm9518/Desktop/Article-Summarizer/.env"</span>) <span class="co"># where i keep my API key... </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>api_key <span class="op">=</span> os.getenv(<span class="st">"OPENAI_API_KEY"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> api_key:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"API Key loaded successfully!</span><span class="ch">\n</span><span class="st">:)"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"API Key not found.</span><span class="ch">\n</span><span class="st">Make sure it is set in the .env file."</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>model<span class="op">=</span><span class="st">"gpt-3.5-turbo"</span> <span class="co"># set model. we dont need anything fancy for this task.</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>temperature<span class="op">=</span><span class="dv">0</span> <span class="co"># set temp to be rather determinisitic </span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> random.seed(<span class="dv">42</span>) <span class="co"># set seed for reproducibility</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>API Key loaded successfully!
+:)</code></pre>
+</div>
+</div>
+<div id="cell-3" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'/Users/sm9518/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/final-project/data/pokedex.csv'</span>, index_col<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">height</th>
+<th data-quarto-table-cell-role="th">weight</th>
+<th data-quarto-table-cell-role="th">hp</th>
+<th data-quarto-table-cell-role="th">attack</th>
+<th data-quarto-table-cell-role="th">defense</th>
+<th data-quarto-table-cell-role="th">s_attack</th>
+<th data-quarto-table-cell-role="th">s_defense</th>
+<th data-quarto-table-cell-role="th">speed</th>
+<th data-quarto-table-cell-role="th">type</th>
+<th data-quarto-table-cell-role="th">evo_set</th>
+<th data-quarto-table-cell-role="th">info</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>bulbasaur</td>
+<td>7</td>
+<td>69</td>
+<td>45</td>
+<td>49</td>
+<td>49</td>
+<td>65</td>
+<td>65</td>
+<td>45</td>
+<td>{grass,poison}</td>
+<td>1</td>
+<td>A strange seed was planted on its back at birt...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>ivysaur</td>
+<td>10</td>
+<td>130</td>
+<td>60</td>
+<td>62</td>
+<td>63</td>
+<td>80</td>
+<td>80</td>
+<td>60</td>
+<td>{grass,poison}</td>
+<td>1</td>
+<td>When the bulb on its back grows large, it appe...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3</td>
+<td>venusaur</td>
+<td>20</td>
+<td>1000</td>
+<td>80</td>
+<td>82</td>
+<td>83</td>
+<td>100</td>
+<td>100</td>
+<td>80</td>
+<td>{grass,poison}</td>
+<td>1</td>
+<td>The plant blooms when it is absorbing solar en...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4</td>
+<td>charmander</td>
+<td>6</td>
+<td>85</td>
+<td>39</td>
+<td>52</td>
+<td>43</td>
+<td>60</td>
+<td>50</td>
+<td>65</td>
+<td>{fire}</td>
+<td>2</td>
+<td>Obviously prefers hot places. When it rains, s...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>charmeleon</td>
+<td>11</td>
+<td>190</td>
+<td>58</td>
+<td>64</td>
+<td>58</td>
+<td>80</td>
+<td>65</td>
+<td>80</td>
+<td>{fire}</td>
+<td>2</td>
+<td>When it swings its burning tail, it elevates t...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-4" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>OG_pokedex <span class="op">=</span> df.iloc[:<span class="dv">151</span>].copy() <span class="co"># take the OG 151 pokemon</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># build the 20‐matchups per Pokémon</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>matchups <span class="op">=</span> []</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> challenger <span class="kw">in</span> OG_pokedex[<span class="st">'name'</span>]:</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    pool <span class="op">=</span> [p <span class="cf">for</span> p <span class="kw">in</span> OG_pokedex[<span class="st">'name'</span>] <span class="cf">if</span> p <span class="op">!=</span> challenger]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    opponents <span class="op">=</span> random.sample(pool, <span class="dv">20</span>) <span class="co"># give them 20 challengers</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> opponent <span class="kw">in</span> opponents:</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        matchups.append({<span class="st">'challenger'</span>: challenger, <span class="st">'opponent'</span>: opponent})</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>matchups_df <span class="op">=</span> pd.DataFrame(matchups)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co"># merge challenger metadata</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>matchups_with_meta <span class="op">=</span> (</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    matchups_df</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    .merge(</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        OG_pokedex.add_suffix(<span class="st">'_challenger'</span>),</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        left_on<span class="op">=</span><span class="st">'challenger'</span>,</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        right_on<span class="op">=</span><span class="st">'name_challenger'</span>,</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        how<span class="op">=</span><span class="st">'left'</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># drop the redundant name_challenger column if you like</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    .drop(columns<span class="op">=</span>[<span class="st">'name_challenger'</span>])</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># merge opponent metadata</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    .merge(</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>        OG_pokedex.add_suffix(<span class="st">'_opponent'</span>),</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>        left_on<span class="op">=</span><span class="st">'opponent'</span>,</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>        right_on<span class="op">=</span><span class="st">'name_opponent'</span>,</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        how<span class="op">=</span><span class="st">'left'</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    .drop(columns<span class="op">=</span>[<span class="st">'name_opponent'</span>])</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co"># now every row has both challenger_* and opponent_* columns</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>matchups_with_meta.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">challenger</th>
+<th data-quarto-table-cell-role="th">opponent</th>
+<th data-quarto-table-cell-role="th">height_challenger</th>
+<th data-quarto-table-cell-role="th">weight_challenger</th>
+<th data-quarto-table-cell-role="th">hp_challenger</th>
+<th data-quarto-table-cell-role="th">attack_challenger</th>
+<th data-quarto-table-cell-role="th">defense_challenger</th>
+<th data-quarto-table-cell-role="th">s_attack_challenger</th>
+<th data-quarto-table-cell-role="th">s_defense_challenger</th>
+<th data-quarto-table-cell-role="th">speed_challenger</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">weight_opponent</th>
+<th data-quarto-table-cell-role="th">hp_opponent</th>
+<th data-quarto-table-cell-role="th">attack_opponent</th>
+<th data-quarto-table-cell-role="th">defense_opponent</th>
+<th data-quarto-table-cell-role="th">s_attack_opponent</th>
+<th data-quarto-table-cell-role="th">s_defense_opponent</th>
+<th data-quarto-table-cell-role="th">speed_opponent</th>
+<th data-quarto-table-cell-role="th">type_opponent</th>
+<th data-quarto-table-cell-role="th">evo_set_opponent</th>
+<th data-quarto-table-cell-role="th">info_opponent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>bulbasaur</td>
+<td>nidorina</td>
+<td>7</td>
+<td>69</td>
+<td>45</td>
+<td>49</td>
+<td>49</td>
+<td>65</td>
+<td>65</td>
+<td>45</td>
+<td>...</td>
+<td>200</td>
+<td>70</td>
+<td>62</td>
+<td>67</td>
+<td>55</td>
+<td>55</td>
+<td>56</td>
+<td>{poison}</td>
+<td>12</td>
+<td>The female's horn develops slowly. Prefers phy...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>bulbasaur</td>
+<td>wartortle</td>
+<td>7</td>
+<td>69</td>
+<td>45</td>
+<td>49</td>
+<td>49</td>
+<td>65</td>
+<td>65</td>
+<td>45</td>
+<td>...</td>
+<td>225</td>
+<td>59</td>
+<td>63</td>
+<td>80</td>
+<td>65</td>
+<td>80</td>
+<td>58</td>
+<td>{water}</td>
+<td>3</td>
+<td>Often hides in water to stalk unwary prey. For...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>bulbasaur</td>
+<td>tentacool</td>
+<td>7</td>
+<td>69</td>
+<td>45</td>
+<td>49</td>
+<td>49</td>
+<td>65</td>
+<td>65</td>
+<td>45</td>
+<td>...</td>
+<td>455</td>
+<td>40</td>
+<td>40</td>
+<td>35</td>
+<td>50</td>
+<td>100</td>
+<td>70</td>
+<td>{water,poison}</td>
+<td>30</td>
+<td>Drifts in shallow seas. Anglers who hook them ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>bulbasaur</td>
+<td>kadabra</td>
+<td>7</td>
+<td>69</td>
+<td>45</td>
+<td>49</td>
+<td>49</td>
+<td>65</td>
+<td>65</td>
+<td>45</td>
+<td>...</td>
+<td>565</td>
+<td>40</td>
+<td>35</td>
+<td>30</td>
+<td>120</td>
+<td>70</td>
+<td>105</td>
+<td>{psychic}</td>
+<td>27</td>
+<td>It emits special alpha waves from its body tha...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>bulbasaur</td>
+<td>arcanine</td>
+<td>7</td>
+<td>69</td>
+<td>45</td>
+<td>49</td>
+<td>49</td>
+<td>65</td>
+<td>65</td>
+<td>45</td>
+<td>...</td>
+<td>1550</td>
+<td>90</td>
+<td>110</td>
+<td>80</td>
+<td>100</td>
+<td>80</td>
+<td>95</td>
+<td>{fire}</td>
+<td>25</td>
+<td>A POKéMON that has been admired since the past...</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 24 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-5" class="cell" data-execution_count="47">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># randomly sample 10% to make sure it works before deploying at scale</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#matchups_with_meta = matchups_with_meta.sample(frac=0.1,random_state=SEED)</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#matchups_with_meta.shape</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="47">
+<pre><code>(302, 24)</code></pre>
+</div>
+</div>
+<div id="cell-6" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize OpenAI client</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> OpenAI()</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Utility Functions ---- #</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> safe_parse_types(val):</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">isinstance</span>(val, <span class="bu">list</span>):</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> val</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> ast.literal_eval(val)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [<span class="bu">str</span>(val)]</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> format_pokemon_stats(name, row, suffix):</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    types <span class="op">=</span> safe_parse_types(row[<span class="ss">f'type</span><span class="sc">{</span>suffix<span class="sc">}</span><span class="ss">'</span>])</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"</span><span class="sc">{</span>name<span class="sc">.</span>title()<span class="sc">}</span><span class="ss">:</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"- Type: </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(types)<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"- HP: </span><span class="sc">{</span>row[<span class="ss">f'hp</span><span class="sc">{</span>suffix<span class="sc">}</span><span class="ss">'</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"- Attack: </span><span class="sc">{</span>row[<span class="ss">f'attack</span><span class="sc">{</span>suffix<span class="sc">}</span><span class="ss">'</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"- Defense: </span><span class="sc">{</span>row[<span class="ss">f'defense</span><span class="sc">{</span>suffix<span class="sc">}</span><span class="ss">'</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"- Special Attack: </span><span class="sc">{</span>row[<span class="ss">f's_attack</span><span class="sc">{</span>suffix<span class="sc">}</span><span class="ss">'</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"- Special Defense: </span><span class="sc">{</span>row[<span class="ss">f's_defense</span><span class="sc">{</span>suffix<span class="sc">}</span><span class="ss">'</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"- Speed: </span><span class="sc">{</span>row[<span class="ss">f'speed</span><span class="sc">{</span>suffix<span class="sc">}</span><span class="ss">'</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- API Interaction ---- #</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_completion(prompt):</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    messages <span class="op">=</span> [{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: prompt}]</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> client.chat.completions.create(</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>        model<span class="op">=</span>model,</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>        messages<span class="op">=</span>messages,</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>        temperature<span class="op">=</span>temperature</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> response.choices[<span class="dv">0</span>].message.content.strip()</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_response(prompt):</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> get_completion(prompt)</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> RateLimitError <span class="im">as</span> e:</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>        retry_time <span class="op">=</span> <span class="bu">getattr</span>(e, <span class="st">'retry_after'</span>, <span class="dv">30</span>)</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Rate limit exceeded. Retrying in </span><span class="sc">{</span>retry_time<span class="sc">}</span><span class="ss"> seconds..."</span>)</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>        time.sleep(retry_time)</span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> get_response(prompt)</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> APIError <span class="im">as</span> e:</span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"API error occurred: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">. Retrying in 30 seconds..."</span>)</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="dv">30</span>)</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> get_response(prompt)</span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> APITimeoutError <span class="im">as</span> e:</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Request timed out: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">. Retrying in 10 seconds..."</span>)</span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="dv">10</span>)</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> get_response(prompt)</span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Unexpected error: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">. Retrying in 10 seconds..."</span>)</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="dv">10</span>)</span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> get_response(prompt)</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Simulate One Battle ---- #</span></span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_battle(row):</span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>    p1_stats <span class="op">=</span> format_pokemon_stats(row[<span class="st">'challenger'</span>], row, <span class="st">'_challenger'</span>)</span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>    p2_stats <span class="op">=</span> format_pokemon_stats(row[<span class="st">'opponent'</span>], row, <span class="st">'_opponent'</span>)</span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>    prompt <span class="op">=</span> (</span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Based on the stats, which Pokémon would win a one-on-one battle?</span><span class="ch">\n\n</span><span class="st">"</span></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"</span><span class="sc">{</span>p1_stats<span class="sc">}</span><span class="ch">\n</span><span class="ss">VS</span><span class="ch">\n\n</span><span class="sc">{</span>p2_stats<span class="sc">}</span><span class="ch">\n\n</span><span class="ss">"</span></span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Only respond with the name of the winning Pokémon."</span></span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> get_response(prompt)</span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> response.lower()</span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Run All Simulations ---- #</span></span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a><span class="co"># This should be your DataFrame containing all matchups</span></span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a><span class="co"># matchups_with_meta = pd.read_csv(...)  # Load your data here</span></span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> []</span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> tqdm(matchups_with_meta.iterrows(), total<span class="op">=</span><span class="bu">len</span>(matchups_with_meta), desc<span class="op">=</span><span class="st">"Simulating battles"</span>):</span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Simulating battle </span><span class="sc">{</span>idx <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss"> of </span><span class="sc">{</span><span class="bu">len</span>(matchups_with_meta)<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>row[<span class="st">'challenger'</span>]<span class="sc">}</span><span class="ss"> vs </span><span class="sc">{</span>row[<span class="st">'opponent'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>    winner <span class="op">=</span> simulate_battle(row)</span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>    results.append({</span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>        <span class="st">"challenger"</span>: row[<span class="st">'challenger'</span>],</span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>        <span class="st">"opponent"</span>: row[<span class="st">'opponent'</span>],</span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>        <span class="st">"winner"</span>: winner</span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="fl">1.5</span>)  <span class="co"># Respect rate limits</span></span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Save Results ---- #</span></span>
+<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>results_df <span class="op">=</span> pd.DataFrame(results)</span>
+<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>matchups_with_results <span class="op">=</span> matchups_with_meta.merge(</span>
+<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>    results_df,</span>
+<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a>    on<span class="op">=</span>[<span class="st">"challenger"</span>, <span class="st">"opponent"</span>],</span>
+<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>    how<span class="op">=</span><span class="st">"left"</span></span>
+<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>matchups_with_results.head()</span>
+<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>matchups_with_results.to_csv(<span class="ss">f"/Users/sm9518/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/final-project/data/pokemon_battle_results_</span><span class="sc">{</span>model<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>SEED<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>temperature<span class="sc">}</span><span class="ss">.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Done! Winners saved to pokemon_battle_results_</span><span class="sc">{</span>model<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>SEED<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>temperature<span class="sc">}</span><span class="ss">.csv."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"efd7a131f31f449a830ece3c0df6dc62","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simulating battle 1 of 3020: bulbasaur vs nidorina
+Simulating battle 2 of 3020: bulbasaur vs wartortle
+Simulating battle 3 of 3020: bulbasaur vs tentacool
+Simulating battle 4 of 3020: bulbasaur vs kadabra
+Simulating battle 5 of 3020: bulbasaur vs arcanine
+Simulating battle 6 of 3020: bulbasaur vs vulpix
+Simulating battle 7 of 3020: bulbasaur vs sandslash
+Simulating battle 8 of 3020: bulbasaur vs kabutops
+Simulating battle 9 of 3020: bulbasaur vs arbok
+Simulating battle 10 of 3020: bulbasaur vs weezing
+Simulating battle 11 of 3020: bulbasaur vs caterpie
+Simulating battle 12 of 3020: bulbasaur vs blastoise
+Simulating battle 13 of 3020: bulbasaur vs pikachu
+Simulating battle 14 of 3020: bulbasaur vs primeape
+Simulating battle 15 of 3020: bulbasaur vs poliwhirl
+Simulating battle 16 of 3020: bulbasaur vs lapras
+Simulating battle 17 of 3020: bulbasaur vs zapdos
+Simulating battle 18 of 3020: bulbasaur vs meowth
+Simulating battle 19 of 3020: bulbasaur vs koffing
+Simulating battle 20 of 3020: bulbasaur vs growlithe
+Simulating battle 21 of 3020: ivysaur vs horsea
+Simulating battle 22 of 3020: ivysaur vs tentacruel
+Simulating battle 23 of 3020: ivysaur vs venusaur
+Simulating battle 24 of 3020: ivysaur vs golbat
+Simulating battle 25 of 3020: ivysaur vs weezing
+Simulating battle 26 of 3020: ivysaur vs muk
+Simulating battle 27 of 3020: ivysaur vs zubat
+Simulating battle 28 of 3020: ivysaur vs primeape
+Simulating battle 29 of 3020: ivysaur vs grimer
+Simulating battle 30 of 3020: ivysaur vs sandslash
+Simulating battle 31 of 3020: ivysaur vs pikachu
+Simulating battle 32 of 3020: ivysaur vs kingler
+Simulating battle 33 of 3020: ivysaur vs raichu
+Simulating battle 34 of 3020: ivysaur vs haunter
+Simulating battle 35 of 3020: ivysaur vs shellder
+Simulating battle 36 of 3020: ivysaur vs bellsprout
+Simulating battle 37 of 3020: ivysaur vs weedle
+Simulating battle 38 of 3020: ivysaur vs seaking
+Simulating battle 39 of 3020: ivysaur vs omastar
+Simulating battle 40 of 3020: ivysaur vs nidorino
+Simulating battle 41 of 3020: venusaur vs krabby
+Simulating battle 42 of 3020: venusaur vs fearow
+Simulating battle 43 of 3020: venusaur vs snorlax
+Simulating battle 44 of 3020: venusaur vs ponyta
+Simulating battle 45 of 3020: venusaur vs gengar
+Simulating battle 46 of 3020: venusaur vs dragonite
+Simulating battle 47 of 3020: venusaur vs dugtrio
+Simulating battle 48 of 3020: venusaur vs rattata
+Simulating battle 49 of 3020: venusaur vs weedle
+Simulating battle 50 of 3020: venusaur vs poliwag
+Simulating battle 51 of 3020: venusaur vs golem
+Simulating battle 52 of 3020: venusaur vs poliwhirl
+Simulating battle 53 of 3020: venusaur vs sandshrew
+Simulating battle 54 of 3020: venusaur vs kingler
+Simulating battle 55 of 3020: venusaur vs tentacruel
+Simulating battle 56 of 3020: venusaur vs goldeen
+Simulating battle 57 of 3020: venusaur vs onix
+Simulating battle 58 of 3020: venusaur vs oddish
+Simulating battle 59 of 3020: venusaur vs drowzee
+Simulating battle 60 of 3020: venusaur vs gastly
+Simulating battle 61 of 3020: charmander vs golduck
+Simulating battle 62 of 3020: charmander vs weepinbell
+Simulating battle 63 of 3020: charmander vs raticate
+Simulating battle 64 of 3020: charmander vs vileplume
+Simulating battle 65 of 3020: charmander vs omanyte
+Simulating battle 66 of 3020: charmander vs kadabra
+Simulating battle 67 of 3020: charmander vs oddish
+Simulating battle 68 of 3020: charmander vs staryu
+Simulating battle 69 of 3020: charmander vs kingler
+Simulating battle 70 of 3020: charmander vs victreebel
+Simulating battle 71 of 3020: charmander vs articuno
+Simulating battle 72 of 3020: charmander vs growlithe
+Simulating battle 73 of 3020: charmander vs dodrio
+Simulating battle 74 of 3020: charmander vs pidgey
+Simulating battle 75 of 3020: charmander vs poliwag
+Simulating battle 76 of 3020: charmander vs caterpie
+Simulating battle 77 of 3020: charmander vs magneton
+Simulating battle 78 of 3020: charmander vs cubone
+Simulating battle 79 of 3020: charmander vs pidgeot
+Simulating battle 80 of 3020: charmander vs mankey
+Simulating battle 81 of 3020: charmeleon vs dratini
+Simulating battle 82 of 3020: charmeleon vs magneton
+Simulating battle 83 of 3020: charmeleon vs mankey
+Simulating battle 84 of 3020: charmeleon vs magikarp
+Simulating battle 85 of 3020: charmeleon vs exeggutor
+Simulating battle 86 of 3020: charmeleon vs seaking
+Simulating battle 87 of 3020: charmeleon vs ninetales
+Simulating battle 88 of 3020: charmeleon vs bellsprout
+Simulating battle 89 of 3020: charmeleon vs vulpix
+Simulating battle 90 of 3020: charmeleon vs alakazam
+Simulating battle 91 of 3020: charmeleon vs zapdos
+Simulating battle 92 of 3020: charmeleon vs omastar
+Simulating battle 93 of 3020: charmeleon vs mew
+Simulating battle 94 of 3020: charmeleon vs rhyhorn
+Simulating battle 95 of 3020: charmeleon vs cubone
+Simulating battle 96 of 3020: charmeleon vs gengar
+Simulating battle 97 of 3020: charmeleon vs growlithe
+Simulating battle 98 of 3020: charmeleon vs ditto
+Simulating battle 99 of 3020: charmeleon vs tauros
+Simulating battle 100 of 3020: charmeleon vs pikachu
+Simulating battle 101 of 3020: charizard vs kakuna
+Simulating battle 102 of 3020: charizard vs nidorina
+Simulating battle 103 of 3020: charizard vs zubat
+Simulating battle 104 of 3020: charizard vs golbat
+Simulating battle 105 of 3020: charizard vs weezing
+Simulating battle 106 of 3020: charizard vs pidgeot
+Simulating battle 107 of 3020: charizard vs voltorb
+Simulating battle 108 of 3020: charizard vs kingler
+Simulating battle 109 of 3020: charizard vs starmie
+Simulating battle 110 of 3020: charizard vs porygon
+Simulating battle 111 of 3020: charizard vs machop
+Simulating battle 112 of 3020: charizard vs snorlax
+Simulating battle 113 of 3020: charizard vs venusaur
+Simulating battle 114 of 3020: charizard vs nidoqueen
+Simulating battle 115 of 3020: charizard vs omastar
+Simulating battle 116 of 3020: charizard vs weepinbell
+Simulating battle 117 of 3020: charizard vs muk
+Simulating battle 118 of 3020: charizard vs ponyta
+Simulating battle 119 of 3020: charizard vs chansey
+Simulating battle 120 of 3020: charizard vs goldeen
+Simulating battle 121 of 3020: squirtle vs bulbasaur
+Simulating battle 122 of 3020: squirtle vs bellsprout
+Simulating battle 123 of 3020: squirtle vs gyarados
+Simulating battle 124 of 3020: squirtle vs parasect
+Simulating battle 125 of 3020: squirtle vs lapras
+Simulating battle 126 of 3020: squirtle vs nidoran-f
+Simulating battle 127 of 3020: squirtle vs rapidash
+Simulating battle 128 of 3020: squirtle vs meowth
+Simulating battle 129 of 3020: squirtle vs zubat
+Simulating battle 130 of 3020: squirtle vs hypno
+Simulating battle 131 of 3020: squirtle vs oddish
+Simulating battle 132 of 3020: squirtle vs kabuto
+Simulating battle 133 of 3020: squirtle vs porygon
+Simulating battle 134 of 3020: squirtle vs doduo
+Simulating battle 135 of 3020: squirtle vs pinsir
+Simulating battle 136 of 3020: squirtle vs charmeleon
+Simulating battle 137 of 3020: squirtle vs nidorina
+Simulating battle 138 of 3020: squirtle vs gengar
+Simulating battle 139 of 3020: squirtle vs slowbro
+Simulating battle 140 of 3020: squirtle vs abra
+Simulating battle 141 of 3020: wartortle vs pidgey
+Simulating battle 142 of 3020: wartortle vs abra
+Simulating battle 143 of 3020: wartortle vs dratini
+Simulating battle 144 of 3020: wartortle vs fearow
+Simulating battle 145 of 3020: wartortle vs ekans
+Simulating battle 146 of 3020: wartortle vs magmar
+Simulating battle 147 of 3020: wartortle vs rattata
+Simulating battle 148 of 3020: wartortle vs omanyte
+Simulating battle 149 of 3020: wartortle vs nidoking
+Simulating battle 150 of 3020: wartortle vs scyther
+Simulating battle 151 of 3020: wartortle vs aerodactyl
+Simulating battle 152 of 3020: wartortle vs gloom
+Simulating battle 153 of 3020: wartortle vs bellsprout
+Simulating battle 154 of 3020: wartortle vs porygon
+Simulating battle 155 of 3020: wartortle vs weezing
+Simulating battle 156 of 3020: wartortle vs mankey
+Simulating battle 157 of 3020: wartortle vs kabuto
+Simulating battle 158 of 3020: wartortle vs persian
+Simulating battle 159 of 3020: wartortle vs magnemite
+Simulating battle 160 of 3020: wartortle vs cubone
+Simulating battle 161 of 3020: blastoise vs hypno
+Simulating battle 162 of 3020: blastoise vs tangela
+Simulating battle 163 of 3020: blastoise vs vaporeon
+Simulating battle 164 of 3020: blastoise vs seadra
+Simulating battle 165 of 3020: blastoise vs nidoran-m
+Simulating battle 166 of 3020: blastoise vs alakazam
+Simulating battle 167 of 3020: blastoise vs arcanine
+Simulating battle 168 of 3020: blastoise vs pidgeot
+Simulating battle 169 of 3020: blastoise vs grimer
+Simulating battle 170 of 3020: blastoise vs charizard
+Simulating battle 171 of 3020: blastoise vs snorlax
+Simulating battle 172 of 3020: blastoise vs poliwag
+Simulating battle 173 of 3020: blastoise vs growlithe
+Simulating battle 174 of 3020: blastoise vs ivysaur
+Simulating battle 175 of 3020: blastoise vs raticate
+Simulating battle 176 of 3020: blastoise vs pidgeotto
+Simulating battle 177 of 3020: blastoise vs rattata
+Simulating battle 178 of 3020: blastoise vs caterpie
+Simulating battle 179 of 3020: blastoise vs seel
+Simulating battle 180 of 3020: blastoise vs eevee
+Simulating battle 181 of 3020: caterpie vs poliwrath
+Simulating battle 182 of 3020: caterpie vs tentacruel
+Simulating battle 183 of 3020: caterpie vs magmar
+Simulating battle 184 of 3020: caterpie vs mankey
+Simulating battle 185 of 3020: caterpie vs kabuto
+Simulating battle 186 of 3020: caterpie vs clefairy
+Simulating battle 187 of 3020: caterpie vs dragonair
+Simulating battle 188 of 3020: caterpie vs dragonite
+Simulating battle 189 of 3020: caterpie vs scyther
+Simulating battle 190 of 3020: caterpie vs kadabra
+Simulating battle 191 of 3020: caterpie vs hitmonlee
+Simulating battle 192 of 3020: caterpie vs diglett
+Simulating battle 193 of 3020: caterpie vs raichu
+Simulating battle 194 of 3020: caterpie vs rhydon
+Simulating battle 195 of 3020: caterpie vs gastly
+Simulating battle 196 of 3020: caterpie vs weezing
+Simulating battle 197 of 3020: caterpie vs hitmonchan
+Simulating battle 198 of 3020: caterpie vs starmie
+Simulating battle 199 of 3020: caterpie vs beedrill
+Simulating battle 200 of 3020: caterpie vs sandshrew
+Simulating battle 201 of 3020: metapod vs pidgeotto
+Simulating battle 202 of 3020: metapod vs marowak
+Simulating battle 203 of 3020: metapod vs grimer
+Simulating battle 204 of 3020: metapod vs nidoran-f
+Simulating battle 205 of 3020: metapod vs alakazam
+Simulating battle 206 of 3020: metapod vs dugtrio
+Simulating battle 207 of 3020: metapod vs diglett
+Simulating battle 208 of 3020: metapod vs omastar
+Simulating battle 209 of 3020: metapod vs horsea
+Simulating battle 210 of 3020: metapod vs vulpix
+Simulating battle 211 of 3020: metapod vs weezing
+Simulating battle 212 of 3020: metapod vs venonat
+Simulating battle 213 of 3020: metapod vs tentacruel
+Simulating battle 214 of 3020: metapod vs staryu
+Simulating battle 215 of 3020: metapod vs spearow
+Simulating battle 216 of 3020: metapod vs kangaskhan
+Simulating battle 217 of 3020: metapod vs aerodactyl
+Simulating battle 218 of 3020: metapod vs sandshrew
+Simulating battle 219 of 3020: metapod vs kakuna
+Simulating battle 220 of 3020: metapod vs kabuto
+Simulating battle 221 of 3020: butterfree vs charmander
+Simulating battle 222 of 3020: butterfree vs pikachu
+Simulating battle 223 of 3020: butterfree vs poliwrath
+Simulating battle 224 of 3020: butterfree vs gloom
+Simulating battle 225 of 3020: butterfree vs hitmonlee
+Simulating battle 226 of 3020: butterfree vs magmar
+Simulating battle 227 of 3020: butterfree vs electabuzz
+Simulating battle 228 of 3020: butterfree vs mankey
+Simulating battle 229 of 3020: butterfree vs cubone
+Simulating battle 230 of 3020: butterfree vs pidgeotto
+Simulating battle 231 of 3020: butterfree vs kingler
+Simulating battle 232 of 3020: butterfree vs bulbasaur
+Simulating battle 233 of 3020: butterfree vs electrode
+Simulating battle 234 of 3020: butterfree vs bellsprout
+Simulating battle 235 of 3020: butterfree vs goldeen
+Simulating battle 236 of 3020: butterfree vs graveler
+Simulating battle 237 of 3020: butterfree vs weezing
+Simulating battle 238 of 3020: butterfree vs articuno
+Simulating battle 239 of 3020: butterfree vs zubat
+Simulating battle 240 of 3020: butterfree vs diglett
+Simulating battle 241 of 3020: weedle vs ponyta
+Simulating battle 242 of 3020: weedle vs primeape
+Simulating battle 243 of 3020: weedle vs pidgey
+Simulating battle 244 of 3020: weedle vs mewtwo
+Simulating battle 245 of 3020: weedle vs kabuto
+Simulating battle 246 of 3020: weedle vs pidgeotto
+Simulating battle 247 of 3020: weedle vs magneton
+Simulating battle 248 of 3020: weedle vs kakuna
+Simulating battle 249 of 3020: weedle vs mew
+Simulating battle 250 of 3020: weedle vs jynx
+Simulating battle 251 of 3020: weedle vs gyarados
+Simulating battle 252 of 3020: weedle vs porygon
+Simulating battle 253 of 3020: weedle vs golbat
+Simulating battle 254 of 3020: weedle vs ditto
+Simulating battle 255 of 3020: weedle vs fearow
+Simulating battle 256 of 3020: weedle vs venomoth
+Simulating battle 257 of 3020: weedle vs rattata
+Simulating battle 258 of 3020: weedle vs poliwrath
+Simulating battle 259 of 3020: weedle vs marowak
+Simulating battle 260 of 3020: weedle vs nidoran-m
+Simulating battle 261 of 3020: kakuna vs dratini
+Simulating battle 262 of 3020: kakuna vs alakazam
+Simulating battle 263 of 3020: kakuna vs mewtwo
+Simulating battle 264 of 3020: kakuna vs metapod
+Simulating battle 265 of 3020: kakuna vs fearow
+Simulating battle 266 of 3020: kakuna vs koffing
+Simulating battle 267 of 3020: kakuna vs mew
+Simulating battle 268 of 3020: kakuna vs moltres
+Simulating battle 269 of 3020: kakuna vs jolteon
+Simulating battle 270 of 3020: kakuna vs magneton
+Simulating battle 271 of 3020: kakuna vs machamp
+Simulating battle 272 of 3020: kakuna vs psyduck
+Simulating battle 273 of 3020: kakuna vs abra
+Simulating battle 274 of 3020: kakuna vs bellsprout
+Simulating battle 275 of 3020: kakuna vs exeggutor
+Simulating battle 276 of 3020: kakuna vs clefairy
+Simulating battle 277 of 3020: kakuna vs rapidash
+Simulating battle 278 of 3020: kakuna vs seaking
+Simulating battle 279 of 3020: kakuna vs raticate
+Simulating battle 280 of 3020: kakuna vs venusaur
+Simulating battle 281 of 3020: beedrill vs seaking
+Simulating battle 282 of 3020: beedrill vs moltres
+Simulating battle 283 of 3020: beedrill vs sandshrew
+Simulating battle 284 of 3020: beedrill vs raticate
+Simulating battle 285 of 3020: beedrill vs omastar
+Simulating battle 286 of 3020: beedrill vs mankey
+Simulating battle 287 of 3020: beedrill vs lapras
+Simulating battle 288 of 3020: beedrill vs bellsprout
+Simulating battle 289 of 3020: beedrill vs clefairy
+Simulating battle 290 of 3020: beedrill vs cloyster
+Simulating battle 291 of 3020: beedrill vs rattata
+Simulating battle 292 of 3020: beedrill vs kadabra
+Simulating battle 293 of 3020: beedrill vs drowzee
+Simulating battle 294 of 3020: beedrill vs geodude
+Simulating battle 295 of 3020: beedrill vs golbat
+Simulating battle 296 of 3020: beedrill vs tangela
+Simulating battle 297 of 3020: beedrill vs kabutops
+Simulating battle 298 of 3020: beedrill vs slowpoke
+Simulating battle 299 of 3020: beedrill vs porygon
+Simulating battle 300 of 3020: beedrill vs venusaur
+Simulating battle 301 of 3020: pidgey vs snorlax
+Simulating battle 302 of 3020: pidgey vs rapidash
+Simulating battle 303 of 3020: pidgey vs sandslash
+Simulating battle 304 of 3020: pidgey vs clefable
+Simulating battle 305 of 3020: pidgey vs bellsprout
+Simulating battle 306 of 3020: pidgey vs nidoqueen
+Simulating battle 307 of 3020: pidgey vs nidoran-f
+Simulating battle 308 of 3020: pidgey vs zubat
+Simulating battle 309 of 3020: pidgey vs victreebel
+Simulating battle 310 of 3020: pidgey vs geodude
+Simulating battle 311 of 3020: pidgey vs golduck
+Simulating battle 312 of 3020: pidgey vs muk
+Simulating battle 313 of 3020: pidgey vs psyduck
+Simulating battle 314 of 3020: pidgey vs lapras
+Simulating battle 315 of 3020: pidgey vs pinsir
+Simulating battle 316 of 3020: pidgey vs machop
+Simulating battle 317 of 3020: pidgey vs kakuna
+Simulating battle 318 of 3020: pidgey vs pikachu
+Simulating battle 319 of 3020: pidgey vs weezing
+Simulating battle 320 of 3020: pidgey vs tentacool
+Simulating battle 321 of 3020: pidgeotto vs butterfree
+Simulating battle 322 of 3020: pidgeotto vs bulbasaur
+Simulating battle 323 of 3020: pidgeotto vs dewgong
+Simulating battle 324 of 3020: pidgeotto vs clefairy
+Simulating battle 325 of 3020: pidgeotto vs bellsprout
+Simulating battle 326 of 3020: pidgeotto vs oddish
+Simulating battle 327 of 3020: pidgeotto vs kangaskhan
+Simulating battle 328 of 3020: pidgeotto vs snorlax
+Simulating battle 329 of 3020: pidgeotto vs rhyhorn
+Simulating battle 330 of 3020: pidgeotto vs zapdos
+Simulating battle 331 of 3020: pidgeotto vs venusaur
+Simulating battle 332 of 3020: pidgeotto vs nidorina
+Simulating battle 333 of 3020: pidgeotto vs spearow
+Simulating battle 334 of 3020: pidgeotto vs wigglytuff
+Simulating battle 335 of 3020: pidgeotto vs kabutops
+Simulating battle 336 of 3020: pidgeotto vs caterpie
+Simulating battle 337 of 3020: pidgeotto vs drowzee
+Simulating battle 338 of 3020: pidgeotto vs mew
+Simulating battle 339 of 3020: pidgeotto vs jigglypuff
+Simulating battle 340 of 3020: pidgeotto vs rhydon
+Simulating battle 341 of 3020: pidgeot vs nidoking
+Simulating battle 342 of 3020: pidgeot vs metapod
+Simulating battle 343 of 3020: pidgeot vs slowbro
+Simulating battle 344 of 3020: pidgeot vs onix
+Simulating battle 345 of 3020: pidgeot vs haunter
+Simulating battle 346 of 3020: pidgeot vs golduck
+Simulating battle 347 of 3020: pidgeot vs alakazam
+Simulating battle 348 of 3020: pidgeot vs sandslash
+Simulating battle 349 of 3020: pidgeot vs gastly
+Simulating battle 350 of 3020: pidgeot vs zapdos
+Simulating battle 351 of 3020: pidgeot vs hitmonlee
+Simulating battle 352 of 3020: pidgeot vs zubat
+Simulating battle 353 of 3020: pidgeot vs poliwrath
+Simulating battle 354 of 3020: pidgeot vs oddish
+Simulating battle 355 of 3020: pidgeot vs parasect
+Simulating battle 356 of 3020: pidgeot vs hitmonchan
+Simulating battle 357 of 3020: pidgeot vs squirtle
+Simulating battle 358 of 3020: pidgeot vs dewgong
+Simulating battle 359 of 3020: pidgeot vs weepinbell
+Simulating battle 360 of 3020: pidgeot vs golbat
+Simulating battle 361 of 3020: rattata vs nidoran-f
+Simulating battle 362 of 3020: rattata vs kingler
+Simulating battle 363 of 3020: rattata vs caterpie
+Simulating battle 364 of 3020: rattata vs mr-mime
+Simulating battle 365 of 3020: rattata vs growlithe
+Simulating battle 366 of 3020: rattata vs persian
+Simulating battle 367 of 3020: rattata vs seaking
+Simulating battle 368 of 3020: rattata vs cloyster
+Simulating battle 369 of 3020: rattata vs slowbro
+Simulating battle 370 of 3020: rattata vs poliwag
+Simulating battle 371 of 3020: rattata vs arcanine
+Simulating battle 372 of 3020: rattata vs squirtle
+Simulating battle 373 of 3020: rattata vs dugtrio
+Simulating battle 374 of 3020: rattata vs cubone
+Simulating battle 375 of 3020: rattata vs seel
+Simulating battle 376 of 3020: rattata vs tentacruel
+Simulating battle 377 of 3020: rattata vs pidgeot
+Simulating battle 378 of 3020: rattata vs ditto
+Simulating battle 379 of 3020: rattata vs omastar
+Simulating battle 380 of 3020: rattata vs wartortle
+Simulating battle 381 of 3020: raticate vs nidoqueen
+Simulating battle 382 of 3020: raticate vs machamp
+Simulating battle 383 of 3020: raticate vs parasect
+Simulating battle 384 of 3020: raticate vs mewtwo
+Simulating battle 385 of 3020: raticate vs bellsprout
+Simulating battle 386 of 3020: raticate vs caterpie
+Simulating battle 387 of 3020: raticate vs nidoran-f
+Simulating battle 388 of 3020: raticate vs chansey
+Simulating battle 389 of 3020: raticate vs shellder
+Simulating battle 390 of 3020: raticate vs magneton
+Simulating battle 391 of 3020: raticate vs ditto
+Simulating battle 392 of 3020: raticate vs voltorb
+Simulating battle 393 of 3020: raticate vs dragonite
+Simulating battle 394 of 3020: raticate vs diglett
+Simulating battle 395 of 3020: raticate vs machoke
+Simulating battle 396 of 3020: raticate vs butterfree
+Simulating battle 397 of 3020: raticate vs bulbasaur
+Simulating battle 398 of 3020: raticate vs jolteon
+Simulating battle 399 of 3020: raticate vs omastar
+Simulating battle 400 of 3020: raticate vs meowth
+Simulating battle 401 of 3020: spearow vs onix
+Simulating battle 402 of 3020: spearow vs rhydon
+Simulating battle 403 of 3020: spearow vs pidgeot
+Simulating battle 404 of 3020: spearow vs seel
+Simulating battle 405 of 3020: spearow vs magneton
+Simulating battle 406 of 3020: spearow vs nidorino
+Simulating battle 407 of 3020: spearow vs rapidash
+Simulating battle 408 of 3020: spearow vs lapras
+Simulating battle 409 of 3020: spearow vs magnemite
+Simulating battle 410 of 3020: spearow vs hitmonlee
+Simulating battle 411 of 3020: spearow vs dodrio
+Simulating battle 412 of 3020: spearow vs marowak
+Simulating battle 413 of 3020: spearow vs ponyta
+Simulating battle 414 of 3020: spearow vs snorlax
+Simulating battle 415 of 3020: spearow vs nidoking
+Simulating battle 416 of 3020: spearow vs dugtrio
+Simulating battle 417 of 3020: spearow vs koffing
+Simulating battle 418 of 3020: spearow vs kingler
+Simulating battle 419 of 3020: spearow vs paras
+Simulating battle 420 of 3020: spearow vs dratini
+Simulating battle 421 of 3020: fearow vs slowpoke
+Simulating battle 422 of 3020: fearow vs marowak
+Simulating battle 423 of 3020: fearow vs aerodactyl
+Simulating battle 424 of 3020: fearow vs bulbasaur
+Simulating battle 425 of 3020: fearow vs graveler
+Simulating battle 426 of 3020: fearow vs golduck
+Simulating battle 427 of 3020: fearow vs rhydon
+Simulating battle 428 of 3020: fearow vs mewtwo
+Simulating battle 429 of 3020: fearow vs doduo
+Simulating battle 430 of 3020: fearow vs starmie
+Simulating battle 431 of 3020: fearow vs kangaskhan
+Simulating battle 432 of 3020: fearow vs mankey
+Simulating battle 433 of 3020: fearow vs ditto
+Simulating battle 434 of 3020: fearow vs scyther
+Simulating battle 435 of 3020: fearow vs vileplume
+Simulating battle 436 of 3020: fearow vs ekans
+Simulating battle 437 of 3020: fearow vs geodude
+Simulating battle 438 of 3020: fearow vs eevee
+Simulating battle 439 of 3020: fearow vs dewgong
+Simulating battle 440 of 3020: fearow vs pikachu
+Simulating battle 441 of 3020: ekans vs poliwrath
+Simulating battle 442 of 3020: ekans vs magnemite
+Simulating battle 443 of 3020: ekans vs arcanine
+Simulating battle 444 of 3020: ekans vs meowth
+Simulating battle 445 of 3020: ekans vs jigglypuff
+Simulating battle 446 of 3020: ekans vs squirtle
+Simulating battle 447 of 3020: ekans vs butterfree
+Simulating battle 448 of 3020: ekans vs kadabra
+Simulating battle 449 of 3020: ekans vs scyther
+Simulating battle 450 of 3020: ekans vs rattata
+Simulating battle 451 of 3020: ekans vs goldeen
+Simulating battle 452 of 3020: ekans vs lickitung
+Simulating battle 453 of 3020: ekans vs dragonite
+Simulating battle 454 of 3020: ekans vs dugtrio
+Simulating battle 455 of 3020: ekans vs voltorb
+Simulating battle 456 of 3020: ekans vs tauros
+Simulating battle 457 of 3020: ekans vs cubone
+Simulating battle 458 of 3020: ekans vs ivysaur
+Simulating battle 459 of 3020: ekans vs nidoran-f
+Simulating battle 460 of 3020: ekans vs weezing
+Simulating battle 461 of 3020: arbok vs growlithe
+Simulating battle 462 of 3020: arbok vs parasect
+Simulating battle 463 of 3020: arbok vs vaporeon
+Simulating battle 464 of 3020: arbok vs staryu
+Simulating battle 465 of 3020: arbok vs weedle
+Simulating battle 466 of 3020: arbok vs articuno
+Simulating battle 467 of 3020: arbok vs alakazam
+Simulating battle 468 of 3020: arbok vs nidorino
+Simulating battle 469 of 3020: arbok vs goldeen
+Simulating battle 470 of 3020: arbok vs clefable
+Simulating battle 471 of 3020: arbok vs porygon
+Simulating battle 472 of 3020: arbok vs zapdos
+Simulating battle 473 of 3020: arbok vs farfetchd
+Simulating battle 474 of 3020: arbok vs kangaskhan
+Simulating battle 475 of 3020: arbok vs lapras
+Simulating battle 476 of 3020: arbok vs rhyhorn
+Simulating battle 477 of 3020: arbok vs aerodactyl
+Simulating battle 478 of 3020: arbok vs horsea
+Simulating battle 479 of 3020: arbok vs golbat
+Simulating battle 480 of 3020: arbok vs scyther
+Simulating battle 481 of 3020: pikachu vs seadra
+Simulating battle 482 of 3020: pikachu vs machamp
+Simulating battle 483 of 3020: pikachu vs alakazam
+Simulating battle 484 of 3020: pikachu vs tentacool
+Simulating battle 485 of 3020: pikachu vs jolteon
+Simulating battle 486 of 3020: pikachu vs magmar
+Simulating battle 487 of 3020: pikachu vs abra
+Simulating battle 488 of 3020: pikachu vs tangela
+Simulating battle 489 of 3020: pikachu vs raticate
+Simulating battle 490 of 3020: pikachu vs graveler
+Simulating battle 491 of 3020: pikachu vs poliwrath
+Simulating battle 492 of 3020: pikachu vs victreebel
+Simulating battle 493 of 3020: pikachu vs dewgong
+Simulating battle 494 of 3020: pikachu vs farfetchd
+Simulating battle 495 of 3020: pikachu vs kabuto
+Simulating battle 496 of 3020: pikachu vs spearow
+Simulating battle 497 of 3020: pikachu vs vulpix
+Simulating battle 498 of 3020: pikachu vs wigglytuff
+Simulating battle 499 of 3020: pikachu vs poliwhirl
+Simulating battle 500 of 3020: pikachu vs voltorb
+Simulating battle 501 of 3020: raichu vs zubat
+Simulating battle 502 of 3020: raichu vs mankey
+Simulating battle 503 of 3020: raichu vs pidgeotto
+Simulating battle 504 of 3020: raichu vs lickitung
+Simulating battle 505 of 3020: raichu vs hitmonlee
+Simulating battle 506 of 3020: raichu vs seel
+Simulating battle 507 of 3020: raichu vs kabuto
+Simulating battle 508 of 3020: raichu vs starmie
+Simulating battle 509 of 3020: raichu vs pidgey
+Simulating battle 510 of 3020: raichu vs psyduck
+Simulating battle 511 of 3020: raichu vs koffing
+Simulating battle 512 of 3020: raichu vs electrode
+Simulating battle 513 of 3020: raichu vs mew
+Simulating battle 514 of 3020: raichu vs charizard
+Simulating battle 515 of 3020: raichu vs dragonite
+Simulating battle 516 of 3020: raichu vs kingler
+Simulating battle 517 of 3020: raichu vs jynx
+Simulating battle 518 of 3020: raichu vs ivysaur
+Simulating battle 519 of 3020: raichu vs gastly
+Simulating battle 520 of 3020: raichu vs rapidash
+Simulating battle 521 of 3020: sandshrew vs electrode
+Simulating battle 522 of 3020: sandshrew vs koffing
+Simulating battle 523 of 3020: sandshrew vs omastar
+Simulating battle 524 of 3020: sandshrew vs kabutops
+Simulating battle 525 of 3020: sandshrew vs growlithe
+Simulating battle 526 of 3020: sandshrew vs magmar
+Simulating battle 527 of 3020: sandshrew vs victreebel
+Simulating battle 528 of 3020: sandshrew vs chansey
+Simulating battle 529 of 3020: sandshrew vs wartortle
+Simulating battle 530 of 3020: sandshrew vs grimer
+Simulating battle 531 of 3020: sandshrew vs marowak
+Simulating battle 532 of 3020: sandshrew vs gloom
+Simulating battle 533 of 3020: sandshrew vs starmie
+Simulating battle 534 of 3020: sandshrew vs nidoking
+Simulating battle 535 of 3020: sandshrew vs omanyte
+Simulating battle 536 of 3020: sandshrew vs squirtle
+Simulating battle 537 of 3020: sandshrew vs exeggcute
+Simulating battle 538 of 3020: sandshrew vs moltres
+Simulating battle 539 of 3020: sandshrew vs fearow
+Simulating battle 540 of 3020: sandshrew vs rhyhorn
+Simulating battle 541 of 3020: sandslash vs clefable
+Simulating battle 542 of 3020: sandslash vs staryu
+Simulating battle 543 of 3020: sandslash vs venonat
+Simulating battle 544 of 3020: sandslash vs weedle
+Simulating battle 545 of 3020: sandslash vs machamp
+Simulating battle 546 of 3020: sandslash vs kingler
+Simulating battle 547 of 3020: sandslash vs dodrio
+Simulating battle 548 of 3020: sandslash vs mankey
+Simulating battle 549 of 3020: sandslash vs goldeen
+Simulating battle 550 of 3020: sandslash vs grimer
+Simulating battle 551 of 3020: sandslash vs tentacruel
+Simulating battle 552 of 3020: sandslash vs koffing
+Simulating battle 553 of 3020: sandslash vs machop
+Simulating battle 554 of 3020: sandslash vs spearow
+Simulating battle 555 of 3020: sandslash vs mr-mime
+Simulating battle 556 of 3020: sandslash vs charmeleon
+Simulating battle 557 of 3020: sandslash vs kabuto
+Simulating battle 558 of 3020: sandslash vs kakuna
+Simulating battle 559 of 3020: sandslash vs cloyster
+Simulating battle 560 of 3020: sandslash vs arcanine
+Simulating battle 561 of 3020: nidoran-f vs pidgeot
+Simulating battle 562 of 3020: nidoran-f vs metapod
+Simulating battle 563 of 3020: nidoran-f vs wartortle
+Simulating battle 564 of 3020: nidoran-f vs alakazam
+Simulating battle 565 of 3020: nidoran-f vs persian
+Simulating battle 566 of 3020: nidoran-f vs charizard
+Simulating battle 567 of 3020: nidoran-f vs zubat
+Simulating battle 568 of 3020: nidoran-f vs abra
+Simulating battle 569 of 3020: nidoran-f vs nidoking
+Simulating battle 570 of 3020: nidoran-f vs scyther
+Simulating battle 571 of 3020: nidoran-f vs nidoqueen
+Simulating battle 572 of 3020: nidoran-f vs moltres
+Simulating battle 573 of 3020: nidoran-f vs primeape
+Simulating battle 574 of 3020: nidoran-f vs starmie
+Simulating battle 575 of 3020: nidoran-f vs machoke
+Simulating battle 576 of 3020: nidoran-f vs drowzee
+Simulating battle 577 of 3020: nidoran-f vs gloom
+Simulating battle 578 of 3020: nidoran-f vs oddish
+Simulating battle 579 of 3020: nidoran-f vs magnemite
+Simulating battle 580 of 3020: nidoran-f vs sandslash
+Simulating battle 581 of 3020: nidorina vs mewtwo
+Simulating battle 582 of 3020: nidorina vs squirtle
+Simulating battle 583 of 3020: nidorina vs magnemite
+Simulating battle 584 of 3020: nidorina vs dragonite
+Simulating battle 585 of 3020: nidorina vs krabby
+Simulating battle 586 of 3020: nidorina vs exeggutor
+Simulating battle 587 of 3020: nidorina vs meowth
+Simulating battle 588 of 3020: nidorina vs raticate
+Simulating battle 589 of 3020: nidorina vs kadabra
+Simulating battle 590 of 3020: nidorina vs sandshrew
+Simulating battle 591 of 3020: nidorina vs slowpoke
+Simulating battle 592 of 3020: nidorina vs nidoran-m
+Simulating battle 593 of 3020: nidorina vs moltres
+Simulating battle 594 of 3020: nidorina vs metapod
+Simulating battle 595 of 3020: nidorina vs shellder
+Simulating battle 596 of 3020: nidorina vs omanyte
+Simulating battle 597 of 3020: nidorina vs rhyhorn
+Simulating battle 598 of 3020: nidorina vs drowzee
+Simulating battle 599 of 3020: nidorina vs pidgeot
+Simulating battle 600 of 3020: nidorina vs lapras
+Simulating battle 601 of 3020: nidoqueen vs muk
+Simulating battle 602 of 3020: nidoqueen vs charmander
+Simulating battle 603 of 3020: nidoqueen vs koffing
+Simulating battle 604 of 3020: nidoqueen vs pinsir
+Simulating battle 605 of 3020: nidoqueen vs sandslash
+Simulating battle 606 of 3020: nidoqueen vs rhydon
+Simulating battle 607 of 3020: nidoqueen vs gengar
+Simulating battle 608 of 3020: nidoqueen vs seaking
+Simulating battle 609 of 3020: nidoqueen vs zubat
+Simulating battle 610 of 3020: nidoqueen vs chansey
+Simulating battle 611 of 3020: nidoqueen vs parasect
+Simulating battle 612 of 3020: nidoqueen vs jolteon
+Simulating battle 613 of 3020: nidoqueen vs victreebel
+Simulating battle 614 of 3020: nidoqueen vs omastar
+Simulating battle 615 of 3020: nidoqueen vs electabuzz
+Simulating battle 616 of 3020: nidoqueen vs starmie
+Simulating battle 617 of 3020: nidoqueen vs weepinbell
+Simulating battle 618 of 3020: nidoqueen vs doduo
+Simulating battle 619 of 3020: nidoqueen vs kadabra
+Simulating battle 620 of 3020: nidoqueen vs ekans
+Simulating battle 621 of 3020: nidoran-m vs tentacruel
+Simulating battle 622 of 3020: nidoran-m vs seadra
+Simulating battle 623 of 3020: nidoran-m vs kadabra
+Simulating battle 624 of 3020: nidoran-m vs staryu
+Simulating battle 625 of 3020: nidoran-m vs dratini
+Simulating battle 626 of 3020: nidoran-m vs kingler
+Simulating battle 627 of 3020: nidoran-m vs grimer
+Simulating battle 628 of 3020: nidoran-m vs wartortle
+Simulating battle 629 of 3020: nidoran-m vs tauros
+Simulating battle 630 of 3020: nidoran-m vs dodrio
+Simulating battle 631 of 3020: nidoran-m vs venonat
+Simulating battle 632 of 3020: nidoran-m vs magmar
+Simulating battle 633 of 3020: nidoran-m vs mankey
+Simulating battle 634 of 3020: nidoran-m vs gastly
+Simulating battle 635 of 3020: nidoran-m vs machamp
+Simulating battle 636 of 3020: nidoran-m vs muk
+Simulating battle 637 of 3020: nidoran-m vs tentacool
+Simulating battle 638 of 3020: nidoran-m vs articuno
+Simulating battle 639 of 3020: nidoran-m vs venusaur
+Simulating battle 640 of 3020: nidoran-m vs vaporeon
+Simulating battle 641 of 3020: nidorino vs diglett
+Simulating battle 642 of 3020: nidorino vs fearow
+Simulating battle 643 of 3020: nidorino vs abra
+Simulating battle 644 of 3020: nidorino vs hitmonlee
+Simulating battle 645 of 3020: nidorino vs pinsir
+Simulating battle 646 of 3020: nidorino vs articuno
+Simulating battle 647 of 3020: nidorino vs scyther
+Simulating battle 648 of 3020: nidorino vs horsea
+Simulating battle 649 of 3020: nidorino vs charmeleon
+Simulating battle 650 of 3020: nidorino vs arbok
+Simulating battle 651 of 3020: nidorino vs ponyta
+Simulating battle 652 of 3020: nidorino vs growlithe
+Simulating battle 653 of 3020: nidorino vs marowak
+Simulating battle 654 of 3020: nidorino vs kadabra
+Simulating battle 655 of 3020: nidorino vs slowbro
+Simulating battle 656 of 3020: nidorino vs mewtwo
+Simulating battle 657 of 3020: nidorino vs drowzee
+Simulating battle 658 of 3020: nidorino vs snorlax
+Simulating battle 659 of 3020: nidorino vs porygon
+Simulating battle 660 of 3020: nidorino vs shellder
+Simulating battle 661 of 3020: nidoking vs weezing
+Simulating battle 662 of 3020: nidoking vs aerodactyl
+Simulating battle 663 of 3020: nidoking vs seel
+Simulating battle 664 of 3020: nidoking vs gastly
+Simulating battle 665 of 3020: nidoking vs goldeen
+Simulating battle 666 of 3020: nidoking vs victreebel
+Simulating battle 667 of 3020: nidoking vs slowbro
+Simulating battle 668 of 3020: nidoking vs machop
+Simulating battle 669 of 3020: nidoking vs poliwhirl
+Simulating battle 670 of 3020: nidoking vs nidoqueen
+Simulating battle 671 of 3020: nidoking vs dugtrio
+Simulating battle 672 of 3020: nidoking vs magneton
+Simulating battle 673 of 3020: nidoking vs omastar
+Simulating battle 674 of 3020: nidoking vs venomoth
+Simulating battle 675 of 3020: nidoking vs primeape
+Simulating battle 676 of 3020: nidoking vs electabuzz
+Simulating battle 677 of 3020: nidoking vs tentacool
+Simulating battle 678 of 3020: nidoking vs flareon
+Simulating battle 679 of 3020: nidoking vs geodude
+Simulating battle 680 of 3020: nidoking vs raichu
+Simulating battle 681 of 3020: clefairy vs dugtrio
+Simulating battle 682 of 3020: clefairy vs ponyta
+Simulating battle 683 of 3020: clefairy vs poliwag
+Simulating battle 684 of 3020: clefairy vs gengar
+Simulating battle 685 of 3020: clefairy vs parasect
+Simulating battle 686 of 3020: clefairy vs slowpoke
+Simulating battle 687 of 3020: clefairy vs charmander
+Simulating battle 688 of 3020: clefairy vs omanyte
+Simulating battle 689 of 3020: clefairy vs nidorino
+Simulating battle 690 of 3020: clefairy vs tentacool
+Simulating battle 691 of 3020: clefairy vs butterfree
+Simulating battle 692 of 3020: clefairy vs kakuna
+Simulating battle 693 of 3020: clefairy vs snorlax
+Simulating battle 694 of 3020: clefairy vs golem
+Simulating battle 695 of 3020: clefairy vs pinsir
+Simulating battle 696 of 3020: clefairy vs sandshrew
+Simulating battle 697 of 3020: clefairy vs dragonair
+Simulating battle 698 of 3020: clefairy vs geodude
+Simulating battle 699 of 3020: clefairy vs mr-mime
+Simulating battle 700 of 3020: clefairy vs jynx
+Simulating battle 701 of 3020: clefable vs tangela
+Simulating battle 702 of 3020: clefable vs muk
+Simulating battle 703 of 3020: clefable vs venomoth
+Simulating battle 704 of 3020: clefable vs kakuna
+Simulating battle 705 of 3020: clefable vs machop
+Simulating battle 706 of 3020: clefable vs jynx
+Simulating battle 707 of 3020: clefable vs nidorina
+Simulating battle 708 of 3020: clefable vs pidgeotto
+Simulating battle 709 of 3020: clefable vs cubone
+Simulating battle 710 of 3020: clefable vs pinsir
+Simulating battle 711 of 3020: clefable vs rattata
+Simulating battle 712 of 3020: clefable vs dragonite
+Simulating battle 713 of 3020: clefable vs wigglytuff
+Simulating battle 714 of 3020: clefable vs moltres
+Simulating battle 715 of 3020: clefable vs slowpoke
+Simulating battle 716 of 3020: clefable vs fearow
+Simulating battle 717 of 3020: clefable vs alakazam
+Simulating battle 718 of 3020: clefable vs nidoqueen
+Simulating battle 719 of 3020: clefable vs articuno
+Simulating battle 720 of 3020: clefable vs lickitung
+Simulating battle 721 of 3020: vulpix vs arcanine
+Simulating battle 722 of 3020: vulpix vs jolteon
+Simulating battle 723 of 3020: vulpix vs kingler
+Simulating battle 724 of 3020: vulpix vs seadra
+Simulating battle 725 of 3020: vulpix vs kangaskhan
+Simulating battle 726 of 3020: vulpix vs rapidash
+Simulating battle 727 of 3020: vulpix vs rhyhorn
+Simulating battle 728 of 3020: vulpix vs slowbro
+Simulating battle 729 of 3020: vulpix vs dratini
+Simulating battle 730 of 3020: vulpix vs pidgey
+Simulating battle 731 of 3020: vulpix vs raichu
+Simulating battle 732 of 3020: vulpix vs golduck
+Simulating battle 733 of 3020: vulpix vs mankey
+Simulating battle 734 of 3020: vulpix vs bellsprout
+Simulating battle 735 of 3020: vulpix vs spearow
+Simulating battle 736 of 3020: vulpix vs golbat
+Simulating battle 737 of 3020: vulpix vs abra
+Simulating battle 738 of 3020: vulpix vs paras
+Simulating battle 739 of 3020: vulpix vs snorlax
+Simulating battle 740 of 3020: vulpix vs raticate
+Simulating battle 741 of 3020: ninetales vs golbat
+Simulating battle 742 of 3020: ninetales vs bulbasaur
+Simulating battle 743 of 3020: ninetales vs hitmonlee
+Simulating battle 744 of 3020: ninetales vs seadra
+Simulating battle 745 of 3020: ninetales vs mr-mime
+Simulating battle 746 of 3020: ninetales vs golem
+Simulating battle 747 of 3020: ninetales vs blastoise
+Simulating battle 748 of 3020: ninetales vs poliwhirl
+Simulating battle 749 of 3020: ninetales vs graveler
+Simulating battle 750 of 3020: ninetales vs geodude
+Simulating battle 751 of 3020: ninetales vs goldeen
+Simulating battle 752 of 3020: ninetales vs rattata
+Simulating battle 753 of 3020: ninetales vs bellsprout
+Simulating battle 754 of 3020: ninetales vs meowth
+Simulating battle 755 of 3020: ninetales vs weezing
+Simulating battle 756 of 3020: ninetales vs nidorina
+Simulating battle 757 of 3020: ninetales vs kabutops
+Simulating battle 758 of 3020: ninetales vs arcanine
+Simulating battle 759 of 3020: ninetales vs wigglytuff
+Simulating battle 760 of 3020: ninetales vs weepinbell
+Simulating battle 761 of 3020: jigglypuff vs vulpix
+Simulating battle 762 of 3020: jigglypuff vs rattata
+Simulating battle 763 of 3020: jigglypuff vs pidgey
+Simulating battle 764 of 3020: jigglypuff vs gloom
+Simulating battle 765 of 3020: jigglypuff vs slowbro
+Simulating battle 766 of 3020: jigglypuff vs dratini
+Simulating battle 767 of 3020: jigglypuff vs graveler
+Simulating battle 768 of 3020: jigglypuff vs tangela
+Simulating battle 769 of 3020: jigglypuff vs nidoran-m
+Simulating battle 770 of 3020: jigglypuff vs starmie
+Simulating battle 771 of 3020: jigglypuff vs slowpoke
+Simulating battle 772 of 3020: jigglypuff vs marowak
+Simulating battle 773 of 3020: jigglypuff vs victreebel
+Simulating battle 774 of 3020: jigglypuff vs gyarados
+Simulating battle 775 of 3020: jigglypuff vs kabuto
+Simulating battle 776 of 3020: jigglypuff vs tauros
+Simulating battle 777 of 3020: jigglypuff vs spearow
+Simulating battle 778 of 3020: jigglypuff vs metapod
+Simulating battle 779 of 3020: jigglypuff vs rhydon
+Simulating battle 780 of 3020: jigglypuff vs doduo
+Simulating battle 781 of 3020: wigglytuff vs machop
+Simulating battle 782 of 3020: wigglytuff vs squirtle
+Simulating battle 783 of 3020: wigglytuff vs arbok
+Simulating battle 784 of 3020: wigglytuff vs poliwag
+Simulating battle 785 of 3020: wigglytuff vs dragonite
+Simulating battle 786 of 3020: wigglytuff vs charizard
+Simulating battle 787 of 3020: wigglytuff vs weepinbell
+Simulating battle 788 of 3020: wigglytuff vs metapod
+Simulating battle 789 of 3020: wigglytuff vs paras
+Simulating battle 790 of 3020: wigglytuff vs mr-mime
+Simulating battle 791 of 3020: wigglytuff vs vaporeon
+Simulating battle 792 of 3020: wigglytuff vs kangaskhan
+Simulating battle 793 of 3020: wigglytuff vs tentacruel
+Simulating battle 794 of 3020: wigglytuff vs venonat
+Simulating battle 795 of 3020: wigglytuff vs mew
+Simulating battle 796 of 3020: wigglytuff vs chansey
+Simulating battle 797 of 3020: wigglytuff vs pinsir
+Simulating battle 798 of 3020: wigglytuff vs cloyster
+Simulating battle 799 of 3020: wigglytuff vs hitmonlee
+Simulating battle 800 of 3020: wigglytuff vs dewgong
+Simulating battle 801 of 3020: zubat vs doduo
+Simulating battle 802 of 3020: zubat vs sandshrew
+Simulating battle 803 of 3020: zubat vs oddish
+Simulating battle 804 of 3020: zubat vs seel
+Simulating battle 805 of 3020: zubat vs hitmonchan
+Simulating battle 806 of 3020: zubat vs tauros
+Simulating battle 807 of 3020: zubat vs graveler
+Simulating battle 808 of 3020: zubat vs cubone
+Simulating battle 809 of 3020: zubat vs aerodactyl
+Simulating battle 810 of 3020: zubat vs caterpie
+Simulating battle 811 of 3020: zubat vs goldeen
+Simulating battle 812 of 3020: zubat vs ekans
+Simulating battle 813 of 3020: zubat vs magneton
+Simulating battle 814 of 3020: zubat vs machop
+Simulating battle 815 of 3020: zubat vs nidorina
+Simulating battle 816 of 3020: zubat vs marowak
+Simulating battle 817 of 3020: zubat vs eevee
+Simulating battle 818 of 3020: zubat vs bulbasaur
+Simulating battle 819 of 3020: zubat vs kabuto
+Simulating battle 820 of 3020: zubat vs staryu
+Simulating battle 821 of 3020: golbat vs hitmonchan
+Simulating battle 822 of 3020: golbat vs kakuna
+Simulating battle 823 of 3020: golbat vs diglett
+Simulating battle 824 of 3020: golbat vs vaporeon
+Simulating battle 825 of 3020: golbat vs gengar
+Simulating battle 826 of 3020: golbat vs magikarp
+Simulating battle 827 of 3020: golbat vs kangaskhan
+Simulating battle 828 of 3020: golbat vs psyduck
+Simulating battle 829 of 3020: golbat vs weepinbell
+Simulating battle 830 of 3020: golbat vs aerodactyl
+Simulating battle 831 of 3020: golbat vs nidoking
+Simulating battle 832 of 3020: golbat vs graveler
+Simulating battle 833 of 3020: golbat vs tangela
+Simulating battle 834 of 3020: golbat vs magmar
+Simulating battle 835 of 3020: golbat vs nidoran-m
+Simulating battle 836 of 3020: golbat vs wartortle
+Simulating battle 837 of 3020: golbat vs abra
+Simulating battle 838 of 3020: golbat vs zubat
+Simulating battle 839 of 3020: golbat vs magnemite
+Simulating battle 840 of 3020: golbat vs snorlax
+Simulating battle 841 of 3020: oddish vs charmander
+Simulating battle 842 of 3020: oddish vs snorlax
+Simulating battle 843 of 3020: oddish vs hitmonlee
+Simulating battle 844 of 3020: oddish vs arbok
+Simulating battle 845 of 3020: oddish vs arcanine
+Simulating battle 846 of 3020: oddish vs nidorina
+Simulating battle 847 of 3020: oddish vs staryu
+Simulating battle 848 of 3020: oddish vs nidoqueen
+Simulating battle 849 of 3020: oddish vs wigglytuff
+Simulating battle 850 of 3020: oddish vs magikarp
+Simulating battle 851 of 3020: oddish vs golem
+Simulating battle 852 of 3020: oddish vs ditto
+Simulating battle 853 of 3020: oddish vs victreebel
+Simulating battle 854 of 3020: oddish vs lickitung
+Simulating battle 855 of 3020: oddish vs electabuzz
+Simulating battle 856 of 3020: oddish vs mr-mime
+Simulating battle 857 of 3020: oddish vs kadabra
+Simulating battle 858 of 3020: oddish vs goldeen
+Simulating battle 859 of 3020: oddish vs ninetales
+Simulating battle 860 of 3020: oddish vs voltorb
+Simulating battle 861 of 3020: gloom vs diglett
+Simulating battle 862 of 3020: gloom vs ditto
+Simulating battle 863 of 3020: gloom vs clefairy
+Simulating battle 864 of 3020: gloom vs pidgeot
+Simulating battle 865 of 3020: gloom vs tentacool
+Simulating battle 866 of 3020: gloom vs lickitung
+Simulating battle 867 of 3020: gloom vs muk
+Simulating battle 868 of 3020: gloom vs lapras
+Simulating battle 869 of 3020: gloom vs weepinbell
+Simulating battle 870 of 3020: gloom vs bulbasaur
+Simulating battle 871 of 3020: gloom vs geodude
+Simulating battle 872 of 3020: gloom vs rapidash
+Simulating battle 873 of 3020: gloom vs mewtwo
+Simulating battle 874 of 3020: gloom vs pinsir
+Simulating battle 875 of 3020: gloom vs jigglypuff
+Simulating battle 876 of 3020: gloom vs horsea
+Simulating battle 877 of 3020: gloom vs omastar
+Simulating battle 878 of 3020: gloom vs electabuzz
+Simulating battle 879 of 3020: gloom vs shellder
+Simulating battle 880 of 3020: gloom vs dewgong
+Simulating battle 881 of 3020: vileplume vs snorlax
+Simulating battle 882 of 3020: vileplume vs kabutops
+Simulating battle 883 of 3020: vileplume vs krabby
+Simulating battle 884 of 3020: vileplume vs goldeen
+Simulating battle 885 of 3020: vileplume vs doduo
+Simulating battle 886 of 3020: vileplume vs diglett
+Simulating battle 887 of 3020: vileplume vs abra
+Simulating battle 888 of 3020: vileplume vs dragonair
+Simulating battle 889 of 3020: vileplume vs voltorb
+Simulating battle 890 of 3020: vileplume vs poliwhirl
+Simulating battle 891 of 3020: vileplume vs hitmonchan
+Simulating battle 892 of 3020: vileplume vs butterfree
+Simulating battle 893 of 3020: vileplume vs farfetchd
+Simulating battle 894 of 3020: vileplume vs scyther
+Simulating battle 895 of 3020: vileplume vs kingler
+Simulating battle 896 of 3020: vileplume vs jigglypuff
+Simulating battle 897 of 3020: vileplume vs tauros
+Simulating battle 898 of 3020: vileplume vs caterpie
+Simulating battle 899 of 3020: vileplume vs nidorino
+Simulating battle 900 of 3020: vileplume vs gyarados
+Simulating battle 901 of 3020: paras vs seel
+Simulating battle 902 of 3020: paras vs raichu
+Simulating battle 903 of 3020: paras vs tangela
+Simulating battle 904 of 3020: paras vs flareon
+Simulating battle 905 of 3020: paras vs goldeen
+Simulating battle 906 of 3020: paras vs charmander
+Simulating battle 907 of 3020: paras vs vulpix
+Simulating battle 908 of 3020: paras vs hitmonlee
+Simulating battle 909 of 3020: paras vs wigglytuff
+Simulating battle 910 of 3020: paras vs raticate
+Simulating battle 911 of 3020: paras vs mr-mime
+Simulating battle 912 of 3020: paras vs bellsprout
+Simulating battle 913 of 3020: paras vs grimer
+Simulating battle 914 of 3020: paras vs exeggutor
+Simulating battle 915 of 3020: paras vs spearow
+Simulating battle 916 of 3020: paras vs omanyte
+Simulating battle 917 of 3020: paras vs kingler
+Simulating battle 918 of 3020: paras vs farfetchd
+Simulating battle 919 of 3020: paras vs magmar
+Simulating battle 920 of 3020: paras vs kabuto
+Simulating battle 921 of 3020: parasect vs caterpie
+Simulating battle 922 of 3020: parasect vs pidgeot
+Simulating battle 923 of 3020: parasect vs poliwrath
+Simulating battle 924 of 3020: parasect vs graveler
+Simulating battle 925 of 3020: parasect vs poliwag
+Simulating battle 926 of 3020: parasect vs arbok
+Simulating battle 927 of 3020: parasect vs chansey
+Simulating battle 928 of 3020: parasect vs raichu
+Simulating battle 929 of 3020: parasect vs kangaskhan
+Simulating battle 930 of 3020: parasect vs oddish
+Simulating battle 931 of 3020: parasect vs rapidash
+Simulating battle 932 of 3020: parasect vs wartortle
+Simulating battle 933 of 3020: parasect vs butterfree
+Simulating battle 934 of 3020: parasect vs dodrio
+Simulating battle 935 of 3020: parasect vs beedrill
+Simulating battle 936 of 3020: parasect vs ponyta
+Simulating battle 937 of 3020: parasect vs haunter
+Simulating battle 938 of 3020: parasect vs hypno
+Simulating battle 939 of 3020: parasect vs rhydon
+Simulating battle 940 of 3020: parasect vs ninetales
+Simulating battle 941 of 3020: venonat vs kadabra
+Simulating battle 942 of 3020: venonat vs porygon
+Simulating battle 943 of 3020: venonat vs hitmonchan
+Simulating battle 944 of 3020: venonat vs moltres
+Simulating battle 945 of 3020: venonat vs parasect
+Simulating battle 946 of 3020: venonat vs gloom
+Simulating battle 947 of 3020: venonat vs vileplume
+Simulating battle 948 of 3020: venonat vs spearow
+Simulating battle 949 of 3020: venonat vs kingler
+Simulating battle 950 of 3020: venonat vs abra
+Simulating battle 951 of 3020: venonat vs magikarp
+Simulating battle 952 of 3020: venonat vs mew
+Simulating battle 953 of 3020: venonat vs vulpix
+Simulating battle 954 of 3020: venonat vs poliwhirl
+Simulating battle 955 of 3020: venonat vs staryu
+Simulating battle 956 of 3020: venonat vs machoke
+Simulating battle 957 of 3020: venonat vs seaking
+Simulating battle 958 of 3020: venonat vs venusaur
+Simulating battle 959 of 3020: venonat vs starmie
+Simulating battle 960 of 3020: venonat vs graveler
+Simulating battle 961 of 3020: venomoth vs kabutops
+Simulating battle 962 of 3020: venomoth vs zubat
+Simulating battle 963 of 3020: venomoth vs rattata
+Simulating battle 964 of 3020: venomoth vs kangaskhan
+Simulating battle 965 of 3020: venomoth vs shellder
+Simulating battle 966 of 3020: venomoth vs rapidash
+Simulating battle 967 of 3020: venomoth vs weezing
+Simulating battle 968 of 3020: venomoth vs machop
+Simulating battle 969 of 3020: venomoth vs goldeen
+Simulating battle 970 of 3020: venomoth vs slowpoke
+Simulating battle 971 of 3020: venomoth vs meowth
+Simulating battle 972 of 3020: venomoth vs voltorb
+Simulating battle 973 of 3020: venomoth vs electabuzz
+Simulating battle 974 of 3020: venomoth vs sandslash
+Simulating battle 975 of 3020: venomoth vs poliwrath
+Simulating battle 976 of 3020: venomoth vs kingler
+Simulating battle 977 of 3020: venomoth vs dragonair
+Simulating battle 978 of 3020: venomoth vs haunter
+Simulating battle 979 of 3020: venomoth vs dragonite
+Simulating battle 980 of 3020: venomoth vs ponyta
+Simulating battle 981 of 3020: diglett vs ponyta
+Simulating battle 982 of 3020: diglett vs charizard
+Simulating battle 983 of 3020: diglett vs exeggutor
+Simulating battle 984 of 3020: diglett vs tentacool
+Simulating battle 985 of 3020: diglett vs venusaur
+Simulating battle 986 of 3020: diglett vs moltres
+Simulating battle 987 of 3020: diglett vs weedle
+Simulating battle 988 of 3020: diglett vs magikarp
+Simulating battle 989 of 3020: diglett vs graveler
+Simulating battle 990 of 3020: diglett vs poliwag
+Simulating battle 991 of 3020: diglett vs gastly
+Simulating battle 992 of 3020: diglett vs growlithe
+Simulating battle 993 of 3020: diglett vs venomoth
+Simulating battle 994 of 3020: diglett vs machop
+Simulating battle 995 of 3020: diglett vs clefable
+Simulating battle 996 of 3020: diglett vs pikachu
+Simulating battle 997 of 3020: diglett vs metapod
+Simulating battle 998 of 3020: diglett vs magnemite
+Simulating battle 999 of 3020: diglett vs tangela
+Simulating battle 1000 of 3020: diglett vs blastoise
+Simulating battle 1001 of 3020: dugtrio vs mewtwo
+Simulating battle 1002 of 3020: dugtrio vs onix
+Simulating battle 1003 of 3020: dugtrio vs nidoking
+Simulating battle 1004 of 3020: dugtrio vs arbok
+Simulating battle 1005 of 3020: dugtrio vs ponyta
+Simulating battle 1006 of 3020: dugtrio vs dodrio
+Simulating battle 1007 of 3020: dugtrio vs lickitung
+Simulating battle 1008 of 3020: dugtrio vs vileplume
+Simulating battle 1009 of 3020: dugtrio vs persian
+Simulating battle 1010 of 3020: dugtrio vs kabuto
+Simulating battle 1011 of 3020: dugtrio vs porygon
+Simulating battle 1012 of 3020: dugtrio vs gyarados
+Simulating battle 1013 of 3020: dugtrio vs victreebel
+Simulating battle 1014 of 3020: dugtrio vs oddish
+Simulating battle 1015 of 3020: dugtrio vs machoke
+Simulating battle 1016 of 3020: dugtrio vs electabuzz
+Simulating battle 1017 of 3020: dugtrio vs grimer
+Simulating battle 1018 of 3020: dugtrio vs nidorina
+Simulating battle 1019 of 3020: dugtrio vs starmie
+Simulating battle 1020 of 3020: dugtrio vs raticate
+Simulating battle 1021 of 3020: meowth vs vulpix
+Simulating battle 1022 of 3020: meowth vs arcanine
+Simulating battle 1023 of 3020: meowth vs exeggutor
+Simulating battle 1024 of 3020: meowth vs articuno
+Simulating battle 1025 of 3020: meowth vs onix
+Simulating battle 1026 of 3020: meowth vs arbok
+Simulating battle 1027 of 3020: meowth vs charmander
+Simulating battle 1028 of 3020: meowth vs bellsprout
+Simulating battle 1029 of 3020: meowth vs omastar
+Simulating battle 1030 of 3020: meowth vs nidoran-m
+Simulating battle 1031 of 3020: meowth vs goldeen
+Simulating battle 1032 of 3020: meowth vs drowzee
+Simulating battle 1033 of 3020: meowth vs mew
+Simulating battle 1034 of 3020: meowth vs kingler
+Simulating battle 1035 of 3020: meowth vs hypno
+Simulating battle 1036 of 3020: meowth vs sandslash
+Simulating battle 1037 of 3020: meowth vs poliwhirl
+Simulating battle 1038 of 3020: meowth vs mr-mime
+Simulating battle 1039 of 3020: meowth vs squirtle
+Simulating battle 1040 of 3020: meowth vs zapdos
+Simulating battle 1041 of 3020: persian vs dodrio
+Simulating battle 1042 of 3020: persian vs growlithe
+Simulating battle 1043 of 3020: persian vs pidgeotto
+Simulating battle 1044 of 3020: persian vs staryu
+Simulating battle 1045 of 3020: persian vs slowpoke
+Simulating battle 1046 of 3020: persian vs hitmonlee
+Simulating battle 1047 of 3020: persian vs nidorina
+Simulating battle 1048 of 3020: persian vs clefable
+Simulating battle 1049 of 3020: persian vs butterfree
+Simulating battle 1050 of 3020: persian vs caterpie
+Simulating battle 1051 of 3020: persian vs tauros
+Simulating battle 1052 of 3020: persian vs pikachu
+Simulating battle 1053 of 3020: persian vs poliwrath
+Simulating battle 1054 of 3020: persian vs omastar
+Simulating battle 1055 of 3020: persian vs clefairy
+Simulating battle 1056 of 3020: persian vs electrode
+Simulating battle 1057 of 3020: persian vs goldeen
+Simulating battle 1058 of 3020: persian vs drowzee
+Simulating battle 1059 of 3020: persian vs kabuto
+Simulating battle 1060 of 3020: persian vs koffing
+Simulating battle 1061 of 3020: psyduck vs wigglytuff
+Simulating battle 1062 of 3020: psyduck vs lickitung
+Simulating battle 1063 of 3020: psyduck vs raichu
+Simulating battle 1064 of 3020: psyduck vs pinsir
+Simulating battle 1065 of 3020: psyduck vs hitmonlee
+Simulating battle 1066 of 3020: psyduck vs tentacruel
+Simulating battle 1067 of 3020: psyduck vs blastoise
+Simulating battle 1068 of 3020: psyduck vs drowzee
+Simulating battle 1069 of 3020: psyduck vs primeape
+Simulating battle 1070 of 3020: psyduck vs kangaskhan
+Simulating battle 1071 of 3020: psyduck vs poliwrath
+Simulating battle 1072 of 3020: psyduck vs gengar
+Simulating battle 1073 of 3020: psyduck vs kabutops
+Simulating battle 1074 of 3020: psyduck vs haunter
+Simulating battle 1075 of 3020: psyduck vs pidgey
+Simulating battle 1076 of 3020: psyduck vs exeggutor
+Simulating battle 1077 of 3020: psyduck vs tentacool
+Simulating battle 1078 of 3020: psyduck vs venomoth
+Simulating battle 1079 of 3020: psyduck vs nidoran-m
+Simulating battle 1080 of 3020: psyduck vs goldeen
+Simulating battle 1081 of 3020: golduck vs arbok
+Simulating battle 1082 of 3020: golduck vs mankey
+Simulating battle 1083 of 3020: golduck vs charizard
+Simulating battle 1084 of 3020: golduck vs weedle
+Simulating battle 1085 of 3020: golduck vs dewgong
+Simulating battle 1086 of 3020: golduck vs kadabra
+Simulating battle 1087 of 3020: golduck vs nidorino
+Simulating battle 1088 of 3020: golduck vs moltres
+Simulating battle 1089 of 3020: golduck vs persian
+Simulating battle 1090 of 3020: golduck vs pidgeot
+Simulating battle 1091 of 3020: golduck vs snorlax
+Simulating battle 1092 of 3020: golduck vs psyduck
+Simulating battle 1093 of 3020: golduck vs primeape
+Simulating battle 1094 of 3020: golduck vs poliwhirl
+Simulating battle 1095 of 3020: golduck vs seel
+Simulating battle 1096 of 3020: golduck vs ninetales
+Simulating battle 1097 of 3020: golduck vs bulbasaur
+Simulating battle 1098 of 3020: golduck vs tentacool
+Simulating battle 1099 of 3020: golduck vs nidoking
+Simulating battle 1100 of 3020: golduck vs kabuto
+Simulating battle 1101 of 3020: mankey vs machop
+Simulating battle 1102 of 3020: mankey vs vileplume
+Simulating battle 1103 of 3020: mankey vs nidoran-f
+Simulating battle 1104 of 3020: mankey vs squirtle
+Simulating battle 1105 of 3020: mankey vs nidoking
+Simulating battle 1106 of 3020: mankey vs charmander
+Simulating battle 1107 of 3020: mankey vs haunter
+Simulating battle 1108 of 3020: mankey vs poliwrath
+Simulating battle 1109 of 3020: mankey vs doduo
+Simulating battle 1110 of 3020: mankey vs charmeleon
+Simulating battle 1111 of 3020: mankey vs bellsprout
+Simulating battle 1112 of 3020: mankey vs kakuna
+Simulating battle 1113 of 3020: mankey vs nidorino
+Simulating battle 1114 of 3020: mankey vs koffing
+Simulating battle 1115 of 3020: mankey vs flareon
+Simulating battle 1116 of 3020: mankey vs nidorina
+Simulating battle 1117 of 3020: mankey vs pidgeotto
+Simulating battle 1118 of 3020: mankey vs scyther
+Simulating battle 1119 of 3020: mankey vs horsea
+Simulating battle 1120 of 3020: mankey vs gengar
+Simulating battle 1121 of 3020: primeape vs eevee
+Simulating battle 1122 of 3020: primeape vs sandslash
+Simulating battle 1123 of 3020: primeape vs seadra
+Simulating battle 1124 of 3020: primeape vs gyarados
+Simulating battle 1125 of 3020: primeape vs growlithe
+Simulating battle 1126 of 3020: primeape vs butterfree
+Simulating battle 1127 of 3020: primeape vs jolteon
+Simulating battle 1128 of 3020: primeape vs slowpoke
+Simulating battle 1129 of 3020: primeape vs seaking
+Simulating battle 1130 of 3020: primeape vs wartortle
+Simulating battle 1131 of 3020: primeape vs pidgey
+Simulating battle 1132 of 3020: primeape vs jynx
+Simulating battle 1133 of 3020: primeape vs cubone
+Simulating battle 1134 of 3020: primeape vs rhyhorn
+Simulating battle 1135 of 3020: primeape vs pinsir
+Simulating battle 1136 of 3020: primeape vs kangaskhan
+Simulating battle 1137 of 3020: primeape vs rattata
+Simulating battle 1138 of 3020: primeape vs spearow
+Simulating battle 1139 of 3020: primeape vs doduo
+Simulating battle 1140 of 3020: primeape vs ninetales
+Simulating battle 1141 of 3020: growlithe vs pidgeotto
+Simulating battle 1142 of 3020: growlithe vs nidorino
+Simulating battle 1143 of 3020: growlithe vs tentacool
+Simulating battle 1144 of 3020: growlithe vs mew
+Simulating battle 1145 of 3020: growlithe vs aerodactyl
+Simulating battle 1146 of 3020: growlithe vs dodrio
+Simulating battle 1147 of 3020: growlithe vs kingler
+Simulating battle 1148 of 3020: growlithe vs porygon
+Simulating battle 1149 of 3020: growlithe vs ponyta
+Simulating battle 1150 of 3020: growlithe vs goldeen
+Simulating battle 1151 of 3020: growlithe vs lapras
+Simulating battle 1152 of 3020: growlithe vs rhydon
+Simulating battle 1153 of 3020: growlithe vs raichu
+Simulating battle 1154 of 3020: growlithe vs nidorina
+Simulating battle 1155 of 3020: growlithe vs snorlax
+Simulating battle 1156 of 3020: growlithe vs mankey
+Simulating battle 1157 of 3020: growlithe vs seadra
+Simulating battle 1158 of 3020: growlithe vs poliwag
+Simulating battle 1159 of 3020: growlithe vs hitmonchan
+Simulating battle 1160 of 3020: growlithe vs grimer
+Simulating battle 1161 of 3020: arcanine vs goldeen
+Simulating battle 1162 of 3020: arcanine vs cubone
+Simulating battle 1163 of 3020: arcanine vs lickitung
+Simulating battle 1164 of 3020: arcanine vs pikachu
+Simulating battle 1165 of 3020: arcanine vs magneton
+Simulating battle 1166 of 3020: arcanine vs rhyhorn
+Simulating battle 1167 of 3020: arcanine vs machoke
+Simulating battle 1168 of 3020: arcanine vs hypno
+Simulating battle 1169 of 3020: arcanine vs wigglytuff
+Simulating battle 1170 of 3020: arcanine vs scyther
+Simulating battle 1171 of 3020: arcanine vs pidgeot
+Simulating battle 1172 of 3020: arcanine vs arbok
+Simulating battle 1173 of 3020: arcanine vs fearow
+Simulating battle 1174 of 3020: arcanine vs rhydon
+Simulating battle 1175 of 3020: arcanine vs nidoking
+Simulating battle 1176 of 3020: arcanine vs articuno
+Simulating battle 1177 of 3020: arcanine vs pidgey
+Simulating battle 1178 of 3020: arcanine vs zapdos
+Simulating battle 1179 of 3020: arcanine vs seel
+Simulating battle 1180 of 3020: arcanine vs nidoran-m
+Simulating battle 1181 of 3020: poliwag vs hitmonchan
+Simulating battle 1182 of 3020: poliwag vs gastly
+Simulating battle 1183 of 3020: poliwag vs weezing
+Simulating battle 1184 of 3020: poliwag vs kakuna
+Simulating battle 1185 of 3020: poliwag vs graveler
+Simulating battle 1186 of 3020: poliwag vs magnemite
+Simulating battle 1187 of 3020: poliwag vs sandshrew
+Simulating battle 1188 of 3020: poliwag vs dragonite
+Simulating battle 1189 of 3020: poliwag vs lapras
+Simulating battle 1190 of 3020: poliwag vs golduck
+Simulating battle 1191 of 3020: poliwag vs wigglytuff
+Simulating battle 1192 of 3020: poliwag vs electabuzz
+Simulating battle 1193 of 3020: poliwag vs growlithe
+Simulating battle 1194 of 3020: poliwag vs sandslash
+Simulating battle 1195 of 3020: poliwag vs cloyster
+Simulating battle 1196 of 3020: poliwag vs articuno
+Simulating battle 1197 of 3020: poliwag vs drowzee
+Simulating battle 1198 of 3020: poliwag vs nidorina
+Simulating battle 1199 of 3020: poliwag vs tentacruel
+Simulating battle 1200 of 3020: poliwag vs dragonair
+Simulating battle 1201 of 3020: poliwhirl vs growlithe
+Simulating battle 1202 of 3020: poliwhirl vs rhyhorn
+Simulating battle 1203 of 3020: poliwhirl vs zapdos
+Simulating battle 1204 of 3020: poliwhirl vs articuno
+Simulating battle 1205 of 3020: poliwhirl vs squirtle
+Simulating battle 1206 of 3020: poliwhirl vs weepinbell
+Simulating battle 1207 of 3020: poliwhirl vs wartortle
+Simulating battle 1208 of 3020: poliwhirl vs parasect
+Simulating battle 1209 of 3020: poliwhirl vs victreebel
+Simulating battle 1210 of 3020: poliwhirl vs magnemite
+Simulating battle 1211 of 3020: poliwhirl vs grimer
+Simulating battle 1212 of 3020: poliwhirl vs cloyster
+Simulating battle 1213 of 3020: poliwhirl vs ivysaur
+Simulating battle 1214 of 3020: poliwhirl vs vulpix
+Simulating battle 1215 of 3020: poliwhirl vs moltres
+Simulating battle 1216 of 3020: poliwhirl vs cubone
+Simulating battle 1217 of 3020: poliwhirl vs pidgeot
+Simulating battle 1218 of 3020: poliwhirl vs arbok
+Simulating battle 1219 of 3020: poliwhirl vs porygon
+Simulating battle 1220 of 3020: poliwhirl vs mankey
+Simulating battle 1221 of 3020: poliwrath vs krabby
+Simulating battle 1222 of 3020: poliwrath vs koffing
+Simulating battle 1223 of 3020: poliwrath vs goldeen
+Simulating battle 1224 of 3020: poliwrath vs muk
+Simulating battle 1225 of 3020: poliwrath vs zubat
+Simulating battle 1226 of 3020: poliwrath vs drowzee
+Simulating battle 1227 of 3020: poliwrath vs magnemite
+Simulating battle 1228 of 3020: poliwrath vs dodrio
+Simulating battle 1229 of 3020: poliwrath vs dratini
+Simulating battle 1230 of 3020: poliwrath vs fearow
+Simulating battle 1231 of 3020: poliwrath vs kakuna
+Simulating battle 1232 of 3020: poliwrath vs wigglytuff
+Simulating battle 1233 of 3020: poliwrath vs weedle
+Simulating battle 1234 of 3020: poliwrath vs spearow
+Simulating battle 1235 of 3020: poliwrath vs victreebel
+Simulating battle 1236 of 3020: poliwrath vs kangaskhan
+Simulating battle 1237 of 3020: poliwrath vs weezing
+Simulating battle 1238 of 3020: poliwrath vs magmar
+Simulating battle 1239 of 3020: poliwrath vs lickitung
+Simulating battle 1240 of 3020: poliwrath vs mankey
+Simulating battle 1241 of 3020: abra vs eevee
+Simulating battle 1242 of 3020: abra vs nidorina
+Simulating battle 1243 of 3020: abra vs shellder
+Simulating battle 1244 of 3020: abra vs rhydon
+Simulating battle 1245 of 3020: abra vs nidoran-f
+Simulating battle 1246 of 3020: abra vs geodude
+Simulating battle 1247 of 3020: abra vs magmar
+Simulating battle 1248 of 3020: abra vs flareon
+Simulating battle 1249 of 3020: abra vs slowbro
+Simulating battle 1250 of 3020: abra vs butterfree
+Simulating battle 1251 of 3020: abra vs primeape
+Simulating battle 1252 of 3020: abra vs exeggutor
+Simulating battle 1253 of 3020: abra vs beedrill
+Simulating battle 1254 of 3020: abra vs ivysaur
+Simulating battle 1255 of 3020: abra vs persian
+Simulating battle 1256 of 3020: abra vs slowpoke
+Simulating battle 1257 of 3020: abra vs golduck
+Simulating battle 1258 of 3020: abra vs clefable
+Simulating battle 1259 of 3020: abra vs machoke
+Simulating battle 1260 of 3020: abra vs golem
+Simulating battle 1261 of 3020: kadabra vs dodrio
+Simulating battle 1262 of 3020: kadabra vs nidoqueen
+Simulating battle 1263 of 3020: kadabra vs ivysaur
+Simulating battle 1264 of 3020: kadabra vs magikarp
+Simulating battle 1265 of 3020: kadabra vs rhydon
+Simulating battle 1266 of 3020: kadabra vs vileplume
+Simulating battle 1267 of 3020: kadabra vs nidoking
+Simulating battle 1268 of 3020: kadabra vs kingler
+Simulating battle 1269 of 3020: kadabra vs omanyte
+Simulating battle 1270 of 3020: kadabra vs arcanine
+Simulating battle 1271 of 3020: kadabra vs gyarados
+Simulating battle 1272 of 3020: kadabra vs zapdos
+Simulating battle 1273 of 3020: kadabra vs gastly
+Simulating battle 1274 of 3020: kadabra vs rattata
+Simulating battle 1275 of 3020: kadabra vs exeggutor
+Simulating battle 1276 of 3020: kadabra vs metapod
+Simulating battle 1277 of 3020: kadabra vs chansey
+Simulating battle 1278 of 3020: kadabra vs charmeleon
+Simulating battle 1279 of 3020: kadabra vs seaking
+Simulating battle 1280 of 3020: kadabra vs raticate
+Simulating battle 1281 of 3020: alakazam vs magneton
+Simulating battle 1282 of 3020: alakazam vs dragonite
+Simulating battle 1283 of 3020: alakazam vs rhyhorn
+Simulating battle 1284 of 3020: alakazam vs dragonair
+Simulating battle 1285 of 3020: alakazam vs marowak
+Simulating battle 1286 of 3020: alakazam vs lickitung
+Simulating battle 1287 of 3020: alakazam vs golem
+Simulating battle 1288 of 3020: alakazam vs nidorina
+Simulating battle 1289 of 3020: alakazam vs charizard
+Simulating battle 1290 of 3020: alakazam vs dodrio
+Simulating battle 1291 of 3020: alakazam vs gloom
+Simulating battle 1292 of 3020: alakazam vs seaking
+Simulating battle 1293 of 3020: alakazam vs gengar
+Simulating battle 1294 of 3020: alakazam vs ekans
+Simulating battle 1295 of 3020: alakazam vs chansey
+Simulating battle 1296 of 3020: alakazam vs sandslash
+Simulating battle 1297 of 3020: alakazam vs abra
+Simulating battle 1298 of 3020: alakazam vs cubone
+Simulating battle 1299 of 3020: alakazam vs flareon
+Simulating battle 1300 of 3020: alakazam vs spearow
+Simulating battle 1301 of 3020: machop vs exeggutor
+Simulating battle 1302 of 3020: machop vs magnemite
+Simulating battle 1303 of 3020: machop vs grimer
+Simulating battle 1304 of 3020: machop vs primeape
+Simulating battle 1305 of 3020: machop vs dewgong
+Simulating battle 1306 of 3020: machop vs gloom
+Simulating battle 1307 of 3020: machop vs raticate
+Simulating battle 1308 of 3020: machop vs ditto
+Simulating battle 1309 of 3020: machop vs nidorina
+Simulating battle 1310 of 3020: machop vs porygon
+Simulating battle 1311 of 3020: machop vs diglett
+Simulating battle 1312 of 3020: machop vs cloyster
+Simulating battle 1313 of 3020: machop vs ninetales
+Simulating battle 1314 of 3020: machop vs poliwhirl
+Simulating battle 1315 of 3020: machop vs sandshrew
+Simulating battle 1316 of 3020: machop vs machoke
+Simulating battle 1317 of 3020: machop vs dugtrio
+Simulating battle 1318 of 3020: machop vs vileplume
+Simulating battle 1319 of 3020: machop vs wigglytuff
+Simulating battle 1320 of 3020: machop vs paras
+Simulating battle 1321 of 3020: machoke vs tauros
+Simulating battle 1322 of 3020: machoke vs staryu
+Simulating battle 1323 of 3020: machoke vs moltres
+Simulating battle 1324 of 3020: machoke vs mewtwo
+Simulating battle 1325 of 3020: machoke vs horsea
+Simulating battle 1326 of 3020: machoke vs doduo
+Simulating battle 1327 of 3020: machoke vs magneton
+Simulating battle 1328 of 3020: machoke vs jigglypuff
+Simulating battle 1329 of 3020: machoke vs tangela
+Simulating battle 1330 of 3020: machoke vs pidgeot
+Simulating battle 1331 of 3020: machoke vs mr-mime
+Simulating battle 1332 of 3020: machoke vs kangaskhan
+Simulating battle 1333 of 3020: machoke vs slowpoke
+Simulating battle 1334 of 3020: machoke vs tentacool
+Simulating battle 1335 of 3020: machoke vs beedrill
+Simulating battle 1336 of 3020: machoke vs gastly
+Simulating battle 1337 of 3020: machoke vs lapras
+Simulating battle 1338 of 3020: machoke vs rattata
+Simulating battle 1339 of 3020: machoke vs magnemite
+Simulating battle 1340 of 3020: machoke vs seadra
+Simulating battle 1341 of 3020: machamp vs caterpie
+Simulating battle 1342 of 3020: machamp vs beedrill
+Simulating battle 1343 of 3020: machamp vs drowzee
+Simulating battle 1344 of 3020: machamp vs graveler
+Simulating battle 1345 of 3020: machamp vs raticate
+Simulating battle 1346 of 3020: machamp vs arbok
+Simulating battle 1347 of 3020: machamp vs lapras
+Simulating battle 1348 of 3020: machamp vs voltorb
+Simulating battle 1349 of 3020: machamp vs staryu
+Simulating battle 1350 of 3020: machamp vs mewtwo
+Simulating battle 1351 of 3020: machamp vs snorlax
+Simulating battle 1352 of 3020: machamp vs metapod
+Simulating battle 1353 of 3020: machamp vs seadra
+Simulating battle 1354 of 3020: machamp vs dragonair
+Simulating battle 1355 of 3020: machamp vs venomoth
+Simulating battle 1356 of 3020: machamp vs doduo
+Simulating battle 1357 of 3020: machamp vs scyther
+Simulating battle 1358 of 3020: machamp vs gyarados
+Simulating battle 1359 of 3020: machamp vs jigglypuff
+Simulating battle 1360 of 3020: machamp vs pidgey
+Simulating battle 1361 of 3020: bellsprout vs seadra
+Simulating battle 1362 of 3020: bellsprout vs sandshrew
+Simulating battle 1363 of 3020: bellsprout vs muk
+Simulating battle 1364 of 3020: bellsprout vs fearow
+Simulating battle 1365 of 3020: bellsprout vs lapras
+Simulating battle 1366 of 3020: bellsprout vs vileplume
+Simulating battle 1367 of 3020: bellsprout vs metapod
+Simulating battle 1368 of 3020: bellsprout vs kadabra
+Simulating battle 1369 of 3020: bellsprout vs tangela
+Simulating battle 1370 of 3020: bellsprout vs flareon
+Simulating battle 1371 of 3020: bellsprout vs jolteon
+Simulating battle 1372 of 3020: bellsprout vs zubat
+Simulating battle 1373 of 3020: bellsprout vs onix
+Simulating battle 1374 of 3020: bellsprout vs hypno
+Simulating battle 1375 of 3020: bellsprout vs geodude
+Simulating battle 1376 of 3020: bellsprout vs electrode
+Simulating battle 1377 of 3020: bellsprout vs hitmonlee
+Simulating battle 1378 of 3020: bellsprout vs grimer
+Simulating battle 1379 of 3020: bellsprout vs kakuna
+Simulating battle 1380 of 3020: bellsprout vs dewgong
+Simulating battle 1381 of 3020: weepinbell vs pidgeotto
+Simulating battle 1382 of 3020: weepinbell vs seel
+Simulating battle 1383 of 3020: weepinbell vs pikachu
+Simulating battle 1384 of 3020: weepinbell vs articuno
+Simulating battle 1385 of 3020: weepinbell vs voltorb
+Simulating battle 1386 of 3020: weepinbell vs geodude
+Simulating battle 1387 of 3020: weepinbell vs alakazam
+Simulating battle 1388 of 3020: weepinbell vs jigglypuff
+Simulating battle 1389 of 3020: weepinbell vs dewgong
+Simulating battle 1390 of 3020: weepinbell vs spearow
+Simulating battle 1391 of 3020: weepinbell vs mew
+Simulating battle 1392 of 3020: weepinbell vs vulpix
+Simulating battle 1393 of 3020: weepinbell vs cloyster
+Simulating battle 1394 of 3020: weepinbell vs magnemite
+Simulating battle 1395 of 3020: weepinbell vs exeggcute
+Simulating battle 1396 of 3020: weepinbell vs nidoking
+Simulating battle 1397 of 3020: weepinbell vs fearow
+Simulating battle 1398 of 3020: weepinbell vs zapdos
+Simulating battle 1399 of 3020: weepinbell vs krabby
+Simulating battle 1400 of 3020: weepinbell vs nidorino
+Simulating battle 1401 of 3020: victreebel vs flareon
+Simulating battle 1402 of 3020: victreebel vs arbok
+Simulating battle 1403 of 3020: victreebel vs weezing
+Simulating battle 1404 of 3020: victreebel vs ditto
+Simulating battle 1405 of 3020: victreebel vs gengar
+Simulating battle 1406 of 3020: victreebel vs charmeleon
+Simulating battle 1407 of 3020: victreebel vs magnemite
+Simulating battle 1408 of 3020: victreebel vs parasect
+Simulating battle 1409 of 3020: victreebel vs golduck
+Simulating battle 1410 of 3020: victreebel vs muk
+Simulating battle 1411 of 3020: victreebel vs magmar
+Simulating battle 1412 of 3020: victreebel vs diglett
+Simulating battle 1413 of 3020: victreebel vs growlithe
+Simulating battle 1414 of 3020: victreebel vs clefable
+Simulating battle 1415 of 3020: victreebel vs wigglytuff
+Simulating battle 1416 of 3020: victreebel vs raticate
+Simulating battle 1417 of 3020: victreebel vs ponyta
+Simulating battle 1418 of 3020: victreebel vs raichu
+Simulating battle 1419 of 3020: victreebel vs lapras
+Simulating battle 1420 of 3020: victreebel vs kabuto
+Simulating battle 1421 of 3020: tentacool vs flareon
+Simulating battle 1422 of 3020: tentacool vs caterpie
+Simulating battle 1423 of 3020: tentacool vs grimer
+Simulating battle 1424 of 3020: tentacool vs nidoking
+Simulating battle 1425 of 3020: tentacool vs krabby
+Simulating battle 1426 of 3020: tentacool vs wigglytuff
+Simulating battle 1427 of 3020: tentacool vs golbat
+Simulating battle 1428 of 3020: tentacool vs parasect
+Simulating battle 1429 of 3020: tentacool vs oddish
+Simulating battle 1430 of 3020: tentacool vs tangela
+Simulating battle 1431 of 3020: tentacool vs butterfree
+Simulating battle 1432 of 3020: tentacool vs hitmonchan
+Simulating battle 1433 of 3020: tentacool vs onix
+Simulating battle 1434 of 3020: tentacool vs poliwhirl
+Simulating battle 1435 of 3020: tentacool vs kangaskhan
+Simulating battle 1436 of 3020: tentacool vs geodude
+Simulating battle 1437 of 3020: tentacool vs horsea
+Simulating battle 1438 of 3020: tentacool vs poliwag
+Simulating battle 1439 of 3020: tentacool vs omanyte
+Simulating battle 1440 of 3020: tentacool vs poliwrath
+Simulating battle 1441 of 3020: tentacruel vs magnemite
+Simulating battle 1442 of 3020: tentacruel vs mr-mime
+Simulating battle 1443 of 3020: tentacruel vs diglett
+Simulating battle 1444 of 3020: tentacruel vs drowzee
+Simulating battle 1445 of 3020: tentacruel vs dragonair
+Simulating battle 1446 of 3020: tentacruel vs tangela
+Simulating battle 1447 of 3020: tentacruel vs staryu
+Simulating battle 1448 of 3020: tentacruel vs geodude
+Simulating battle 1449 of 3020: tentacruel vs kingler
+Simulating battle 1450 of 3020: tentacruel vs gyarados
+Simulating battle 1451 of 3020: tentacruel vs porygon
+Simulating battle 1452 of 3020: tentacruel vs koffing
+Simulating battle 1453 of 3020: tentacruel vs golbat
+Simulating battle 1454 of 3020: tentacruel vs meowth
+Simulating battle 1455 of 3020: tentacruel vs clefable
+Simulating battle 1456 of 3020: tentacruel vs alakazam
+Simulating battle 1457 of 3020: tentacruel vs kakuna
+Simulating battle 1458 of 3020: tentacruel vs electabuzz
+Simulating battle 1459 of 3020: tentacruel vs hypno
+Simulating battle 1460 of 3020: tentacruel vs snorlax
+Simulating battle 1461 of 3020: geodude vs sandshrew
+Simulating battle 1462 of 3020: geodude vs vaporeon
+Simulating battle 1463 of 3020: geodude vs nidoran-m
+Simulating battle 1464 of 3020: geodude vs tentacruel
+Simulating battle 1465 of 3020: geodude vs fearow
+Simulating battle 1466 of 3020: geodude vs golbat
+Simulating battle 1467 of 3020: geodude vs weepinbell
+Simulating battle 1468 of 3020: geodude vs seadra
+Simulating battle 1469 of 3020: geodude vs eevee
+Simulating battle 1470 of 3020: geodude vs ninetales
+Simulating battle 1471 of 3020: geodude vs chansey
+Simulating battle 1472 of 3020: geodude vs arbok
+Simulating battle 1473 of 3020: geodude vs primeape
+Simulating battle 1474 of 3020: geodude vs cloyster
+Simulating battle 1475 of 3020: geodude vs squirtle
+Simulating battle 1476 of 3020: geodude vs lickitung
+Simulating battle 1477 of 3020: geodude vs kakuna
+Simulating battle 1478 of 3020: geodude vs exeggutor
+Simulating battle 1479 of 3020: geodude vs gyarados
+Simulating battle 1480 of 3020: geodude vs hypno
+Simulating battle 1481 of 3020: graveler vs poliwhirl
+Simulating battle 1482 of 3020: graveler vs voltorb
+Simulating battle 1483 of 3020: graveler vs spearow
+Simulating battle 1484 of 3020: graveler vs hypno
+Simulating battle 1485 of 3020: graveler vs growlithe
+Simulating battle 1486 of 3020: graveler vs wartortle
+Simulating battle 1487 of 3020: graveler vs farfetchd
+Simulating battle 1488 of 3020: graveler vs raichu
+Simulating battle 1489 of 3020: graveler vs dewgong
+Simulating battle 1490 of 3020: graveler vs ninetales
+Simulating battle 1491 of 3020: graveler vs clefable
+Simulating battle 1492 of 3020: graveler vs caterpie
+Simulating battle 1493 of 3020: graveler vs geodude
+Simulating battle 1494 of 3020: graveler vs mr-mime
+Simulating battle 1495 of 3020: graveler vs horsea
+Simulating battle 1496 of 3020: graveler vs ivysaur
+Simulating battle 1497 of 3020: graveler vs charmeleon
+Simulating battle 1498 of 3020: graveler vs machop
+Simulating battle 1499 of 3020: graveler vs mankey
+Simulating battle 1500 of 3020: graveler vs jigglypuff
+Simulating battle 1501 of 3020: golem vs aerodactyl
+Simulating battle 1502 of 3020: golem vs porygon
+Simulating battle 1503 of 3020: golem vs weezing
+Simulating battle 1504 of 3020: golem vs nidoran-f
+Simulating battle 1505 of 3020: golem vs geodude
+Simulating battle 1506 of 3020: golem vs poliwhirl
+Simulating battle 1507 of 3020: golem vs slowpoke
+Simulating battle 1508 of 3020: golem vs nidoran-m
+Simulating battle 1509 of 3020: golem vs weedle
+Simulating battle 1510 of 3020: golem vs poliwrath
+Simulating battle 1511 of 3020: golem vs koffing
+Simulating battle 1512 of 3020: golem vs seaking
+Simulating battle 1513 of 3020: golem vs pidgeotto
+Simulating battle 1514 of 3020: golem vs magikarp
+Simulating battle 1515 of 3020: golem vs omastar
+Simulating battle 1516 of 3020: golem vs charmeleon
+Simulating battle 1517 of 3020: golem vs eevee
+Simulating battle 1518 of 3020: golem vs dragonite
+Simulating battle 1519 of 3020: golem vs vulpix
+Simulating battle 1520 of 3020: golem vs graveler
+Simulating battle 1521 of 3020: ponyta vs rhyhorn
+Simulating battle 1522 of 3020: ponyta vs bulbasaur
+Simulating battle 1523 of 3020: ponyta vs gastly
+Simulating battle 1524 of 3020: ponyta vs poliwrath
+Simulating battle 1525 of 3020: ponyta vs dragonair
+Simulating battle 1526 of 3020: ponyta vs lickitung
+Simulating battle 1527 of 3020: ponyta vs venonat
+Simulating battle 1528 of 3020: ponyta vs fearow
+Simulating battle 1529 of 3020: ponyta vs flareon
+Simulating battle 1530 of 3020: ponyta vs gengar
+Simulating battle 1531 of 3020: ponyta vs pidgeot
+Simulating battle 1532 of 3020: ponyta vs kabutops
+Simulating battle 1533 of 3020: ponyta vs lapras
+Simulating battle 1534 of 3020: ponyta vs snorlax
+Simulating battle 1535 of 3020: ponyta vs charizard
+Simulating battle 1536 of 3020: ponyta vs electrode
+Simulating battle 1537 of 3020: ponyta vs mr-mime
+Simulating battle 1538 of 3020: ponyta vs butterfree
+Simulating battle 1539 of 3020: ponyta vs hypno
+Simulating battle 1540 of 3020: ponyta vs alakazam
+Simulating battle 1541 of 3020: rapidash vs charmeleon
+Simulating battle 1542 of 3020: rapidash vs haunter
+Simulating battle 1543 of 3020: rapidash vs pidgeot
+Simulating battle 1544 of 3020: rapidash vs shellder
+Simulating battle 1545 of 3020: rapidash vs poliwrath
+Simulating battle 1546 of 3020: rapidash vs sandshrew
+Simulating battle 1547 of 3020: rapidash vs mewtwo
+Simulating battle 1548 of 3020: rapidash vs dewgong
+Simulating battle 1549 of 3020: rapidash vs clefairy
+Simulating battle 1550 of 3020: rapidash vs butterfree
+Simulating battle 1551 of 3020: rapidash vs gastly
+Simulating battle 1552 of 3020: rapidash vs kabutops
+Simulating battle 1553 of 3020: rapidash vs grimer
+Simulating battle 1554 of 3020: rapidash vs vileplume
+Simulating battle 1555 of 3020: rapidash vs staryu
+Simulating battle 1556 of 3020: rapidash vs jynx
+Simulating battle 1557 of 3020: rapidash vs parasect
+Simulating battle 1558 of 3020: rapidash vs pidgeotto
+Simulating battle 1559 of 3020: rapidash vs seaking
+Simulating battle 1560 of 3020: rapidash vs caterpie
+Simulating battle 1561 of 3020: slowpoke vs golem
+Simulating battle 1562 of 3020: slowpoke vs meowth
+Simulating battle 1563 of 3020: slowpoke vs butterfree
+Simulating battle 1564 of 3020: slowpoke vs metapod
+Simulating battle 1565 of 3020: slowpoke vs magneton
+Simulating battle 1566 of 3020: slowpoke vs magnemite
+Simulating battle 1567 of 3020: slowpoke vs eevee
+Simulating battle 1568 of 3020: slowpoke vs exeggutor
+Simulating battle 1569 of 3020: slowpoke vs kabutops
+Simulating battle 1570 of 3020: slowpoke vs scyther
+Simulating battle 1571 of 3020: slowpoke vs alakazam
+Simulating battle 1572 of 3020: slowpoke vs caterpie
+Simulating battle 1573 of 3020: slowpoke vs venomoth
+Simulating battle 1574 of 3020: slowpoke vs geodude
+Simulating battle 1575 of 3020: slowpoke vs haunter
+Simulating battle 1576 of 3020: slowpoke vs weedle
+Simulating battle 1577 of 3020: slowpoke vs seel
+Simulating battle 1578 of 3020: slowpoke vs weepinbell
+Simulating battle 1579 of 3020: slowpoke vs nidoran-m
+Simulating battle 1580 of 3020: slowpoke vs drowzee
+Simulating battle 1581 of 3020: slowbro vs chansey
+Simulating battle 1582 of 3020: slowbro vs cubone
+Simulating battle 1583 of 3020: slowbro vs tangela
+Simulating battle 1584 of 3020: slowbro vs voltorb
+Simulating battle 1585 of 3020: slowbro vs grimer
+Simulating battle 1586 of 3020: slowbro vs venonat
+Simulating battle 1587 of 3020: slowbro vs magikarp
+Simulating battle 1588 of 3020: slowbro vs drowzee
+Simulating battle 1589 of 3020: slowbro vs vaporeon
+Simulating battle 1590 of 3020: slowbro vs bellsprout
+Simulating battle 1591 of 3020: slowbro vs fearow
+Simulating battle 1592 of 3020: slowbro vs weezing
+Simulating battle 1593 of 3020: slowbro vs spearow
+Simulating battle 1594 of 3020: slowbro vs rhydon
+Simulating battle 1595 of 3020: slowbro vs parasect
+Simulating battle 1596 of 3020: slowbro vs kabutops
+Simulating battle 1597 of 3020: slowbro vs golem
+Simulating battle 1598 of 3020: slowbro vs doduo
+Simulating battle 1599 of 3020: slowbro vs sandshrew
+Simulating battle 1600 of 3020: slowbro vs dodrio
+Simulating battle 1601 of 3020: magnemite vs golem
+Simulating battle 1602 of 3020: magnemite vs slowpoke
+Simulating battle 1603 of 3020: magnemite vs horsea
+Simulating battle 1604 of 3020: magnemite vs rhyhorn
+Simulating battle 1605 of 3020: magnemite vs oddish
+Simulating battle 1606 of 3020: magnemite vs kangaskhan
+Simulating battle 1607 of 3020: magnemite vs cloyster
+Simulating battle 1608 of 3020: magnemite vs metapod
+Simulating battle 1609 of 3020: magnemite vs gastly
+Simulating battle 1610 of 3020: magnemite vs chansey
+Simulating battle 1611 of 3020: magnemite vs victreebel
+Simulating battle 1612 of 3020: magnemite vs beedrill
+Simulating battle 1613 of 3020: magnemite vs raticate
+Simulating battle 1614 of 3020: magnemite vs marowak
+Simulating battle 1615 of 3020: magnemite vs onix
+Simulating battle 1616 of 3020: magnemite vs eevee
+Simulating battle 1617 of 3020: magnemite vs zubat
+Simulating battle 1618 of 3020: magnemite vs wartortle
+Simulating battle 1619 of 3020: magnemite vs vulpix
+Simulating battle 1620 of 3020: magnemite vs tangela
+Simulating battle 1621 of 3020: magneton vs blastoise
+Simulating battle 1622 of 3020: magneton vs nidorino
+Simulating battle 1623 of 3020: magneton vs pidgeot
+Simulating battle 1624 of 3020: magneton vs poliwhirl
+Simulating battle 1625 of 3020: magneton vs onix
+Simulating battle 1626 of 3020: magneton vs gengar
+Simulating battle 1627 of 3020: magneton vs voltorb
+Simulating battle 1628 of 3020: magneton vs dratini
+Simulating battle 1629 of 3020: magneton vs wigglytuff
+Simulating battle 1630 of 3020: magneton vs seadra
+Simulating battle 1631 of 3020: magneton vs drowzee
+Simulating battle 1632 of 3020: magneton vs hypno
+Simulating battle 1633 of 3020: magneton vs kangaskhan
+Simulating battle 1634 of 3020: magneton vs raticate
+Simulating battle 1635 of 3020: magneton vs dragonair
+Simulating battle 1636 of 3020: magneton vs clefable
+Simulating battle 1637 of 3020: magneton vs porygon
+Simulating battle 1638 of 3020: magneton vs exeggutor
+Simulating battle 1639 of 3020: magneton vs magnemite
+Simulating battle 1640 of 3020: magneton vs tentacool
+Simulating battle 1641 of 3020: farfetchd vs kadabra
+Simulating battle 1642 of 3020: farfetchd vs nidorina
+Simulating battle 1643 of 3020: farfetchd vs squirtle
+Simulating battle 1644 of 3020: farfetchd vs venonat
+Simulating battle 1645 of 3020: farfetchd vs magikarp
+Simulating battle 1646 of 3020: farfetchd vs vaporeon
+Simulating battle 1647 of 3020: farfetchd vs electrode
+Simulating battle 1648 of 3020: farfetchd vs zapdos
+Simulating battle 1649 of 3020: farfetchd vs nidoqueen
+Simulating battle 1650 of 3020: farfetchd vs machamp
+Simulating battle 1651 of 3020: farfetchd vs machoke
+Simulating battle 1652 of 3020: farfetchd vs horsea
+Simulating battle 1653 of 3020: farfetchd vs golduck
+Simulating battle 1654 of 3020: farfetchd vs geodude
+Simulating battle 1655 of 3020: farfetchd vs pinsir
+Simulating battle 1656 of 3020: farfetchd vs meowth
+Simulating battle 1657 of 3020: farfetchd vs nidoran-m
+Simulating battle 1658 of 3020: farfetchd vs clefairy
+Simulating battle 1659 of 3020: farfetchd vs rattata
+Simulating battle 1660 of 3020: farfetchd vs seadra
+Simulating battle 1661 of 3020: doduo vs vileplume
+Simulating battle 1662 of 3020: doduo vs kangaskhan
+Simulating battle 1663 of 3020: doduo vs ekans
+Simulating battle 1664 of 3020: doduo vs magneton
+Simulating battle 1665 of 3020: doduo vs shellder
+Simulating battle 1666 of 3020: doduo vs pidgeotto
+Simulating battle 1667 of 3020: doduo vs aerodactyl
+Simulating battle 1668 of 3020: doduo vs kabuto
+Simulating battle 1669 of 3020: doduo vs graveler
+Simulating battle 1670 of 3020: doduo vs ponyta
+Simulating battle 1671 of 3020: doduo vs zubat
+Simulating battle 1672 of 3020: doduo vs gengar
+Simulating battle 1673 of 3020: doduo vs ditto
+Simulating battle 1674 of 3020: doduo vs growlithe
+Simulating battle 1675 of 3020: doduo vs nidoran-m
+Simulating battle 1676 of 3020: doduo vs meowth
+Simulating battle 1677 of 3020: doduo vs clefable
+Simulating battle 1678 of 3020: doduo vs poliwhirl
+Simulating battle 1679 of 3020: doduo vs tauros
+Simulating battle 1680 of 3020: doduo vs squirtle
+Simulating battle 1681 of 3020: dodrio vs gengar
+Simulating battle 1682 of 3020: dodrio vs snorlax
+Simulating battle 1683 of 3020: dodrio vs dragonair
+Simulating battle 1684 of 3020: dodrio vs drowzee
+Simulating battle 1685 of 3020: dodrio vs starmie
+Simulating battle 1686 of 3020: dodrio vs nidoking
+Simulating battle 1687 of 3020: dodrio vs ekans
+Simulating battle 1688 of 3020: dodrio vs pidgeotto
+Simulating battle 1689 of 3020: dodrio vs slowbro
+Simulating battle 1690 of 3020: dodrio vs exeggutor
+Simulating battle 1691 of 3020: dodrio vs jynx
+Simulating battle 1692 of 3020: dodrio vs flareon
+Simulating battle 1693 of 3020: dodrio vs hitmonchan
+Simulating battle 1694 of 3020: dodrio vs hitmonlee
+Simulating battle 1695 of 3020: dodrio vs dragonite
+Simulating battle 1696 of 3020: dodrio vs rattata
+Simulating battle 1697 of 3020: dodrio vs nidorino
+Simulating battle 1698 of 3020: dodrio vs magneton
+Simulating battle 1699 of 3020: dodrio vs seadra
+Simulating battle 1700 of 3020: dodrio vs vaporeon
+Simulating battle 1701 of 3020: seel vs shellder
+Simulating battle 1702 of 3020: seel vs nidorino
+Simulating battle 1703 of 3020: seel vs snorlax
+Simulating battle 1704 of 3020: seel vs parasect
+Simulating battle 1705 of 3020: seel vs nidoking
+Simulating battle 1706 of 3020: seel vs rhydon
+Simulating battle 1707 of 3020: seel vs gyarados
+Simulating battle 1708 of 3020: seel vs beedrill
+Simulating battle 1709 of 3020: seel vs nidoran-m
+Simulating battle 1710 of 3020: seel vs vaporeon
+Simulating battle 1711 of 3020: seel vs wigglytuff
+Simulating battle 1712 of 3020: seel vs rapidash
+Simulating battle 1713 of 3020: seel vs oddish
+Simulating battle 1714 of 3020: seel vs golbat
+Simulating battle 1715 of 3020: seel vs farfetchd
+Simulating battle 1716 of 3020: seel vs growlithe
+Simulating battle 1717 of 3020: seel vs tentacruel
+Simulating battle 1718 of 3020: seel vs spearow
+Simulating battle 1719 of 3020: seel vs alakazam
+Simulating battle 1720 of 3020: seel vs dugtrio
+Simulating battle 1721 of 3020: dewgong vs snorlax
+Simulating battle 1722 of 3020: dewgong vs victreebel
+Simulating battle 1723 of 3020: dewgong vs nidorino
+Simulating battle 1724 of 3020: dewgong vs rapidash
+Simulating battle 1725 of 3020: dewgong vs omanyte
+Simulating battle 1726 of 3020: dewgong vs arbok
+Simulating battle 1727 of 3020: dewgong vs gyarados
+Simulating battle 1728 of 3020: dewgong vs gloom
+Simulating battle 1729 of 3020: dewgong vs mewtwo
+Simulating battle 1730 of 3020: dewgong vs wigglytuff
+Simulating battle 1731 of 3020: dewgong vs grimer
+Simulating battle 1732 of 3020: dewgong vs moltres
+Simulating battle 1733 of 3020: dewgong vs metapod
+Simulating battle 1734 of 3020: dewgong vs wartortle
+Simulating battle 1735 of 3020: dewgong vs spearow
+Simulating battle 1736 of 3020: dewgong vs butterfree
+Simulating battle 1737 of 3020: dewgong vs dragonite
+Simulating battle 1738 of 3020: dewgong vs machamp
+Simulating battle 1739 of 3020: dewgong vs psyduck
+Simulating battle 1740 of 3020: dewgong vs dragonair
+Simulating battle 1741 of 3020: grimer vs lickitung
+Simulating battle 1742 of 3020: grimer vs wartortle
+Simulating battle 1743 of 3020: grimer vs magikarp
+Simulating battle 1744 of 3020: grimer vs kabutops
+Simulating battle 1745 of 3020: grimer vs graveler
+Simulating battle 1746 of 3020: grimer vs rapidash
+Simulating battle 1747 of 3020: grimer vs electabuzz
+Simulating battle 1748 of 3020: grimer vs abra
+Simulating battle 1749 of 3020: grimer vs marowak
+Simulating battle 1750 of 3020: grimer vs ponyta
+Simulating battle 1751 of 3020: grimer vs goldeen
+Simulating battle 1752 of 3020: grimer vs rattata
+Simulating battle 1753 of 3020: grimer vs pidgey
+Simulating battle 1754 of 3020: grimer vs zubat
+Simulating battle 1755 of 3020: grimer vs tangela
+Simulating battle 1756 of 3020: grimer vs staryu
+Simulating battle 1757 of 3020: grimer vs persian
+Simulating battle 1758 of 3020: grimer vs muk
+Simulating battle 1759 of 3020: grimer vs vulpix
+Simulating battle 1760 of 3020: grimer vs magnemite
+Simulating battle 1761 of 3020: muk vs magneton
+Simulating battle 1762 of 3020: muk vs shellder
+Simulating battle 1763 of 3020: muk vs cubone
+Simulating battle 1764 of 3020: muk vs nidoking
+Simulating battle 1765 of 3020: muk vs drowzee
+Simulating battle 1766 of 3020: muk vs eevee
+Simulating battle 1767 of 3020: muk vs zapdos
+Simulating battle 1768 of 3020: muk vs sandslash
+Simulating battle 1769 of 3020: muk vs poliwrath
+Simulating battle 1770 of 3020: muk vs starmie
+Simulating battle 1771 of 3020: muk vs nidoran-m
+Simulating battle 1772 of 3020: muk vs bellsprout
+Simulating battle 1773 of 3020: muk vs seadra
+Simulating battle 1774 of 3020: muk vs kadabra
+Simulating battle 1775 of 3020: muk vs vulpix
+Simulating battle 1776 of 3020: muk vs pikachu
+Simulating battle 1777 of 3020: muk vs weedle
+Simulating battle 1778 of 3020: muk vs graveler
+Simulating battle 1779 of 3020: muk vs voltorb
+Simulating battle 1780 of 3020: muk vs koffing
+Simulating battle 1781 of 3020: shellder vs kadabra
+Simulating battle 1782 of 3020: shellder vs zubat
+Simulating battle 1783 of 3020: shellder vs doduo
+Simulating battle 1784 of 3020: shellder vs dragonite
+Simulating battle 1785 of 3020: shellder vs magnemite
+Simulating battle 1786 of 3020: shellder vs venomoth
+Simulating battle 1787 of 3020: shellder vs magikarp
+Simulating battle 1788 of 3020: shellder vs eevee
+Simulating battle 1789 of 3020: shellder vs starmie
+Simulating battle 1790 of 3020: shellder vs slowpoke
+Simulating battle 1791 of 3020: shellder vs charizard
+Simulating battle 1792 of 3020: shellder vs arbok
+Simulating battle 1793 of 3020: shellder vs exeggcute
+Simulating battle 1794 of 3020: shellder vs lapras
+Simulating battle 1795 of 3020: shellder vs seaking
+Simulating battle 1796 of 3020: shellder vs poliwrath
+Simulating battle 1797 of 3020: shellder vs mankey
+Simulating battle 1798 of 3020: shellder vs mew
+Simulating battle 1799 of 3020: shellder vs gastly
+Simulating battle 1800 of 3020: shellder vs weedle
+Simulating battle 1801 of 3020: cloyster vs weedle
+Simulating battle 1802 of 3020: cloyster vs tentacruel
+Simulating battle 1803 of 3020: cloyster vs tauros
+Simulating battle 1804 of 3020: cloyster vs mr-mime
+Simulating battle 1805 of 3020: cloyster vs geodude
+Simulating battle 1806 of 3020: cloyster vs omastar
+Simulating battle 1807 of 3020: cloyster vs venusaur
+Simulating battle 1808 of 3020: cloyster vs sandslash
+Simulating battle 1809 of 3020: cloyster vs rhydon
+Simulating battle 1810 of 3020: cloyster vs clefairy
+Simulating battle 1811 of 3020: cloyster vs machamp
+Simulating battle 1812 of 3020: cloyster vs onix
+Simulating battle 1813 of 3020: cloyster vs marowak
+Simulating battle 1814 of 3020: cloyster vs butterfree
+Simulating battle 1815 of 3020: cloyster vs cubone
+Simulating battle 1816 of 3020: cloyster vs kakuna
+Simulating battle 1817 of 3020: cloyster vs dratini
+Simulating battle 1818 of 3020: cloyster vs zapdos
+Simulating battle 1819 of 3020: cloyster vs diglett
+Simulating battle 1820 of 3020: cloyster vs gengar
+Simulating battle 1821 of 3020: gastly vs snorlax
+Simulating battle 1822 of 3020: gastly vs geodude
+Simulating battle 1823 of 3020: gastly vs rattata
+Simulating battle 1824 of 3020: gastly vs voltorb
+Simulating battle 1825 of 3020: gastly vs lapras
+Simulating battle 1826 of 3020: gastly vs seadra
+Simulating battle 1827 of 3020: gastly vs aerodactyl
+Simulating battle 1828 of 3020: gastly vs tentacool
+Simulating battle 1829 of 3020: gastly vs nidoqueen
+Simulating battle 1830 of 3020: gastly vs nidorino
+Simulating battle 1831 of 3020: gastly vs pikachu
+Simulating battle 1832 of 3020: gastly vs exeggcute
+Simulating battle 1833 of 3020: gastly vs hypno
+Simulating battle 1834 of 3020: gastly vs dewgong
+Simulating battle 1835 of 3020: gastly vs articuno
+Simulating battle 1836 of 3020: gastly vs onix
+Simulating battle 1837 of 3020: gastly vs vulpix
+Simulating battle 1838 of 3020: gastly vs dugtrio
+Simulating battle 1839 of 3020: gastly vs ditto
+Simulating battle 1840 of 3020: gastly vs cubone
+Simulating battle 1841 of 3020: haunter vs gyarados
+Simulating battle 1842 of 3020: haunter vs metapod
+Simulating battle 1843 of 3020: haunter vs butterfree
+Simulating battle 1844 of 3020: haunter vs caterpie
+Simulating battle 1845 of 3020: haunter vs clefable
+Simulating battle 1846 of 3020: haunter vs seel
+Simulating battle 1847 of 3020: haunter vs scyther
+Simulating battle 1848 of 3020: haunter vs vaporeon
+Simulating battle 1849 of 3020: haunter vs goldeen
+Simulating battle 1850 of 3020: haunter vs jigglypuff
+Simulating battle 1851 of 3020: haunter vs eevee
+Simulating battle 1852 of 3020: haunter vs doduo
+Simulating battle 1853 of 3020: haunter vs magneton
+Simulating battle 1854 of 3020: haunter vs golbat
+Simulating battle 1855 of 3020: haunter vs exeggcute
+Simulating battle 1856 of 3020: haunter vs ponyta
+Simulating battle 1857 of 3020: haunter vs dewgong
+Simulating battle 1858 of 3020: haunter vs lapras
+Simulating battle 1859 of 3020: haunter vs ditto
+Simulating battle 1860 of 3020: haunter vs omanyte
+Simulating battle 1861 of 3020: gengar vs pinsir
+Simulating battle 1862 of 3020: gengar vs moltres
+Simulating battle 1863 of 3020: gengar vs ponyta
+Simulating battle 1864 of 3020: gengar vs scyther
+Simulating battle 1865 of 3020: gengar vs charmeleon
+Simulating battle 1866 of 3020: gengar vs drowzee
+Simulating battle 1867 of 3020: gengar vs dodrio
+Simulating battle 1868 of 3020: gengar vs nidoran-f
+Simulating battle 1869 of 3020: gengar vs lickitung
+Simulating battle 1870 of 3020: gengar vs mew
+Simulating battle 1871 of 3020: gengar vs slowpoke
+Simulating battle 1872 of 3020: gengar vs squirtle
+Simulating battle 1873 of 3020: gengar vs machamp
+Simulating battle 1874 of 3020: gengar vs mewtwo
+Simulating battle 1875 of 3020: gengar vs dragonite
+Simulating battle 1876 of 3020: gengar vs arcanine
+Simulating battle 1877 of 3020: gengar vs kakuna
+Simulating battle 1878 of 3020: gengar vs jynx
+Simulating battle 1879 of 3020: gengar vs gloom
+Simulating battle 1880 of 3020: gengar vs flareon
+Simulating battle 1881 of 3020: onix vs kingler
+Simulating battle 1882 of 3020: onix vs ninetales
+Simulating battle 1883 of 3020: onix vs abra
+Simulating battle 1884 of 3020: onix vs blastoise
+Simulating battle 1885 of 3020: onix vs dragonair
+Simulating battle 1886 of 3020: onix vs nidoran-f
+Simulating battle 1887 of 3020: onix vs venomoth
+Simulating battle 1888 of 3020: onix vs charmeleon
+Simulating battle 1889 of 3020: onix vs tangela
+Simulating battle 1890 of 3020: onix vs magnemite
+Simulating battle 1891 of 3020: onix vs koffing
+Simulating battle 1892 of 3020: onix vs jigglypuff
+Simulating battle 1893 of 3020: onix vs hitmonchan
+Simulating battle 1894 of 3020: onix vs persian
+Simulating battle 1895 of 3020: onix vs gyarados
+Simulating battle 1896 of 3020: onix vs mr-mime
+Simulating battle 1897 of 3020: onix vs pidgey
+Simulating battle 1898 of 3020: onix vs clefable
+Simulating battle 1899 of 3020: onix vs vaporeon
+Simulating battle 1900 of 3020: onix vs psyduck
+Simulating battle 1901 of 3020: drowzee vs zapdos
+Simulating battle 1902 of 3020: drowzee vs doduo
+Simulating battle 1903 of 3020: drowzee vs jynx
+Simulating battle 1904 of 3020: drowzee vs flareon
+Simulating battle 1905 of 3020: drowzee vs krabby
+Simulating battle 1906 of 3020: drowzee vs magnemite
+Simulating battle 1907 of 3020: drowzee vs vileplume
+Simulating battle 1908 of 3020: drowzee vs seaking
+Simulating battle 1909 of 3020: drowzee vs omanyte
+Simulating battle 1910 of 3020: drowzee vs grimer
+Simulating battle 1911 of 3020: drowzee vs kabutops
+Simulating battle 1912 of 3020: drowzee vs cloyster
+Simulating battle 1913 of 3020: drowzee vs machamp
+Simulating battle 1914 of 3020: drowzee vs electabuzz
+Simulating battle 1915 of 3020: drowzee vs diglett
+Simulating battle 1916 of 3020: drowzee vs kadabra
+Simulating battle 1917 of 3020: drowzee vs tentacool
+Simulating battle 1918 of 3020: drowzee vs articuno
+Simulating battle 1919 of 3020: drowzee vs ponyta
+Simulating battle 1920 of 3020: drowzee vs growlithe
+Simulating battle 1921 of 3020: hypno vs ponyta
+Simulating battle 1922 of 3020: hypno vs geodude
+Simulating battle 1923 of 3020: hypno vs psyduck
+Simulating battle 1924 of 3020: hypno vs pinsir
+Simulating battle 1925 of 3020: hypno vs magneton
+Simulating battle 1926 of 3020: hypno vs jynx
+Simulating battle 1927 of 3020: hypno vs shellder
+Simulating battle 1928 of 3020: hypno vs zapdos
+Simulating battle 1929 of 3020: hypno vs victreebel
+Simulating battle 1930 of 3020: hypno vs nidoran-m
+Simulating battle 1931 of 3020: hypno vs dragonair
+Simulating battle 1932 of 3020: hypno vs kabutops
+Simulating battle 1933 of 3020: hypno vs kingler
+Simulating battle 1934 of 3020: hypno vs exeggutor
+Simulating battle 1935 of 3020: hypno vs muk
+Simulating battle 1936 of 3020: hypno vs ninetales
+Simulating battle 1937 of 3020: hypno vs graveler
+Simulating battle 1938 of 3020: hypno vs metapod
+Simulating battle 1939 of 3020: hypno vs spearow
+Simulating battle 1940 of 3020: hypno vs kangaskhan
+Simulating battle 1941 of 3020: krabby vs machop
+Simulating battle 1942 of 3020: krabby vs jynx
+Simulating battle 1943 of 3020: krabby vs golduck
+Simulating battle 1944 of 3020: krabby vs meowth
+Simulating battle 1945 of 3020: krabby vs omastar
+Simulating battle 1946 of 3020: krabby vs weepinbell
+Simulating battle 1947 of 3020: krabby vs zapdos
+Simulating battle 1948 of 3020: krabby vs clefable
+Simulating battle 1949 of 3020: krabby vs sandslash
+Simulating battle 1950 of 3020: krabby vs poliwrath
+Simulating battle 1951 of 3020: krabby vs abra
+Simulating battle 1952 of 3020: krabby vs weedle
+Simulating battle 1953 of 3020: krabby vs porygon
+Simulating battle 1954 of 3020: krabby vs growlithe
+Simulating battle 1955 of 3020: krabby vs poliwag
+Simulating battle 1956 of 3020: krabby vs kakuna
+Simulating battle 1957 of 3020: krabby vs raichu
+Simulating battle 1958 of 3020: krabby vs hitmonchan
+Simulating battle 1959 of 3020: krabby vs dodrio
+Simulating battle 1960 of 3020: krabby vs mr-mime
+Simulating battle 1961 of 3020: kingler vs raichu
+Simulating battle 1962 of 3020: kingler vs clefable
+Simulating battle 1963 of 3020: kingler vs ivysaur
+Simulating battle 1964 of 3020: kingler vs aerodactyl
+Simulating battle 1965 of 3020: kingler vs zubat
+Simulating battle 1966 of 3020: kingler vs hitmonlee
+Simulating battle 1967 of 3020: kingler vs scyther
+Simulating battle 1968 of 3020: kingler vs jynx
+Simulating battle 1969 of 3020: kingler vs meowth
+Simulating battle 1970 of 3020: kingler vs geodude
+Simulating battle 1971 of 3020: kingler vs farfetchd
+Simulating battle 1972 of 3020: kingler vs pidgey
+Simulating battle 1973 of 3020: kingler vs ekans
+Simulating battle 1974 of 3020: kingler vs dragonair
+Simulating battle 1975 of 3020: kingler vs poliwag
+Simulating battle 1976 of 3020: kingler vs omanyte
+Simulating battle 1977 of 3020: kingler vs caterpie
+Simulating battle 1978 of 3020: kingler vs vileplume
+Simulating battle 1979 of 3020: kingler vs lickitung
+Simulating battle 1980 of 3020: kingler vs paras
+Simulating battle 1981 of 3020: voltorb vs caterpie
+Simulating battle 1982 of 3020: voltorb vs exeggutor
+Simulating battle 1983 of 3020: voltorb vs tauros
+Simulating battle 1984 of 3020: voltorb vs venonat
+Simulating battle 1985 of 3020: voltorb vs graveler
+Simulating battle 1986 of 3020: voltorb vs venusaur
+Simulating battle 1987 of 3020: voltorb vs ponyta
+Simulating battle 1988 of 3020: voltorb vs dratini
+Simulating battle 1989 of 3020: voltorb vs sandslash
+Simulating battle 1990 of 3020: voltorb vs seel
+Simulating battle 1991 of 3020: voltorb vs tentacruel
+Simulating battle 1992 of 3020: voltorb vs goldeen
+Simulating battle 1993 of 3020: voltorb vs kabutops
+Simulating battle 1994 of 3020: voltorb vs flareon
+Simulating battle 1995 of 3020: voltorb vs clefairy
+Simulating battle 1996 of 3020: voltorb vs lapras
+Simulating battle 1997 of 3020: voltorb vs starmie
+Simulating battle 1998 of 3020: voltorb vs weepinbell
+Simulating battle 1999 of 3020: voltorb vs diglett
+Simulating battle 2000 of 3020: voltorb vs nidoran-f
+Simulating battle 2001 of 3020: electrode vs dodrio
+API error occurred: Connection error.. Retrying in 30 seconds...
+Simulating battle 2002 of 3020: electrode vs golbat
+Simulating battle 2003 of 3020: electrode vs seaking
+Simulating battle 2004 of 3020: electrode vs machop
+Simulating battle 2005 of 3020: electrode vs venonat
+Simulating battle 2006 of 3020: electrode vs charmander
+Simulating battle 2007 of 3020: electrode vs dewgong
+Simulating battle 2008 of 3020: electrode vs golem
+Simulating battle 2009 of 3020: electrode vs dratini
+Simulating battle 2010 of 3020: electrode vs diglett
+Simulating battle 2011 of 3020: electrode vs vileplume
+Simulating battle 2012 of 3020: electrode vs marowak
+Simulating battle 2013 of 3020: electrode vs rhyhorn
+Simulating battle 2014 of 3020: electrode vs eevee
+Simulating battle 2015 of 3020: electrode vs doduo
+Simulating battle 2016 of 3020: electrode vs ekans
+Simulating battle 2017 of 3020: electrode vs cubone
+Simulating battle 2018 of 3020: electrode vs pikachu
+Simulating battle 2019 of 3020: electrode vs clefable
+Simulating battle 2020 of 3020: electrode vs jynx
+Simulating battle 2021 of 3020: exeggcute vs farfetchd
+Simulating battle 2022 of 3020: exeggcute vs kadabra
+Simulating battle 2023 of 3020: exeggcute vs ivysaur
+Simulating battle 2024 of 3020: exeggcute vs machoke
+Simulating battle 2025 of 3020: exeggcute vs kingler
+Simulating battle 2026 of 3020: exeggcute vs poliwhirl
+Simulating battle 2027 of 3020: exeggcute vs horsea
+Simulating battle 2028 of 3020: exeggcute vs bellsprout
+Simulating battle 2029 of 3020: exeggcute vs dodrio
+Simulating battle 2030 of 3020: exeggcute vs rapidash
+Simulating battle 2031 of 3020: exeggcute vs mew
+Simulating battle 2032 of 3020: exeggcute vs dragonair
+Simulating battle 2033 of 3020: exeggcute vs venusaur
+Simulating battle 2034 of 3020: exeggcute vs haunter
+Simulating battle 2035 of 3020: exeggcute vs pidgey
+Simulating battle 2036 of 3020: exeggcute vs nidoqueen
+Simulating battle 2037 of 3020: exeggcute vs starmie
+Simulating battle 2038 of 3020: exeggcute vs slowpoke
+Simulating battle 2039 of 3020: exeggcute vs zubat
+Simulating battle 2040 of 3020: exeggcute vs marowak
+Simulating battle 2041 of 3020: exeggutor vs gyarados
+Simulating battle 2042 of 3020: exeggutor vs slowbro
+Simulating battle 2043 of 3020: exeggutor vs nidoqueen
+Simulating battle 2044 of 3020: exeggutor vs golem
+Simulating battle 2045 of 3020: exeggutor vs onix
+Simulating battle 2046 of 3020: exeggutor vs primeape
+Simulating battle 2047 of 3020: exeggutor vs clefairy
+Simulating battle 2048 of 3020: exeggutor vs jynx
+Simulating battle 2049 of 3020: exeggutor vs wigglytuff
+Simulating battle 2050 of 3020: exeggutor vs goldeen
+Simulating battle 2051 of 3020: exeggutor vs drowzee
+Simulating battle 2052 of 3020: exeggutor vs lickitung
+Simulating battle 2053 of 3020: exeggutor vs aerodactyl
+Simulating battle 2054 of 3020: exeggutor vs mr-mime
+Simulating battle 2055 of 3020: exeggutor vs omastar
+Simulating battle 2056 of 3020: exeggutor vs mankey
+Simulating battle 2057 of 3020: exeggutor vs kadabra
+Simulating battle 2058 of 3020: exeggutor vs spearow
+Simulating battle 2059 of 3020: exeggutor vs flareon
+Simulating battle 2060 of 3020: exeggutor vs horsea
+Simulating battle 2061 of 3020: cubone vs porygon
+Simulating battle 2062 of 3020: cubone vs haunter
+Simulating battle 2063 of 3020: cubone vs raticate
+Simulating battle 2064 of 3020: cubone vs moltres
+Simulating battle 2065 of 3020: cubone vs nidoran-f
+Simulating battle 2066 of 3020: cubone vs pidgey
+Simulating battle 2067 of 3020: cubone vs aerodactyl
+Simulating battle 2068 of 3020: cubone vs lapras
+Simulating battle 2069 of 3020: cubone vs meowth
+Simulating battle 2070 of 3020: cubone vs dragonair
+Simulating battle 2071 of 3020: cubone vs omastar
+Simulating battle 2072 of 3020: cubone vs jigglypuff
+Simulating battle 2073 of 3020: cubone vs oddish
+Simulating battle 2074 of 3020: cubone vs doduo
+Simulating battle 2075 of 3020: cubone vs jolteon
+Simulating battle 2076 of 3020: cubone vs kangaskhan
+Simulating battle 2077 of 3020: cubone vs nidorina
+Simulating battle 2078 of 3020: cubone vs persian
+Simulating battle 2079 of 3020: cubone vs mew
+Simulating battle 2080 of 3020: cubone vs pinsir
+Simulating battle 2081 of 3020: marowak vs arbok
+Simulating battle 2082 of 3020: marowak vs ditto
+Simulating battle 2083 of 3020: marowak vs horsea
+Simulating battle 2084 of 3020: marowak vs beedrill
+Simulating battle 2085 of 3020: marowak vs goldeen
+Simulating battle 2086 of 3020: marowak vs nidoking
+Simulating battle 2087 of 3020: marowak vs eevee
+Simulating battle 2088 of 3020: marowak vs lickitung
+Simulating battle 2089 of 3020: marowak vs moltres
+Simulating battle 2090 of 3020: marowak vs zapdos
+Simulating battle 2091 of 3020: marowak vs staryu
+Simulating battle 2092 of 3020: marowak vs slowpoke
+Simulating battle 2093 of 3020: marowak vs charizard
+Simulating battle 2094 of 3020: marowak vs exeggcute
+Simulating battle 2095 of 3020: marowak vs machop
+Simulating battle 2096 of 3020: marowak vs bulbasaur
+Simulating battle 2097 of 3020: marowak vs mankey
+Simulating battle 2098 of 3020: marowak vs mewtwo
+Simulating battle 2099 of 3020: marowak vs rattata
+Simulating battle 2100 of 3020: marowak vs butterfree
+Simulating battle 2101 of 3020: hitmonlee vs weezing
+Simulating battle 2102 of 3020: hitmonlee vs muk
+Simulating battle 2103 of 3020: hitmonlee vs pidgeotto
+Simulating battle 2104 of 3020: hitmonlee vs kabuto
+Simulating battle 2105 of 3020: hitmonlee vs pidgey
+Simulating battle 2106 of 3020: hitmonlee vs pidgeot
+Simulating battle 2107 of 3020: hitmonlee vs mr-mime
+Simulating battle 2108 of 3020: hitmonlee vs blastoise
+Simulating battle 2109 of 3020: hitmonlee vs geodude
+Simulating battle 2110 of 3020: hitmonlee vs marowak
+Simulating battle 2111 of 3020: hitmonlee vs parasect
+Simulating battle 2112 of 3020: hitmonlee vs clefairy
+Simulating battle 2113 of 3020: hitmonlee vs koffing
+Simulating battle 2114 of 3020: hitmonlee vs drowzee
+Simulating battle 2115 of 3020: hitmonlee vs krabby
+Simulating battle 2116 of 3020: hitmonlee vs horsea
+Simulating battle 2117 of 3020: hitmonlee vs hypno
+Simulating battle 2118 of 3020: hitmonlee vs spearow
+Simulating battle 2119 of 3020: hitmonlee vs shellder
+Simulating battle 2120 of 3020: hitmonlee vs nidoqueen
+Simulating battle 2121 of 3020: hitmonchan vs paras
+Simulating battle 2122 of 3020: hitmonchan vs omastar
+Simulating battle 2123 of 3020: hitmonchan vs electrode
+Simulating battle 2124 of 3020: hitmonchan vs porygon
+Simulating battle 2125 of 3020: hitmonchan vs nidorino
+Simulating battle 2126 of 3020: hitmonchan vs growlithe
+Simulating battle 2127 of 3020: hitmonchan vs bulbasaur
+Simulating battle 2128 of 3020: hitmonchan vs charizard
+Simulating battle 2129 of 3020: hitmonchan vs ponyta
+Simulating battle 2130 of 3020: hitmonchan vs staryu
+Simulating battle 2131 of 3020: hitmonchan vs kabutops
+Simulating battle 2132 of 3020: hitmonchan vs weezing
+Simulating battle 2133 of 3020: hitmonchan vs omanyte
+Simulating battle 2134 of 3020: hitmonchan vs krabby
+Simulating battle 2135 of 3020: hitmonchan vs arcanine
+Simulating battle 2136 of 3020: hitmonchan vs kadabra
+Simulating battle 2137 of 3020: hitmonchan vs seaking
+Simulating battle 2138 of 3020: hitmonchan vs muk
+Simulating battle 2139 of 3020: hitmonchan vs wigglytuff
+Simulating battle 2140 of 3020: hitmonchan vs victreebel
+Simulating battle 2141 of 3020: lickitung vs venomoth
+Simulating battle 2142 of 3020: lickitung vs nidoran-f
+Simulating battle 2143 of 3020: lickitung vs blastoise
+Simulating battle 2144 of 3020: lickitung vs koffing
+Simulating battle 2145 of 3020: lickitung vs charmeleon
+Simulating battle 2146 of 3020: lickitung vs poliwrath
+Simulating battle 2147 of 3020: lickitung vs persian
+Simulating battle 2148 of 3020: lickitung vs pidgeot
+Simulating battle 2149 of 3020: lickitung vs raichu
+Simulating battle 2150 of 3020: lickitung vs horsea
+Simulating battle 2151 of 3020: lickitung vs weedle
+Simulating battle 2152 of 3020: lickitung vs abra
+Simulating battle 2153 of 3020: lickitung vs butterfree
+Simulating battle 2154 of 3020: lickitung vs exeggutor
+Simulating battle 2155 of 3020: lickitung vs tangela
+Simulating battle 2156 of 3020: lickitung vs poliwag
+Simulating battle 2157 of 3020: lickitung vs kabuto
+Simulating battle 2158 of 3020: lickitung vs mankey
+Simulating battle 2159 of 3020: lickitung vs beedrill
+Simulating battle 2160 of 3020: lickitung vs clefable
+Simulating battle 2161 of 3020: koffing vs gyarados
+Simulating battle 2162 of 3020: koffing vs graveler
+Simulating battle 2163 of 3020: koffing vs poliwag
+Simulating battle 2164 of 3020: koffing vs dragonite
+Simulating battle 2165 of 3020: koffing vs magneton
+Simulating battle 2166 of 3020: koffing vs farfetchd
+Simulating battle 2167 of 3020: koffing vs poliwhirl
+Simulating battle 2168 of 3020: koffing vs rapidash
+Simulating battle 2169 of 3020: koffing vs vulpix
+Simulating battle 2170 of 3020: koffing vs jolteon
+Simulating battle 2171 of 3020: koffing vs primeape
+Simulating battle 2172 of 3020: koffing vs hitmonlee
+Simulating battle 2173 of 3020: koffing vs ponyta
+Simulating battle 2174 of 3020: koffing vs victreebel
+Simulating battle 2175 of 3020: koffing vs pidgey
+Simulating battle 2176 of 3020: koffing vs articuno
+Simulating battle 2177 of 3020: koffing vs vileplume
+Simulating battle 2178 of 3020: koffing vs rhyhorn
+Simulating battle 2179 of 3020: koffing vs tauros
+Simulating battle 2180 of 3020: koffing vs weedle
+Simulating battle 2181 of 3020: weezing vs muk
+Simulating battle 2182 of 3020: weezing vs krabby
+Simulating battle 2183 of 3020: weezing vs flareon
+Simulating battle 2184 of 3020: weezing vs magneton
+Simulating battle 2185 of 3020: weezing vs hitmonchan
+Simulating battle 2186 of 3020: weezing vs marowak
+Simulating battle 2187 of 3020: weezing vs jigglypuff
+Simulating battle 2188 of 3020: weezing vs ponyta
+Simulating battle 2189 of 3020: weezing vs hypno
+Simulating battle 2190 of 3020: weezing vs venonat
+Simulating battle 2191 of 3020: weezing vs omastar
+Simulating battle 2192 of 3020: weezing vs scyther
+Simulating battle 2193 of 3020: weezing vs poliwrath
+Simulating battle 2194 of 3020: weezing vs growlithe
+Simulating battle 2195 of 3020: weezing vs vulpix
+Simulating battle 2196 of 3020: weezing vs staryu
+Simulating battle 2197 of 3020: weezing vs beedrill
+Simulating battle 2198 of 3020: weezing vs zapdos
+Simulating battle 2199 of 3020: weezing vs hitmonlee
+Simulating battle 2200 of 3020: weezing vs articuno
+Simulating battle 2201 of 3020: rhyhorn vs porygon
+Simulating battle 2202 of 3020: rhyhorn vs clefairy
+Simulating battle 2203 of 3020: rhyhorn vs voltorb
+Simulating battle 2204 of 3020: rhyhorn vs abra
+Simulating battle 2205 of 3020: rhyhorn vs machop
+Simulating battle 2206 of 3020: rhyhorn vs persian
+Simulating battle 2207 of 3020: rhyhorn vs dodrio
+Simulating battle 2208 of 3020: rhyhorn vs spearow
+Simulating battle 2209 of 3020: rhyhorn vs seadra
+Simulating battle 2210 of 3020: rhyhorn vs onix
+Simulating battle 2211 of 3020: rhyhorn vs arbok
+Simulating battle 2212 of 3020: rhyhorn vs omastar
+Simulating battle 2213 of 3020: rhyhorn vs venomoth
+Simulating battle 2214 of 3020: rhyhorn vs kakuna</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyboardInterrupt</span>                         Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[19], line 88</span>
+<span class="ansi-green-fg ansi-bold">     82</span>     winner <span style="color:rgb(98,98,98)">=</span> simulate_battle(row)
+<span class="ansi-green-fg ansi-bold">     83</span>     results<span style="color:rgb(98,98,98)">.</span>append({
+<span class="ansi-green-fg ansi-bold">     84</span>         <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">challenger</span><span style="color:rgb(175,0,0)">"</span>: row[<span style="color:rgb(175,0,0)">'</span><span style="color:rgb(175,0,0)">challenger</span><span style="color:rgb(175,0,0)">'</span>],
+<span class="ansi-green-fg ansi-bold">     85</span>         <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">opponent</span><span style="color:rgb(175,0,0)">"</span>: row[<span style="color:rgb(175,0,0)">'</span><span style="color:rgb(175,0,0)">opponent</span><span style="color:rgb(175,0,0)">'</span>],
+<span class="ansi-green-fg ansi-bold">     86</span>         <span style="color:rgb(175,0,0)">"</span><span style="color:rgb(175,0,0)">winner</span><span style="color:rgb(175,0,0)">"</span>: winner
+<span class="ansi-green-fg ansi-bold">     87</span>     })
+<span class="ansi-green-fg">---&gt; 88</span>     <span class="ansi-yellow-bg">time</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">sleep</span><span class="ansi-yellow-bg">(</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">1.5</span><span class="ansi-yellow-bg">)</span>  <span style="font-style:italic;color:rgb(95,135,135)"># Respect rate limits</span>
+<span class="ansi-green-fg ansi-bold">     90</span> <span style="font-style:italic;color:rgb(95,135,135)"># ---- Save Results ---- #</span>
+<span class="ansi-green-fg ansi-bold">     92</span> results_df <span style="color:rgb(98,98,98)">=</span> pd<span style="color:rgb(98,98,98)">.</span>DataFrame(results)
+
+<span class="ansi-red-fg">KeyboardInterrupt</span>: </pre>
+</div>
+</div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

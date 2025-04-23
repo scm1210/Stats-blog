@@ -106,20 +106,11 @@ Because of its pervasive nature, some methodologists have described missing data
 ![](images/missing-data-explanation.png){fig-align="center" width="1200"}
 
 ::: notes
-MCAR (Missing Completely at Random):
-- Missingness unrelated to any data.
-- E.g., a student moves districts for unrelated reasons.
-- Analyses remain unbiased—but true MCAR is rare.
+MCAR (Missing Completely at Random): - Missingness unrelated to any data. - E.g., a student moves districts for unrelated reasons. - Analyses remain unbiased—but true MCAR is rare.
 
-MAR (Missing at Random):
-- Missingness depends only on other observed variables.
-- E.g., students who use substances more often skip school—and thus a self‑esteem survey.
-- Can be handled well with multiple imputation or maximum likelihood.
+MAR (Missing at Random): - Missingness depends only on other observed variables. - E.g., students who use substances more often skip school—and thus a self‑esteem survey. - Can be handled well with multiple imputation or maximum likelihood.
 
-MNAR (Missing Not at Random):
-- Missingness depends on the unobserved value itself.
-- E.g., poor readers skip hard test items because they can’t answer them.
-- Statistically challenging, since the missingness conveys hidden information.
+MNAR (Missing Not at Random): - Missingness depends on the unobserved value itself. - E.g., poor readers skip hard test items because they can’t answer them. - Statistically challenging, since the missingness conveys hidden information.
 :::
 
 ------------------------------------------------------------------------

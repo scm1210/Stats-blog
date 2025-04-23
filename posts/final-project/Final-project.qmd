@@ -1,5 +1,5 @@
 ---
-title: "Final Project"
+title: "Final Project: Prediciting Head to Head Pokémon Wins with Multi-level Binary Logistic Regression"
 subtitle: "Princeton University"
 author: "Steven Mesquiti"
 output: 
@@ -17,7 +17,281 @@ execute:
 params: 
     SHOW_SOLS: TRUE
     TOGGLE: TRUE
+jupyter: python3
 format: html
 engine: knitr
 categories: [Final-Project, code, analysis]
 ---
+
+# Load packages:
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = FALSE,fig.path = "Final_Project_figs/fig_")
+options(scipen=999)
+```
+
+```{r}
+library(pacman)
+pacman::p_load(tidyverse, DT, broom, performance,
+               ordinal,car,ggeffects,gofact,brms,lme4,
+               emmeans,knirt,MASS,brant,
+               install = TRUE)
+
+
+#### define plot objects and stuff
+
+palette <- c(
+  "#772e25", "#c44536", "#ee9b00", "#197278", "#283d3b", 
+  "#9CC5A1", "#6195C6", "#ADA7C9", "#4D4861", "grey50",
+  "#d4a373", "#8a5a44", "#4a6a74", "#5c80a8", "#a9c5a0",
+  "#7b9b8e", "#e1b16a", "#a69b7c", "#9d94c4", "#665c54"
+)
+
+palette_condition = c("#ee9b00", "#c44536","#005f73", "#283d3b", "#9CC5A1", "#6195C6", "#ADA7C9", "#4D4861")
+
+plot_aes = theme_minimal() +
+  theme(
+    legend.position = "top",
+    legend.text = element_text(size = 12),
+    text = element_text(size = 16, family = "Futura Medium"),
+    axis.text = element_text(color = "black"),
+    axis.ticks.y = element_blank(),
+    plot.title = element_text(size = 20, hjust = 0.5) # Adjusted title size and centering
+  )
+```
+
+# Overview of Turtorial 
+
+This tutorial will walk you through the process of building a multi-level binary logistic regression model to predict the winner of Pokémon battles. We will use a curated dataset of Pokémon stats and their battle outcomes, and we will leverage the `brms` package in R for Bayesian modeling.
+
+# GPT Pipeline {.tabset}
+
+## Load Libraries and API Key
+
+```{python}
+#| eval: false
+from openai import OpenAI, RateLimitError, APIError, APITimeoutError
+import pandas as pd 
+from tqdm.notebook import tqdm
+from dotenv import load_dotenv
+import re
+import numpy as np
+import json
+import argparse
+import random
+import time
+import os
+import ast
+
+load_dotenv("/Users/sm9518/Desktop/Article-Summarizer/.env") # where i keep my API key... 
+api_key = os.getenv("OPENAI_API_KEY")
+if api_key:
+    print("API Key loaded successfully!\n:)")
+else:
+    raise ValueError("API Key not found.\nMake sure it is set in the .env file.")
+model="gpt-3.5-turbo" # set model. we dont need anything fancy for this task.
+temperature=0 # set temp to be rather determinisitic 
+SEED = random.seed(42) # set seed for reproducibility
+
+```
+
+## Load Data and Sample
+
+```{python}
+#| eval: false
+df = pd.read_csv('/Users/sm9518/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/final-project/data/pokedex.csv', index_col=0)
+df.head()
+
+OG_pokedex = df.iloc[:151].copy() # take the OG 151 pokemon
+
+# build the 20‐matchups per Pokémon
+matchups = []
+for challenger in OG_pokedex['name']:
+    pool = [p for p in OG_pokedex['name'] if p != challenger]
+    opponents = random.sample(pool, 20) # give them 20 challengers
+    for opponent in opponents:
+        matchups.append({'challenger': challenger, 'opponent': opponent})
+matchups_df = pd.DataFrame(matchups)
+
+
+
+# merge challenger metadata
+matchups_with_meta = (
+    matchups_df
+    .merge(
+        OG_pokedex.add_suffix('_challenger'),
+        left_on='challenger',
+        right_on='name_challenger',
+        how='left'
+    )
+    # drop the redundant name_challenger column if you like
+    .drop(columns=['name_challenger'])
+    # merge opponent metadata
+    .merge(
+        OG_pokedex.add_suffix('_opponent'),
+        left_on='opponent',
+        right_on='name_opponent',
+        how='left'
+    )
+    .drop(columns=['name_opponent'])
+)
+
+# now every row has both challenger_* and opponent_* columns
+matchups_with_meta.head()
+```
+
+## Hit the API to Simuilate Mathcups
+
+```{python}
+#| eval: false
+#| 
+# Initialize OpenAI client
+client = OpenAI()
+# ---- Utility Functions ---- #
+
+def safe_parse_types(val):
+    if isinstance(val, list):
+        return val
+    try:
+        return ast.literal_eval(val)
+    except Exception:
+        return [str(val)]
+
+def format_pokemon_stats(name, row, suffix):
+    types = safe_parse_types(row[f'type{suffix}'])
+    return (
+        f"{name.title()}:\n"
+        f"- Type: {', '.join(types)}\n"
+        f"- HP: {row[f'hp{suffix}']}\n"
+        f"- Attack: {row[f'attack{suffix}']}\n"
+        f"- Defense: {row[f'defense{suffix}']}\n"
+        f"- Special Attack: {row[f's_attack{suffix}']}\n"
+        f"- Special Defense: {row[f's_defense{suffix}']}\n"
+        f"- Speed: {row[f'speed{suffix}']}\n"
+    )
+
+# ---- API Interaction ---- #
+
+def get_completion(prompt):
+    messages = [{"role": "user", "content": prompt}]
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=temperature
+    )
+    return response.choices[0].message.content.strip()
+
+def get_response(prompt):
+    try:
+        return get_completion(prompt)
+    except RateLimitError as e:
+        retry_time = getattr(e, 'retry_after', 30)
+        print(f"Rate limit exceeded. Retrying in {retry_time} seconds...")
+        time.sleep(retry_time)
+        return get_response(prompt)
+    except APIError as e:
+        print(f"API error occurred: {e}. Retrying in 30 seconds...")
+        time.sleep(30)
+        return get_response(prompt)
+    except APITimeoutError as e:
+        print(f"Request timed out: {e}. Retrying in 10 seconds...")
+        time.sleep(10)
+        return get_response(prompt)
+    except Exception as e:
+        print(f"Unexpected error: {e}. Retrying in 10 seconds...")
+        time.sleep(10)
+        return get_response(prompt)
+
+# ---- Simulate One Battle ---- #
+
+def simulate_battle(row):
+    p1_stats = format_pokemon_stats(row['challenger'], row, '_challenger')
+    p2_stats = format_pokemon_stats(row['opponent'], row, '_opponent')
+
+    prompt = (
+        "Based on the stats, which Pokémon would win a one-on-one battle?\n\n"
+        f"{p1_stats}\nVS\n\n{p2_stats}\n\n"
+        "Only respond with the name of the winning Pokémon."
+    )
+
+    response = get_response(prompt)
+    return response.lower()
+
+# ---- Run All Simulations ---- #
+
+# This should be your DataFrame containing all matchups
+# matchups_with_meta = pd.read_csv(...)  # Load your data here
+
+results = []
+
+for idx, row in tqdm(matchups_with_meta.iterrows(), total=len(matchups_with_meta), desc="Simulating battles"):
+    print(f"Simulating battle {idx + 1} of {len(matchups_with_meta)}: {row['challenger']} vs {row['opponent']}")
+    winner = simulate_battle(row)
+    results.append({
+        "challenger": row['challenger'],
+        "opponent": row['opponent'],
+        "winner": winner
+    })
+    time.sleep(1.5)  # Respect rate limits
+
+# ---- Save Results ---- #
+
+results_df = pd.DataFrame(results)
+matchups_with_results = matchups_with_meta.merge(
+    results_df,
+    on=["challenger", "opponent"],
+    how="left"
+)
+matchups_with_results.head()
+matchups_with_results.to_csv(f"/Users/sm9518/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/final-project/data/pokemon_battle_results_{model}_{SEED}_{temperature}.csv", index=False)
+print(f"\nDone! Winners saved to pokemon_battle_results_{model}_{SEED}_{temperature}.csv.")
+```
+
+# Load Curated Dataset 
+
+```{r}
+path = '~/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/final-project/data'
+df = read_csv(file.path(path, 'pokemon_battle_results.csv')) 
+
+df_small <- df |> 
+  dplyr::select(-dplyr::matches(c("info_"))) |> #drop the text col and the opponent info, we aren't interested in that
+  mutate(
+    winner = ifelse(winner == challenger, 1, 0),
+    winner = factor(winner, levels = c(0, 1), labels = c("Loss", "Win")),
+    challenger = as.factor(challenger),
+    opponent = as.factor(opponent),
+  ) |> 
+  rename_with(~ str_replace(., "_challenger$", ""), ends_with("_challenger")) # rename the challenger variable 
+
+df_small_scaled <- df_small %>%
+  mutate(across(c(height, weight, hp, attack, defense, s_attack, s_defense, speed,
+                  height_opponent, weight_opponent, hp_opponent, attack_opponent,
+                  defense_opponent, s_attack_opponent, s_defense_opponent, speed_opponent), 
+                scale))
+```
+
+# Run Models
+
+```{r}
+model_multilevel_slopes <- glmer(winner ~ height + weight + hp + attack + defense + 
+                                 s_attack + s_defense + speed + height_opponent + 
+                                 weight_opponent + hp_opponent + attack_opponent + 
+                                 defense_opponent + s_attack_opponent + s_defense_opponent + 
+                                 speed_opponent + evo_set + evo_set_opponent + 
+                                 (attack | challenger), data = df_small, family = binomial)
+```
+
+
+
+```{r}
+model_multilevel_scaled <- glmer(winner ~ height + weight + hp + attack + defense + s_attack + 
+                                 s_defense + speed +
+                                 (1 | challenger), 
+                                 data = df_small_scaled, 
+                                 family = binomial,
+                                 control = glmerControl(optimizer = "nloptwrap"))
+
+summary(model_multilevel_scaled)
+```
+
+
