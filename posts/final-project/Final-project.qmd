@@ -27,7 +27,7 @@ categories: [Final-Project, code, analysis]
 image: "images/preview-image.png"
 ---
 
-# Overview of Tutorial
+# Overview
 
 This tutorial will walk you through the process of simulating Pokémon battles using the OpenAI API and then analyzing the results using a multi-level binary logistic regression model using a Specification Curve Analysis framework. The main analytic goal is to see which pokemon stats are most predictive of winning a battle.
 
