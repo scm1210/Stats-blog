@@ -11,6 +11,7 @@ website:
         href: about.qmd
     right:
       - about.qmd
+      - CV.qmd
       - icon: github
         href: https://github.com/scm1210
       - icon: twitter

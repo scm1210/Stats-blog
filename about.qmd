@@ -2,7 +2,7 @@
 title: "About"
 image: profile.jpg
 about:
-  template: jolla
+  template: trestles
   links:
     - icon: twitter
       text: Twitter
@@ -18,8 +18,6 @@ education:
     department: "Department of Psychology"
     status: "PhD Student"
 ---
-
-Hi!
 
 My name is Steven Mesquiti! I'm a [first-year](https://lemolab.princeton.edu/people/steven-mesquiti) in the Department of Psychology at Princeton University advised by [Erik Nook](https://lemolab.princeton.edu/people/erik-c-nook-phd).
 

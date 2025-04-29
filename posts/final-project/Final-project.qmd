@@ -1,6 +1,6 @@
 ---
 title: "Final Project: Prediciting Head to Head Pokémon Wins with Multi-level Binary Logistic Regression"
-subtitle: "Psy-504"
+subtitle: "PSY-504"
 author: 
   - Steven Mesquiti
 institute: "Princeton University"
@@ -13,6 +13,7 @@ output:
     fig_width: 16
     toc: true
     toc_depth: 1
+    toc_float: true
     code-fold: true
     code-summary: "Show code"
 execute: 
@@ -29,9 +30,9 @@ image: "images/preview-image.png"
 
 # Overview
 
-This tutorial will walk you through the process of simulating Pokémon battles using the OpenAI API and then analyzing the results using a multi-level binary logistic regression model using a Specification Curve Analysis framework. The main analytic goal is to see which Pokemon stats are most predictive of winning a battle.
+This tutorial will walk you through the process of simulating Pokémon battles using the `OpenAI` API and then analyzing the results using a multi-level binary logistic regression model using a Specification Curve Analysis framework. The main analytic goal is to see which Pokemon stats are most predictive of winning a battle.
 
-We are using a *multi-level* binary logistic regression model given the multople levels of data we have. Each battle is a unique observation, but each Pokémon has multiple stats that are used to predict the outcome of the battle. This means that we need to account for the fact that different Pokémon may have different effects on the outcome of the battle. Futher, we have to employ a logistic regression framework since our outcome is binary (win/loss).
+We are using a *multi-level* binary logistic regression model given the multiple levels of data we have. Each battle is a unique observation, but each Pokémon has multiple stats that are used to predict the outcome of the battle. This means that we need to account for the fact that different Pokémon may have different effects on the outcome of the battle. Further, we have to employ a logistic regression framework since our outcome is binary (win/loss).
 
 ![](images/preview-image.png){fig-align="center"}
 
@@ -656,7 +657,7 @@ models |>
 
 We can also evaluate the best model by looking at the conditional r-square value. We start by ranking the models by their conditional r-square value and then plotting the results. This will allow us to see which models are the best predictors of the outcome.
 
-From the results below, we can see that we can account for over 50% of the variance in the outcome using just the challenger pokemon's stats. This is a pretty good result, and it suggests that we can use these stats to predict the outcome of a battle. However, we still don't quite know what the *recipe* for the best model is yet.
+From the results below, we can see that we can account for over 50% of the variance in the outcome using just the challenger Pokemon's stats. This is a pretty good result, and it suggests that we can use these stats to predict the outcome of a battle. However, we still don't quite know what the *recipe* for the best model is yet.
 
 ```{r}
 #| label: r-squared-change
@@ -700,7 +701,7 @@ best_model %>%
 
 ### What seems to be the best model?
 
-Now that we have a sense of the best model, we can plot the results using `ggplot` to create a bargraph that shows us how much variance each of the top 50 models accounts for.
+Now that we have a sense of the best model, we can plot the results using `ggplot` to create a bar graph that shows us how much variance each of the top 50 models accounts for.
 
 ```{r}
 #| label: best model
@@ -734,7 +735,7 @@ best_model %>%
   
 ```
 
-Based on what our graph tell's us, the best model is `(1 | challenger) + s_defense`. This model accounts for 55% of the variance in the outcome, which is a pretty good result. However, it's important to note that this is a pretty simple model and there are likely other factors that could be included to improve the model. For example, we could include the opponent's stats or other variables that might be relevant to the outcome of the battle. If anything, this goes ot show how balanced of a meta Pokemon has.
+Based on what our graph tells us, the best model is `(1 | challenger) + s_defense`. This model accounts for 55% of the variance in the outcome, which is a pretty good result. However, it's important to note that this is a pretty simple model and there are likely other factors that could be included to improve the model. For example, we could include the opponent's stats or other variables that might be relevant to the outcome of the battle. If anything, this goes to show how balanced of a meta Pokemon has.
 
 Thanks for following along!
 
