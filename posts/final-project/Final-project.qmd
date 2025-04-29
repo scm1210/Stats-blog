@@ -29,7 +29,9 @@ image: "images/preview-image.png"
 
 # Overview
 
-This tutorial will walk you through the process of simulating Pokémon battles using the OpenAI API and then analyzing the results using a multi-level binary logistic regression model using a Specification Curve Analysis framework. The main analytic goal is to see which pokemon stats are most predictive of winning a battle.
+This tutorial will walk you through the process of simulating Pokémon battles using the OpenAI API and then analyzing the results using a multi-level binary logistic regression model using a Specification Curve Analysis framework. The main analytic goal is to see which Pokemon stats are most predictive of winning a battle.
+
+We are using a *multi-level* binary logistic regression model given the multople levels of data we have. Each battle is a unique observation, but each Pokémon has multiple stats that are used to predict the outcome of the battle. This means that we need to account for the fact that different Pokémon may have different effects on the outcome of the battle. Futher, we have to employ a logistic regression framework since our outcome is binary (win/loss).
 
 ![](images/preview-image.png){fig-align="center"}
 
@@ -48,9 +50,9 @@ if(!require('pacman')) {
 }
 library(pacman)
 pacman::p_load(tidyverse, DT, broom, performance,
-               ordinal,car,ggeffects,gofact,brms,lme4,
-               emmeans,knirt,MASS,brant,devtool,purr,
-               ggridges,specr, furrr,install = TRUE)
+               ordinal,car,ggeffects,gofact,lme4,
+               emmeans,knirt,MASS,brant,devtool,purr,GGally,
+               specr, furrr,install = TRUE)
 devtools::install_github("hadley/emo")
 
 #### define plot objects and stuff
@@ -381,8 +383,6 @@ This plot shows how different Pokémon stats relate to each other and to winning
 #| fig-height: 12
 #| fig-width: 12
 #| paged-print: false
-library(GGally)
-
 # Define your color palette
 my_colors <- c("Win" = "#4daf4a", "Loss" = "#e41a1c")
 
@@ -416,9 +416,9 @@ df_small %>%
 
 # Predict Outcomes with Multilevel Binary Logistic Regression using `Specr` {.tabset}
 
-Now that we have a sense of the various relationships, we can fit various models to predict our outcome (win/loss).
+Now that we have a sense of the various relationships, we can fit binary logistic regression models to predict our outcome (win/loss).
 
-We will do so using a **specification curve analysis (SCA)** framework, via the `Specr` package in R. You can learn more about Specr [here](https://cran.r-project.org/web/packages/specr/vignettes/specr.html).
+We will fit our models using a **specification curve analysis (SCA)** framework, via the `Specr` package in R. You can learn more about `Specr` [here](https://cran.r-project.org/web/packages/specr/vignettes/specr.html).
 
 SCA will allow us to see how the model changes as we add or remove variables in a transparent manner. Briefly, SCA is a method for exploring the robustness of statistical results across different model specifications. It involves systematically varying the model's parameters, such as the choice of predictors or the functional form, and examining how these changes affect the estimated coefficients and their significance.
 
@@ -452,17 +452,12 @@ glmer_binomial <- possibly(
   otherwise = NULL
 )
 
-# write function to extract r squared
 tidy_new <- function(x) {
   fit <- broom::tidy(x, conf.int = TRUE)
-  
-  # Try to extract R2 info safely
   r2_vals <- tryCatch(
     performance::r2(x),
     error = function(e) NULL
   )
-  
-  # Default NA values
   r2_marginal <- NA
   r2_conditional <- NA
   
@@ -476,19 +471,22 @@ tidy_new <- function(x) {
       r2_marginal <- r2_vals$R2
     }
   }
-  
-  # Store results
   fit$res <- list(x)
   fit$r2_marginal <- r2_marginal
   fit$r2_conditional <- r2_conditional
-  
   return(fit)
 }
 ```
 
 ## Set up the specifications
 
-The `specr` package allows us to set up the specifications for the models we want to run. We will set up the syntax for the models we want to run, including the variables we want to include in the model and the random effects. We will also set up a function to extract the results from the models.
+The `Specr` package allows us to set up the specifications for the models we want to run. We will set up the syntax for the models we want to run, including the variables we want to include in the model and the random effects. We will also set up a function to extract the results from the models.
+
+The model we are trying to specify is `winner ~ Predictors + (1 | challenger)`.
+
+::: callout
+💡 In this case, we are including a random slope for the challenger variable. This means that we are allowing the effect of the challenger variable to vary across different levels of the data. This is important because it allows us to account for the fact that different challengers may have different effects on the outcome of the battle.
+:::
 
 Here is a brief breakdown of the different arguments
 
@@ -527,7 +525,6 @@ Now that we have set up the specifications, we can define the formulas for the m
 
 ```{r}
 #| label: formulas
-### filter out the models with no covariates
 specs$specs <- specs$specs %>%
   mutate(
     controls_sorted = sapply(strsplit(as.character(controls), ","), function(x) paste(sort(trimws(x)), collapse = ","))
@@ -550,17 +547,19 @@ specs$specs |>
 
 ## Execute the Analyses in **parallel** using `furrr`
 
-Now that we have set up the specifications and defined the formulas, we can run the models. The `specr` package allows us to run the models in parallel and extract the results in a tidy format, we'll utilize `furrr` to run our jobs in parallel.
+Now that we have set up the specifications and defined the formulas, we can run the models.
+
+The `specr` package allows us to run the models in parallel and extract the results in a tidy format, we'll utilize `furrr` to run our jobs in parallel to speed up the process. We'll also cache our output as a `.RDS` file, so each time we run the code, it won't have to re-run the models.
 
 ```{r}
 #| label: run sca
 model_path <- file.path("~/Library/CloudStorage/GoogleDrive-sm9518@princeton.edu/My Drive/Classes/Stats-blog/posts/final-project/models/sca_mode.rds") # load in the model
 
-if (!file.exists(model_path)) {
+if (!file.exists(model_path)) { # if the file doesn't exist, then execute the code
   specs <- readRDS(model_path)
   plan() # check what plan we have
   opts <- furrr_options(
-    globals = list(glmer_binomial = glmer_binomial)
+    globals = list(glmer_binomial = glmer_binomial) # tell the code we wanna use glmer 
   )
   plan(strategy = multisession, workers = 6) # switch to multisession plan to make this run faster
   results <- specr(
@@ -568,9 +567,9 @@ if (!file.exists(model_path)) {
     .options = opts,   # Pass opts to specr
     .progress = TRUE
   )
-  plan(sequential) # switch back to sequential
+  plan(sequential) # switch back to sequential once done running
   saveRDS(results, model_path)
-} else {
+} else { # if the file exists, then load it in
   results <- readRDS(model_path)
 }
 
@@ -609,7 +608,6 @@ p2 <- plot(results,
     axis.line.y = element_line("black", size = .5)
   )
 
-
 plot_grid(
   p1, p2,
   ncol = 1,           
@@ -617,19 +615,15 @@ plot_grid(
   axis = "rbl",          
   rel_heights = c(.60, 2.25)  
 )
-
-
-
-
 ```
 
 ## Individually Inspect the top N-Models
 
-Now taht we used `specr()`, we can summarize individual specifications by using `broom::tidy()` and `broom::glance()`. For most cases, this provides a sufficient and appropriate summary of the relationship of interest and model characteristics. Sometimes, however, it might be useful to investigate specific models in more detail or to investigate a specific parameter that is not provided by the two functions (e.g., r-square).
+Now that we used `specr()`, we can summarize individual specifications by using `broom::tidy()` and `broom::glance()`. For most cases, this provides a sufficient and appropriate summary of the relationship of interest and model characteristics. Sometimes, however, it might be useful to investigate specific models in more detail or to investigate a specific parameter that is not provided by the two functions (e.g., *r-square* or variance accounted for by the model).
 
 ### Inspect the significant models
 
-First, we'll look at just the significant models. This is done by filtering the results dataframe to only include models with a p-value less than 0.05. We can then use the `DT` package to create an interactive table that allows us to sort and filter the data.
+First, we'll look at just the significant models (i.e., *p* \< 0.05). This is done by filtering the results dataframe to only include significant models. We can then use the `DT` package to create an interactive table that allows us to sort and filter the data.
 
 ```{r}
 #| label: inspect models
@@ -706,7 +700,7 @@ best_model %>%
 
 ### What seems to be the best model?
 
-Now that we have a sense of the best model, we can plot the results using `ggplot` to create a bargraph that shows us how much variance each of the top 50 models accounts for, as well as which might be the best one.
+Now that we have a sense of the best model, we can plot the results using `ggplot` to create a bargraph that shows us how much variance each of the top 50 models accounts for.
 
 ```{r}
 #| label: best model
@@ -740,4 +734,18 @@ best_model %>%
   
 ```
 
-Based on what our graph tell's us, the best model is `(1 | challenger) + s_defense`. This model accounts for 55% of the variance in the outcome, which is a pretty good result. However, it's important to note that this is a pretty simple model and there are likely other factors that could be included to improve the model. For example, we could include the opponent's stats or other variables that might be relevant to the outcome of the battle.
+Based on what our graph tell's us, the best model is `(1 | challenger) + s_defense`. This model accounts for 55% of the variance in the outcome, which is a pretty good result. However, it's important to note that this is a pretty simple model and there are likely other factors that could be included to improve the model. For example, we could include the opponent's stats or other variables that might be relevant to the outcome of the battle. If anything, this goes ot show how balanced of a meta Pokemon has.
+
+Thanks for following along!
+
+::: {style="text-align: center;"}
+![](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnN5MTBlOTkzMXBidmR2cHJ5dW1hdThhY2kydWJraXo0eTE3bDYxYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oz8xHEisOJuebgmhq/giphy.gif)
+:::
+
+If you'd like to learn more about SCA, I'd recommend checking out ✨Dr. Dani Cosme's ✨ [website](https://dcosme.github.io/2019/06/28/specification-curve-analysis-sca-tutorial/). She's an amazing person, teacher, and has a ton of great resources on SCA and other statistical methods in `R`. I especially recommend this [reproducibililty workshop](https://dcosme.github.io/2022/03/18/reproducibility-workshop/).
+
+# Package Citations
+
+```{r}
+report::cite_packages()
+```
